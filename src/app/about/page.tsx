@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { User, Terminal, Briefcase, GraduationCap, Code2, Globe, Heart } from "lucide-react"
+import awd from "./awd.png";
 
 const skills = [
   { name: "Web Application Security", level: 90 },
