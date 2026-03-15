@@ -10,7 +10,7 @@ import { Mail, Github, Linkedin, MessageSquare, Send, Globe, Terminal, Shield } 
 import { GlowingEffect } from "@/components/ui/glowing-effect"
 import { useToast } from "@/hooks/use-toast"
 import { useFirestore } from "@/firebase"
-import { collection, doc, serverTimestamp } from "firebase/firestore"
+import { collection } from "firebase/firestore"
 import { addDocumentNonBlocking } from "@/firebase/non-blocking-updates"
 
 export default function ContactPage() {
@@ -20,9 +20,10 @@ export default function ContactPage() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const form = e.currentTarget // Capture the form reference before the async timeout
     setIsSubmitting(true)
 
-    const formData = new FormData(e.currentTarget)
+    const formData = new FormData(form)
     const name = formData.get("name") as string
     const email = formData.get("email") as string
     const subject = formData.get("subject") as string
@@ -43,7 +44,7 @@ export default function ContactPage() {
         title: "SIGNAL TRANSMITTED",
         description: "Your message has been encrypted and sent to the secure node.",
       })
-      e.currentTarget.reset()
+      form.reset() // Use the captured form reference
     }, 1000)
   }
 
