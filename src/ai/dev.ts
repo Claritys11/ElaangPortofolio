@@ -1,4 +1,4 @@
 import { config } from 'dotenv';
 config();
 
-import '@/ai/flows/content-refinement-assistant-flow.ts';
+// AI flows can be imported here if needed in the future

@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as React from "react"
@@ -6,7 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Terminal, Shield, Award, Cpu, User, Menu, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { ThemeToggle } from "@/components/ThemeToggle"
 
 const navItems = [
   { name: "About", href: "/about", icon: User },
@@ -51,13 +50,12 @@ export function Navbar() {
                 </Link>
               )
             })}
-            <Button variant="outline" size="sm" className="border-primary/50 hover:bg-primary/10 hover:text-primary" asChild>
-              <Link href="/assistant">AI Assistant</Link>
-            </Button>
+            <ThemeToggle />
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center space-x-4">
+            <ThemeToggle />
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="p-2 rounded-md text-muted-foreground hover:text-primary hover:bg-muted"
@@ -90,11 +88,6 @@ export function Navbar() {
                 </Link>
               )
             })}
-            <div className="pt-4 pb-2 px-3">
-              <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90" asChild>
-                <Link href="/assistant" onClick={() => setIsOpen(false)}>AI Assistant</Link>
-              </Button>
-            </div>
           </div>
         </div>
       )}
