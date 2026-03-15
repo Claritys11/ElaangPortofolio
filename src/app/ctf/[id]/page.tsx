@@ -152,8 +152,8 @@ export default function WriteupDetailPage() {
             <div className="bg-black/40 rounded-lg p-6 font-code text-sm border border-border/50">
               <p className="text-primary mb-2"># PoC Python script fragment</p>
               <p className="text-white">import requests</p>
-              <p className="text-white">payload = "1' || (IF(SUBSTR((SELECT@@version),1,1)='5',SLEEP(5),1))-- -"</p>
-              <p className="text-white">r = requests.get(f"http://target/api/v1?id={payload}")</p>
+              <p className="text-white">{"payload = \"1' || (IF(SUBSTR((SELECT@@version),1,1)='5',SLEEP(5),1))-- -\""}</p>
+              <p className="text-white">{"r = requests.get(f\"http://target/api/v1?id={payload}\")"}</p>
             </div>
           </section>
 
