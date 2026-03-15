@@ -141,18 +141,27 @@ export default function SecureInboxPage() {
   }
 
   const handleDelete = (id: string | null | undefined) => {
-    if (!id || !db) return;
+    if (!id || !db) {
+      toast({
+        variant: "destructive",
+        title: "Operation Aborted",
+        description: "Document identifier missing."
+      });
+      return;
+    }
     
-    if (confirm("Are you sure you want to delete this record? This action cannot be undone.")) {
+    const confirmDelete = window.confirm("Are you sure you want to delete this record? This action cannot be undone.");
+    
+    if (confirmDelete) {
       const docRef = doc(db, "ctfWriteups", id)
       deleteDocumentNonBlocking(docRef)
       
       toast({ 
-        title: "Record Deleted", 
-        description: "Signal purged from database." 
+        title: "Record Purged", 
+        description: "Data successfully removed from Firestore nodes." 
       })
 
-      // Jika data yang sedang diedit adalah yang dihapus, tutup editor
+      // If the deleted record was being edited, clear the editor
       if (editingId === id) {
         setIsEditing(false)
         setEditingId(null)
@@ -203,7 +212,7 @@ export default function SecureInboxPage() {
                     className="bg-muted/50"
                   />
                 </div>
-                <Button type="submit" className="w-full bg-primary font-bold">
+                <Button type="submit" className="w-full bg-primary font-bold text-primary-foreground">
                   AUTHORIZE ACCESS
                 </Button>
               </form>
