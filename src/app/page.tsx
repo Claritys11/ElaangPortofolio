@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as React from "react"
@@ -49,7 +48,7 @@ export default function Home() {
             
             <div className="space-y-2">
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-headline font-bold leading-tight">
-                Hi, I'm <span className="text-primary neon-glow">Elang</span> Dimas Syadewa
+                Hi, I'm <span className="text-primary neon-glow">Elang</span>
               </h1>
               <div className="h-[1.2em] text-4xl md:text-6xl lg:text-7xl font-headline font-bold">
                 <TerminalText 
