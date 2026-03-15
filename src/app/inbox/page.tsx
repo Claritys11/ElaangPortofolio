@@ -79,6 +79,20 @@ export default function SecureInboxPage() {
   const { data: logs, isLoading: logsLoading } = useCollection(isAuthenticated ? logsQuery : null)
   const { data: writeups, isLoading: writeupsLoading } = useCollection(isAuthenticated ? writeupsQuery : null)
 
+  const resetForm = () => {
+    setWriteupForm({
+      title: "",
+      competition: "",
+      category: "Web",
+      difficulty: "Medium",
+      date: format(new Date(), 'yyyy-MM-dd'),
+      summary: "",
+      content: "",
+      flag: "",
+      tags: ""
+    })
+  }
+
   const handleSaveWriteup = () => {
     if (!writeupForm.title || !writeupForm.content) {
       toast({
@@ -107,6 +121,7 @@ export default function SecureInboxPage() {
 
     setIsEditing(false)
     setEditingId(null)
+    resetForm()
   }
 
   const handleEdit = (w: any) => {
@@ -128,41 +143,22 @@ export default function SecureInboxPage() {
   const handleDelete = (id: string | null | undefined) => {
     if (!id || !db) return;
     
-    const confirmMsg = "Are you sure you want to delete this record? This action cannot be undone."
-    if (typeof window !== "undefined" && window.confirm(confirmMsg)) {
-      try {
-        const docRef = doc(db, "ctfWriteups", id)
-        deleteDocumentNonBlocking(docRef)
-        
-        toast({ 
-          title: "Record Deleted", 
-          description: "Signal purged from database." 
-        })
+    if (confirm("Are you sure you want to delete this record? This action cannot be undone.")) {
+      const docRef = doc(db, "ctfWriteups", id)
+      deleteDocumentNonBlocking(docRef)
+      
+      toast({ 
+        title: "Record Deleted", 
+        description: "Signal purged from database." 
+      })
 
-        // Jika data yang sedang diedit adalah yang dihapus, tutup editor
-        if (editingId === id) {
-          setIsEditing(false)
-          setEditingId(null)
-          resetForm()
-        }
-      } catch (error) {
-        console.error("Error creating doc ref for delete:", error)
+      // Jika data yang sedang diedit adalah yang dihapus, tutup editor
+      if (editingId === id) {
+        setIsEditing(false)
+        setEditingId(null)
+        resetForm()
       }
     }
-  }
-
-  const resetForm = () => {
-    setWriteupForm({
-      title: "",
-      competition: "",
-      category: "Web",
-      difficulty: "Medium",
-      date: format(new Date(), 'yyyy-MM-dd'),
-      summary: "",
-      content: "",
-      flag: "",
-      tags: ""
-    })
   }
 
   const handleNewEntry = () => {
