@@ -57,15 +57,6 @@ export default function AboutPage() {
                 </div>
               </div>
             </div>
-            <div className="space-y-4">
-              <div className="flex gap-4">
-                <GraduationCap className="h-5 w-5 text-primary shrink-0" />
-                <div>
-                  <p className="text-sm font-bold">B.Sc Computer Science</p>
-                  <p className="text-xs text-muted-foreground">Tech University, 2022</p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -75,7 +66,7 @@ export default function AboutPage() {
               <User className="h-5 w-5" />
               <span className="font-code text-sm font-bold uppercase tracking-widest">Profile</span>
             </div>
-            <h1 className="text-5xl font-headline font-bold">Hi, I'm <span className="text-primary">CipherSynth</span></h1>
+            <h1 className="text-5xl font-headline font-bold">Hi, I'm <span className="text-primary neon-glow">Elang</span> Dimas Syadewa</h1>
             <p className="text-xl text-muted-foreground leading-relaxed">
               I am a dedicated cybersecurity professional with a passion for offensive security and CTF competitions. 
               My journey began in the terminal, exploring vulnerabilities and building secure systems.

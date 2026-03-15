@@ -19,7 +19,7 @@ const roles = [
 
 export default function Home() {
   const [currentRoleIndex, setCurrentRoleIndex] = React.useState(0)
-  const [name, setName] = React.useState("Elang")
+  const [lastName, setLastName] = React.useState("Dimas Syadewa")
   const [terminalLoaded, setTerminalLoaded] = React.useState(false)
 
   React.useEffect(() => {
@@ -31,9 +31,9 @@ export default function Home() {
 
   React.useEffect(() => {
     const nameGlitchInterval = setInterval(() => {
-      setName("Claritys")
+      setLastName("Claritys")
       setTimeout(() => {
-        setName("Elang")
+        setLastName("Dimas Syadewa")
       }, 800)
     }, 7000)
     return () => clearInterval(nameGlitchInterval)
@@ -60,7 +60,7 @@ export default function Home() {
             
             <div className="space-y-2">
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-headline font-bold leading-tight">
-                Hi, I'm <GlitchText text={name} className="text-primary" />
+                Hi, I'm <span className="text-primary neon-glow">Elang</span> <GlitchText text={lastName} className="text-primary" />
               </h1>
               <div className="h-[1.2em] text-4xl md:text-6xl lg:text-7xl font-headline font-bold">
                 <TerminalText 
