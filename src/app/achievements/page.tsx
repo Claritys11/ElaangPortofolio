@@ -1,58 +1,21 @@
+
 "use client"
 
-import { Award, Shield, Trophy, CheckCircle2, Star, ExternalLink } from "lucide-react"
+import * as React from "react"
+import { Award, Shield, Trophy, CheckCircle2, Star, ExternalLink, Loader2 } from "lucide-react"
 import Image from "next/image"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
-
-const certifications = [
-  {
-    title: "CompTIA Security+",
-    issuer: "CompTIA",
-    date: "2023",
-    id: "COMP-SEC-9981",
-    image: "https://picsum.photos/seed/cert1/400/300",
-    color: "hsl(var(--primary))"
-  },
-  {
-    title: "eJPT - Junior PenTester",
-    issuer: "eLearnSecurity",
-    date: "2023",
-    id: "EJPT-7721-B",
-    image: "https://picsum.photos/seed/cert2/400/300",
-    color: "hsl(var(--secondary))"
-  },
-  {
-    title: "Certified Ethical Hacker",
-    issuer: "EC-Council",
-    date: "2022",
-    id: "CEH-11029",
-    image: "https://picsum.photos/seed/cert3/400/300",
-    color: "hsl(var(--primary))"
-  }
-]
-
-const achievements = [
-  {
-    title: "Top 1% Global Ranking",
-    platform: "TryHackMe",
-    description: "Maintained consistent top ranking through solving 200+ rooms.",
-    icon: Trophy
-  },
-  {
-    title: "CTF Winner - Hacking 101",
-    platform: "University Cup",
-    description: "1st Place out of 50+ regional teams.",
-    icon: Star
-  },
-  {
-    title: "Responsible Disclosure",
-    platform: "HackerOne",
-    description: "Valid critical vulnerability reported to a major fintech firm.",
-    icon: Shield
-  }
-]
+import { useFirestore, useCollection, useMemoFirebase } from "@/firebase"
+import { collection, query, orderBy } from "firebase/firestore"
 
 export default function AchievementsPage() {
+  const db = useFirestore()
+  const achievementsQuery = useMemoFirebase(() => query(collection(db, "achievements"), orderBy("createdAt", "desc")), [db])
+  const { data: dbAchievements, isLoading } = useCollection(achievementsQuery)
+
+  const certifications = (dbAchievements || []).filter(a => a.imageUrl && a.issuer)
+  const quickStats = (dbAchievements || []).filter(a => !a.imageUrl || a.platform)
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-16">
@@ -68,79 +31,95 @@ export default function AchievementsPage() {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
-        {certifications.map((cert, idx) => (
-          <div key={idx} className="relative group rounded-xl border border-border p-1">
-            <GlowingEffect
-              spread={40}
-              glow={true}
-              disabled={false}
-              proximity={64}
-              inactiveZone={0.01}
-              borderWidth={2}
-            />
-            <div className="relative bg-background rounded-lg overflow-hidden h-full flex flex-col">
-              <div className="relative h-56">
-                <Image 
-                  src={cert.image} 
-                  alt={cert.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  data-ai-hint="certificate document"
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center py-20">
+          <Loader2 className="h-10 w-10 text-primary animate-spin mb-4" />
+          <p className="font-code text-muted-foreground">Authenticating credentials...</p>
+        </div>
+      ) : (
+        <>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+            {certifications.length > 0 ? certifications.map((cert, idx) => (
+              <div key={cert.id || idx} className="relative group rounded-xl border border-border p-1">
+                <GlowingEffect
+                  spread={40}
+                  glow={true}
+                  disabled={false}
+                  proximity={64}
+                  inactiveZone={0.01}
+                  borderWidth={2}
                 />
-                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
-                <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-sm p-2 rounded">
-                  <ExternalLink className="h-4 w-4 text-primary" />
-                </div>
-              </div>
-              <div className="p-6 flex-1 flex flex-col justify-between">
-                <div>
-                  <p className="text-[10px] font-code text-primary uppercase mb-1">{cert.issuer}</p>
-                  <h3 className="text-lg font-headline font-bold">{cert.title}</h3>
-                </div>
-                <div className="flex items-center justify-between mt-4">
-                  <div className="flex items-center text-xs text-muted-foreground font-code">
-                    <CheckCircle2 className="h-3 w-3 mr-1 text-green-500" />
-                    {cert.id}
+                <div className="relative bg-background rounded-lg overflow-hidden h-full flex flex-col">
+                  <div className="relative h-56 bg-muted/20">
+                    {cert.imageUrl ? (
+                      <img 
+                        src={cert.imageUrl} 
+                        alt={cert.title}
+                        className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Award className="h-12 w-12 text-primary opacity-20" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
+                    <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-sm p-2 rounded">
+                      <ExternalLink className="h-4 w-4 text-primary" />
+                    </div>
                   </div>
-                  <p className="text-xs text-muted-foreground">{cert.date}</p>
+                  <div className="p-6 flex-1 flex flex-col justify-between border-t border-border/50">
+                    <div>
+                      <p className="text-[10px] font-code text-primary uppercase mb-1">{cert.issuer}</p>
+                      <h3 className="text-lg font-headline font-bold">{cert.title}</h3>
+                      <p className="text-xs text-muted-foreground mt-2 line-clamp-2 italic">{cert.description}</p>
+                    </div>
+                    <div className="flex items-center justify-between mt-4">
+                      <div className="flex items-center text-xs text-muted-foreground font-code">
+                        <CheckCircle2 className="h-3 w-3 mr-1 text-primary" />
+                        VERIFIED
+                      </div>
+                      <p className="text-xs text-muted-foreground">{cert.date}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )) : (
+              <div className="col-span-full text-center py-10 opacity-50 font-code text-sm">No visual credentials recorded.</div>
+            )}
           </div>
-        ))}
-      </div>
 
-      <h2 className="text-2xl font-headline font-bold mb-8 flex items-center">
-        <Trophy className="h-6 w-6 mr-3 text-secondary" />
-        Competitive Milestones
-      </h2>
+          <h2 className="text-2xl font-headline font-bold mb-8 flex items-center">
+            <Trophy className="h-6 w-6 mr-3 text-secondary" />
+            Competitive Milestones
+          </h2>
 
-      <div className="grid md:grid-cols-3 gap-6">
-        {achievements.map((item, idx) => {
-          const Icon = item.icon
-          return (
-            <div key={idx} className="relative group rounded-xl border border-border p-1">
-              <GlowingEffect
-                spread={40}
-                glow={true}
-                disabled={false}
-                proximity={64}
-                inactiveZone={0.01}
-                borderWidth={2}
-              />
-              <div className="relative p-6 h-full flex flex-col bg-background rounded-lg border border-border group-hover:bg-muted/10 transition-colors">
-                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <Icon className="h-6 w-6 text-primary" />
+          <div className="grid md:grid-cols-3 gap-6">
+            {quickStats.length > 0 ? quickStats.map((item, idx) => (
+              <div key={item.id || idx} className="relative group rounded-xl border border-border p-1">
+                <GlowingEffect
+                  spread={40}
+                  glow={true}
+                  disabled={false}
+                  proximity={64}
+                  inactiveZone={0.01}
+                  borderWidth={2}
+                />
+                <div className="relative p-6 h-full flex flex-col bg-background rounded-lg border border-border group-hover:bg-muted/10 transition-colors">
+                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                    <Trophy className="h-6 w-6 text-primary" />
+                  </div>
+                  <p className="text-xs font-code text-secondary mb-1">{item.platform || item.issuer}</p>
+                  <h3 className="text-lg font-headline font-bold mb-2">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground line-clamp-3">{item.description}</p>
+                  <div className="mt-auto pt-4 text-[10px] font-code text-muted-foreground">{item.date}</div>
                 </div>
-                <p className="text-xs font-code text-secondary mb-1">{item.platform}</p>
-                <h3 className="text-lg font-headline font-bold mb-2">{item.title}</h3>
-                <p className="text-sm text-muted-foreground">{item.description}</p>
               </div>
-            </div>
-          )
-        })}
-      </div>
+            )) : (
+              <div className="col-span-full text-center py-10 opacity-50 font-code text-sm">No milestones logged.</div>
+            )}
+          </div>
+        </>
+      )}
     </div>
   )
 }

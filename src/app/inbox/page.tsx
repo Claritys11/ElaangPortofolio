@@ -186,7 +186,7 @@ export default function SecureInboxPage() {
 
         <TabsContent value="messages">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {messagesLoading ? <Loader2 className="animate-spin" /> : messages?.map(msg => (
+            {messagesLoading ? <div className="col-span-full flex justify-center py-20"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div> : messages?.length ? messages.map(msg => (
               <Card key={msg.id} className="bg-background/50 border-border">
                 <CardHeader className="py-4">
                   <CardTitle className="text-lg text-primary">{msg.title}</CardTitle>
@@ -194,7 +194,7 @@ export default function SecureInboxPage() {
                 </CardHeader>
                 <CardContent className="py-4 pt-0 text-sm text-muted-foreground whitespace-pre-wrap">{msg.content}</CardContent>
               </Card>
-            ))}
+            )) : <p className="col-span-full text-center py-20 text-muted-foreground">No signals detected.</p>}
           </div>
         </TabsContent>
 
@@ -204,12 +204,12 @@ export default function SecureInboxPage() {
               <Button onClick={() => { setEditMode("writeup"); setEditingId(null); setWriteupForm({title: "", competition: "", category: "Web", difficulty: "Medium", date: format(new Date(), 'yyyy-MM-dd'), summary: "", content: "", flag: "", tags: ""}) }} className="w-full bg-primary/20 text-primary border border-primary/30">
                 <Plus className="h-4 w-4 mr-2" /> New Write-up
               </Button>
-              <ScrollArea className="h-[500px] border rounded-lg bg-card/30">
+              <ScrollArea className="h-[600px] border rounded-lg bg-card/30">
                 <div className="p-4 space-y-2">
-                  {writeups?.map(w => (
-                    <div key={w.id} className={cn("p-3 rounded-lg border flex justify-between group items-center", editingId === w.id ? "bg-primary/10" : "bg-card")} onClick={() => { setEditMode("writeup"); setEditingId(w.id); setWriteupForm({ ...w, tags: (w.tags || []).join(', ') }) }}>
+                  {writeupsLoading ? <Loader2 className="animate-spin mx-auto mt-10" /> : writeups?.map(w => (
+                    <div key={w.id} className={cn("p-3 rounded-lg border flex justify-between group items-center cursor-pointer", editingId === w.id ? "bg-primary/10 border-primary/50" : "bg-card border-border/50")} onClick={() => { setEditMode("writeup"); setEditingId(w.id); setWriteupForm({ ...w, tags: (w.tags || []).join(', ') }) }}>
                       <div className="truncate"><p className="text-sm font-bold truncate">{w.title}</p><p className="text-[10px] text-muted-foreground">{w.competition}</p></div>
-                      <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); triggerDelete(w.id, "ctfWriteups") }}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                      <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); triggerDelete(w.id, "ctfWriteups") }} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4 text-destructive" /></Button>
                     </div>
                   ))}
                 </div>
@@ -234,12 +234,12 @@ export default function SecureInboxPage() {
                     <div className="space-y-2"><Label>Date</Label><Input type="date" value={writeupForm.date} onChange={e => setWriteupForm({...writeupForm, date: e.target.value})} /></div>
                   </div>
                   <div className="space-y-2"><Label>Flag</Label><Input value={writeupForm.flag} onChange={e => setWriteupForm({...writeupForm, flag: e.target.value})} className="font-code text-primary" /></div>
-                  <div className="space-y-2"><Label>Tags</Label><Input value={writeupForm.tags} onChange={e => setWriteupForm({...writeupForm, tags: e.target.value})} /></div>
+                  <div className="space-y-2"><Label>Tags (comma separated)</Label><Input value={writeupForm.tags} onChange={e => setWriteupForm({...writeupForm, tags: e.target.value})} /></div>
                   <div className="space-y-2"><Label>Summary</Label><Textarea value={writeupForm.summary} onChange={e => setWriteupForm({...writeupForm, summary: e.target.value})} /></div>
                   <div className="space-y-2"><Label>Content</Label><Textarea value={writeupForm.content} onChange={e => setWriteupForm({...writeupForm, content: e.target.value})} className="min-h-[200px]" /></div>
                   <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setEditMode(null)}>Cancel</Button><Button onClick={saveWriteup}><Save className="h-4 w-4 mr-2" /> Save</Button></div>
                 </Card>
-              ) : <div className="h-full border-2 border-dashed rounded-xl flex items-center justify-center text-muted-foreground">Select record or create new</div>}
+              ) : <div className="h-full border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-muted-foreground p-20 text-center"><Database className="h-10 w-10 mb-4 opacity-20" /><p>Select a write-up node to edit or create a new entry.</p></div>}
             </div>
           </div>
         </TabsContent>
@@ -250,12 +250,12 @@ export default function SecureInboxPage() {
               <Button onClick={() => { setEditMode("project"); setEditingId(null); setProjectForm({title: "", description: "", imageUrl: "", category: "Security Tooling", tags: ""}) }} className="w-full bg-primary/20 text-primary border border-primary/30">
                 <Plus className="h-4 w-4 mr-2" /> New Project
               </Button>
-              <ScrollArea className="h-[500px] border rounded-lg bg-card/30">
+              <ScrollArea className="h-[600px] border rounded-lg bg-card/30">
                 <div className="p-4 space-y-2">
-                  {projects?.map(p => (
-                    <div key={p.id} className={cn("p-3 rounded-lg border flex justify-between group items-center", editingId === p.id ? "bg-primary/10" : "bg-card")} onClick={() => { setEditMode("project"); setEditingId(p.id); setProjectForm({ ...p, tags: (p.tags || []).join(', ') }) }}>
+                  {projectsLoading ? <Loader2 className="animate-spin mx-auto mt-10" /> : projects?.map(p => (
+                    <div key={p.id} className={cn("p-3 rounded-lg border flex justify-between group items-center cursor-pointer", editingId === p.id ? "bg-primary/10 border-primary/50" : "bg-card border-border/50")} onClick={() => { setEditMode("project"); setEditingId(p.id); setProjectForm({ ...p, tags: (p.tags || []).join(', ') }) }}>
                       <div className="truncate"><p className="text-sm font-bold truncate">{p.title}</p><p className="text-[10px] text-muted-foreground">{p.category}</p></div>
-                      <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); triggerDelete(p.id, "projects") }}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                      <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); triggerDelete(p.id, "projects") }} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4 text-destructive" /></Button>
                     </div>
                   ))}
                 </div>
@@ -271,30 +271,33 @@ export default function SecureInboxPage() {
                   
                   <div className="space-y-4 border-y py-4 my-2">
                     <div className="flex items-center justify-between mb-2">
-                      <Label>Image Source</Label>
+                      <Label className="font-bold text-primary">Media Asset</Label>
                       <div className="flex bg-muted p-1 rounded-md">
                         <Button size="sm" variant={imageSource === "url" ? "default" : "ghost"} onClick={() => setImageSource("url")} className="h-7 text-[10px]"><LinkIcon className="h-3 w-3 mr-1" /> URL</Button>
                         <Button size="sm" variant={imageSource === "upload" ? "default" : "ghost"} onClick={() => setImageSource("upload")} className="h-7 text-[10px]"><ImageIcon className="h-3 w-3 mr-1" /> UPLOAD</Button>
                       </div>
                     </div>
                     {imageSource === "url" ? (
-                      <Input placeholder="https://..." value={projectForm.imageUrl} onChange={e => setProjectForm({...projectForm, imageUrl: e.target.value})} />
+                      <Input placeholder="https://image-source.com/assets/..." value={projectForm.imageUrl} onChange={e => setProjectForm({...projectForm, imageUrl: e.target.value})} />
                     ) : (
-                      <Input type="file" accept="image/*" onChange={e => handleImageUpload(e, (url) => setProjectForm({...projectForm, imageUrl: url}))} />
+                      <div className="space-y-2">
+                        <Input type="file" accept="image/*" onChange={e => handleImageUpload(e, (url) => setProjectForm({...projectForm, imageUrl: url}))} className="cursor-pointer" />
+                        <p className="text-[10px] text-muted-foreground">Max recommendation: 1MB. Local upload will be encoded as Base64.</p>
+                      </div>
                     )}
                     {projectForm.imageUrl && (
-                      <div className="mt-2 h-20 w-32 relative rounded border overflow-hidden">
+                      <div className="mt-2 h-24 w-40 relative rounded border-2 border-primary/20 overflow-hidden bg-black/50">
                         <img src={projectForm.imageUrl} alt="Preview" className="object-cover w-full h-full" />
                       </div>
                     )}
                   </div>
 
-                  <div className="space-y-2"><Label>Description</Label><Textarea value={projectForm.description} onChange={e => setProjectForm({...projectForm, description: e.target.value})} /></div>
-                  <div className="space-y-2"><Label>Tags (comma separated)</Label><Input value={projectForm.tags} onChange={e => setProjectForm({...projectForm, tags: e.target.value})} /></div>
+                  <div className="space-y-2"><Label>Technical Description</Label><Textarea value={projectForm.description} onChange={e => setProjectForm({...projectForm, description: e.target.value})} className="min-h-[120px]" /></div>
+                  <div className="space-y-2"><Label>Stack Tags (comma separated)</Label><Input value={projectForm.tags} onChange={e => setProjectForm({...projectForm, tags: e.target.value})} placeholder="React, Rust, Cryptography" /></div>
                   
                   <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setEditMode(null)}>Cancel</Button><Button onClick={saveProject}><Save className="h-4 w-4 mr-2" /> Save Project</Button></div>
                 </Card>
-              ) : <div className="h-full border-2 border-dashed rounded-xl flex items-center justify-center text-muted-foreground">Select project to edit</div>}
+              ) : <div className="h-full border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-muted-foreground p-20 text-center"><Cpu className="h-10 w-10 mb-4 opacity-20" /><p>Select a project node or create a new showcase asset.</p></div>}
             </div>
           </div>
         </TabsContent>
@@ -305,12 +308,12 @@ export default function SecureInboxPage() {
               <Button onClick={() => { setEditMode("achievement"); setEditingId(null); setAchievementForm({title: "", issuer: "", platform: "", description: "", imageUrl: "", date: format(new Date(), 'yyyy-MM-dd')}) }} className="w-full bg-primary/20 text-primary border border-primary/30">
                 <Plus className="h-4 w-4 mr-2" /> New Achievement
               </Button>
-              <ScrollArea className="h-[500px] border rounded-lg bg-card/30">
+              <ScrollArea className="h-[600px] border rounded-lg bg-card/30">
                 <div className="p-4 space-y-2">
-                  {achievements?.map(a => (
-                    <div key={a.id} className={cn("p-3 rounded-lg border flex justify-between group items-center", editingId === a.id ? "bg-primary/10" : "bg-card")} onClick={() => { setEditMode("achievement"); setEditingId(a.id); setAchievementForm({ ...a }) }}>
+                  {achievementsLoading ? <Loader2 className="animate-spin mx-auto mt-10" /> : achievements?.map(a => (
+                    <div key={a.id} className={cn("p-3 rounded-lg border flex justify-between group items-center cursor-pointer", editingId === a.id ? "bg-primary/10 border-primary/50" : "bg-card border-border/50")} onClick={() => { setEditMode("achievement"); setEditingId(a.id); setAchievementForm({ ...a }) }}>
                       <div className="truncate"><p className="text-sm font-bold truncate">{a.title}</p><p className="text-[10px] text-muted-foreground">{a.issuer}</p></div>
-                      <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); triggerDelete(a.id, "achievements") }}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                      <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); triggerDelete(a.id, "achievements") }} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4 text-destructive" /></Button>
                     </div>
                   ))}
                 </div>
@@ -321,16 +324,16 @@ export default function SecureInboxPage() {
                 <Card className="p-6 space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>Title</Label><Input value={achievementForm.title} onChange={e => setAchievementForm({...achievementForm, title: e.target.value})} /></div>
-                    <div className="space-y-2"><Label>Issuer</Label><Input value={achievementForm.issuer} onChange={e => setAchievementForm({...achievementForm, issuer: e.target.value})} /></div>
+                    <div className="space-y-2"><Label>Issuer / Organization</Label><Input value={achievementForm.issuer} onChange={e => setAchievementForm({...achievementForm, issuer: e.target.value})} /></div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2"><Label>Platform</Label><Input value={achievementForm.platform} onChange={e => setAchievementForm({...achievementForm, platform: e.target.value})} /></div>
-                    <div className="space-y-2"><Label>Date</Label><Input value={achievementForm.date} onChange={e => setAchievementForm({...achievementForm, date: e.target.value})} /></div>
+                    <div className="space-y-2"><Label>Platform / Category</Label><Input value={achievementForm.platform} onChange={e => setAchievementForm({...achievementForm, platform: e.target.value})} /></div>
+                    <div className="space-y-2"><Label>Date Achieved</Label><Input value={achievementForm.date} onChange={e => setAchievementForm({...achievementForm, date: e.target.value})} placeholder="e.g. Nov 2024" /></div>
                   </div>
                   
                   <div className="space-y-4 border-y py-4 my-2">
                     <div className="flex items-center justify-between mb-2">
-                      <Label>Credential Image</Label>
+                      <Label className="font-bold text-primary">Credential Image</Label>
                       <div className="flex bg-muted p-1 rounded-md">
                         <Button size="sm" variant={imageSource === "url" ? "default" : "ghost"} onClick={() => setImageSource("url")} className="h-7 text-[10px]"><LinkIcon className="h-3 w-3 mr-1" /> URL</Button>
                         <Button size="sm" variant={imageSource === "upload" ? "default" : "ghost"} onClick={() => setImageSource("upload")} className="h-7 text-[10px]"><ImageIcon className="h-3 w-3 mr-1" /> UPLOAD</Button>
@@ -342,31 +345,37 @@ export default function SecureInboxPage() {
                       <Input type="file" accept="image/*" onChange={e => handleImageUpload(e, (url) => setAchievementForm({...achievementForm, imageUrl: url}))} />
                     )}
                     {achievementForm.imageUrl && (
-                      <div className="mt-2 h-20 w-32 relative rounded border overflow-hidden">
+                      <div className="mt-2 h-24 w-32 relative rounded border-2 border-primary/20 overflow-hidden">
                         <img src={achievementForm.imageUrl} alt="Preview" className="object-cover w-full h-full" />
                       </div>
                     )}
                   </div>
 
-                  <div className="space-y-2"><Label>Description</Label><Textarea value={achievementForm.description} onChange={e => setAchievementForm({...achievementForm, description: e.target.value})} /></div>
+                  <div className="space-y-2"><Label>Description / Context</Label><Textarea value={achievementForm.description} onChange={e => setAchievementForm({...achievementForm, description: e.target.value})} /></div>
                   
                   <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setEditMode(null)}>Cancel</Button><Button onClick={saveAchievement}><Save className="h-4 w-4 mr-2" /> Save Record</Button></div>
                 </Card>
-              ) : <div className="h-full border-2 border-dashed rounded-xl flex items-center justify-center text-muted-foreground">Select achievement node</div>}
+              ) : <div className="h-full border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-muted-foreground p-20 text-center"><Award className="h-10 w-10 mb-4 opacity-20" /><p>Select an achievement node or document a new milestone.</p></div>}
             </div>
           </div>
         </TabsContent>
 
         <TabsContent value="logs">
           <Card className="bg-card/50 overflow-hidden h-[600px] flex flex-col">
+            <CardHeader className="bg-muted/30 border-b">
+              <CardTitle className="text-sm font-code flex items-center"><History className="h-4 w-4 mr-2" /> Access Audit Logs</CardTitle>
+            </CardHeader>
             <ScrollArea className="flex-1 p-0">
               <div className="divide-y divide-border">
-                {logs?.map(log => (
-                  <div key={log.id} className="p-3 flex justify-between items-center text-xs">
-                    <span className="font-medium text-primary">{log.username}</span>
-                    <span className="text-muted-foreground font-code">{format(new Date(log.accessedAt), 'yyyy-MM-dd HH:mm:ss')}</span>
+                {logsLoading ? <Loader2 className="animate-spin mx-auto my-10" /> : logs?.length ? logs.map(log => (
+                  <div key={log.id} className="p-3 px-6 flex justify-between items-center text-xs hover:bg-primary/5 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className={cn("w-1.5 h-1.5 rounded-full", log.accessSuccessful ? "bg-primary" : "bg-destructive")} />
+                      <span className="font-medium text-foreground">{log.username}</span>
+                    </div>
+                    <span className="text-muted-foreground font-code opacity-70">{format(new Date(log.accessedAt), 'yyyy-MM-dd HH:mm:ss')}</span>
                   </div>
-                ))}
+                )) : <p className="p-10 text-center text-muted-foreground">No access logs found.</p>}
               </div>
             </ScrollArea>
           </Card>
@@ -374,14 +383,14 @@ export default function SecureInboxPage() {
       </Tabs>
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-card border-destructive/20">
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2"><AlertCircle className="h-5 w-5 text-destructive" /> Confirm Purge</AlertDialogTitle>
-            <AlertDialogDescription>This protocol cannot be reversed. Remove record from Firestore nodes?</AlertDialogDescription>
+            <AlertDialogTitle className="flex items-center gap-2 text-destructive"><AlertCircle className="h-5 w-5" /> Confirm Permanent Purge</AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">This protocol cannot be reversed. Remove this record from Firestore nodes permanently?</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>ABORT</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground">EXECUTE PURGE</AlertDialogAction>
+            <AlertDialogCancel className="bg-muted hover:bg-muted/80">ABORT</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">EXECUTE PURGE</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
