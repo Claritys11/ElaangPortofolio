@@ -3,7 +3,7 @@
 
 import * as React from "react"
 import { useFirestore, useCollection, useMemoFirebase } from "@/firebase"
-import { collection, query, orderBy, doc, deleteDoc } from "firebase/firestore"
+import { collection, query, orderBy, doc } from "firebase/firestore"
 import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase/non-blocking-updates"
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Terminal, Lock, MessageSquare, History, User, Plus, FileEdit, Trash2, Save, X, Database, Tag, Key } from "lucide-react"
+import { Terminal, Lock, MessageSquare, History, User, Plus, Trash2, Save, X, Database, Key, Loader2 } from "lucide-react"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { format } from "date-fns"
@@ -107,28 +107,17 @@ export default function SecureInboxPage() {
 
     setIsEditing(false)
     setEditingId(null)
-    setWriteupForm({
-      title: "",
-      competition: "",
-      category: "Web",
-      difficulty: "Medium",
-      date: format(new Date(), 'yyyy-MM-dd'),
-      summary: "",
-      content: "",
-      flag: "",
-      tags: ""
-    })
   }
 
   const handleEdit = (w: any) => {
     setWriteupForm({
-      title: w.title,
-      competition: w.competition,
-      category: w.category,
-      difficulty: w.difficulty,
-      date: w.date,
-      summary: w.summary,
-      content: w.content,
+      title: w.title || "",
+      competition: w.competition || "",
+      category: w.category || "Web",
+      difficulty: w.difficulty || "Medium",
+      date: w.date || format(new Date(), 'yyyy-MM-dd'),
+      summary: w.summary || "",
+      content: w.content || "",
       flag: w.flag || "",
       tags: (w.tags || []).join(', ')
     })
@@ -141,6 +130,10 @@ export default function SecureInboxPage() {
       const docRef = doc(db, "ctfWriteups", id)
       deleteDocumentNonBlocking(docRef)
       toast({ title: "Record Deleted", description: "Signal purged from database." })
+      if (editingId === id) {
+        setIsEditing(false)
+        setEditingId(null)
+      }
     }
   }
 
@@ -221,41 +214,40 @@ export default function SecureInboxPage() {
         </TabsList>
 
         <TabsContent value="messages">
-          <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-3 space-y-4">
-              <ScrollArea className="h-[600px] rounded-xl border border-border bg-card/50 p-6">
-                {messagesLoading ? (
-                  <div className="flex items-center justify-center h-full">
-                    <Terminal className="h-8 w-8 animate-spin text-primary opacity-50" />
-                  </div>
-                ) : !messages || messages.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full text-muted-foreground opacity-50 italic">
-                    <p>No transmissions found in database.</p>
-                  </div>
-                ) : (
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {messages?.map((msg) => (
-                      <Card key={msg.id} className="bg-background/50 border-border hover:border-primary/50 transition-colors">
-                        <CardHeader className="py-4">
-                          <div className="flex justify-between items-start">
-                            <CardTitle className="text-lg text-primary">{msg.title}</CardTitle>
-                            <time className="text-[10px] font-code text-muted-foreground">
-                              {format(new Date(msg.createdAt), 'yyyy-MM-dd HH:mm:ss')}
-                            </time>
-                          </div>
-                          <CardDescription className="font-code text-[10px]">{msg.username || 'Anonymous'}</CardDescription>
-                        </CardHeader>
-                        <CardContent className="py-4 pt-0">
-                          <pre className="text-xs font-body whitespace-pre-wrap leading-relaxed text-muted-foreground">
-                            {msg.content}
-                          </pre>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                )}
-              </ScrollArea>
-            </div>
+          <div className="grid gap-8">
+            <ScrollArea className="h-[600px] rounded-xl border border-border bg-card/50 p-4 md:p-6">
+              {messagesLoading ? (
+                <div className="flex flex-col items-center justify-center h-full gap-4">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  <p className="text-xs font-code animate-pulse">DECRYPTING SIGNALS...</p>
+                </div>
+              ) : !messages || messages.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full text-muted-foreground opacity-50 italic">
+                  <p>No transmissions found in database.</p>
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {messages?.map((msg) => (
+                    <Card key={msg.id} className="bg-background/50 border-border hover:border-primary/50 transition-colors">
+                      <CardHeader className="py-4">
+                        <div className="flex justify-between items-start">
+                          <CardTitle className="text-lg text-primary truncate">{msg.title}</CardTitle>
+                          <time className="text-[10px] font-code text-muted-foreground shrink-0 ml-2">
+                            {format(new Date(msg.createdAt), 'yy-MM-dd HH:mm')}
+                          </time>
+                        </div>
+                        <CardDescription className="font-code text-[10px]">{msg.username || 'Anonymous'}</CardDescription>
+                      </CardHeader>
+                      <CardContent className="py-4 pt-0">
+                        <pre className="text-xs font-body whitespace-pre-wrap leading-relaxed text-muted-foreground">
+                          {msg.content}
+                        </pre>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </ScrollArea>
           </div>
         </TabsContent>
 
@@ -273,7 +265,7 @@ export default function SecureInboxPage() {
               <ScrollArea className="h-[600px] rounded-xl border border-border bg-card/30">
                 <div className="p-4 space-y-2">
                   {writeupsLoading ? (
-                    <div className="flex justify-center p-8"><Terminal className="animate-spin h-6 w-6 text-primary" /></div>
+                    <div className="flex justify-center p-8"><Loader2 className="animate-spin h-6 w-6 text-primary" /></div>
                   ) : !writeups || writeups.length === 0 ? (
                     <p className="text-center py-8 text-muted-foreground text-xs italic">No records available.</p>
                   ) : (
@@ -301,21 +293,26 @@ export default function SecureInboxPage() {
             <div className="lg:col-span-8">
               {isEditing ? (
                 <Card className="bg-card border-border h-full flex flex-col">
-                  <CardHeader className="border-b border-border/50 flex flex-row items-center justify-between">
+                  <CardHeader className="border-b border-border/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
                       <CardTitle className="text-xl font-headline">{editingId ? 'Edit Signal' : 'New Signal'}</CardTitle>
                       <CardDescription>Protocol: CTF Documentation</CardDescription>
                     </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm" onClick={() => setIsEditing(false)}>
+                    <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                      {editingId && (
+                        <Button variant="destructive" size="sm" onClick={() => handleDelete(editingId)} className="flex-1 sm:flex-none">
+                          <Trash2 className="h-4 w-4 mr-1" /> Delete
+                        </Button>
+                      )}
+                      <Button variant="outline" size="sm" onClick={() => setIsEditing(false)} className="flex-1 sm:flex-none">
                         <X className="h-4 w-4 mr-1" /> Cancel
                       </Button>
-                      <Button size="sm" className="bg-primary text-primary-foreground" onClick={handleSaveWriteup}>
+                      <Button size="sm" className="bg-primary text-primary-foreground flex-1 sm:flex-none" onClick={handleSaveWriteup}>
                         <Save className="h-4 w-4 mr-1" /> Save Signal
                       </Button>
                     </div>
                   </CardHeader>
-                  <CardContent className="flex-1 p-6 overflow-y-auto">
+                  <CardContent className="flex-1 p-4 md:p-6 overflow-y-auto">
                     <div className="space-y-6">
                       <div className="grid md:grid-cols-2 gap-4">
                         <div className="space-y-2">
@@ -409,7 +406,7 @@ export default function SecureInboxPage() {
                   </CardContent>
                 </Card>
               ) : (
-                <div className="h-full flex flex-col items-center justify-center border-2 border-dashed border-border rounded-xl bg-muted/10 p-12 text-center space-y-4">
+                <div className="h-full flex flex-col items-center justify-center border-2 border-dashed border-border rounded-xl bg-muted/10 p-8 md:p-12 text-center space-y-4">
                   <Database className="h-12 w-12 text-muted" />
                   <div>
                     <h3 className="text-xl font-headline font-bold">Write-up Repository Manager</h3>
@@ -433,7 +430,7 @@ export default function SecureInboxPage() {
             <ScrollArea className="flex-1 p-0">
               {logsLoading ? (
                  <div className="flex items-center justify-center h-full">
-                  <Terminal className="h-4 w-4 animate-spin text-primary" />
+                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
                 </div>
               ) : (
                 <div className="divide-y divide-border">
