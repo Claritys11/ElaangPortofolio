@@ -126,10 +126,17 @@ export default function SecureInboxPage() {
   }
 
   const handleDelete = (id: string) => {
-    if (confirm("Confirm deletion of this record?")) {
+    if (!id) return;
+    
+    if (window.confirm("Confirm deletion of this record?")) {
       const docRef = doc(db, "ctfWriteups", id)
       deleteDocumentNonBlocking(docRef)
-      toast({ title: "Record Deleted", description: "Signal purged from database." })
+      
+      toast({ 
+        title: "Record Deleted", 
+        description: "Signal purged from database." 
+      })
+
       if (editingId === id) {
         setIsEditing(false)
         setEditingId(null)
