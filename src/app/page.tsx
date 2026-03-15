@@ -64,8 +64,8 @@ export default function Home() {
             <p className="text-xl text-muted-foreground max-w-lg h-20">
               <TerminalText 
                 text="Student developer focused on Cybersecurity and Software Engineering. Passionate about CTF competitions, digital forensics, and building useful applications."
-                speed={60}
-                delay={900}
+                speed={80}
+                delay={800}
               />
             </p>
 
