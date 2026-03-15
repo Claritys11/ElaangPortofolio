@@ -70,10 +70,11 @@ export default function Home() {
             </p>
 
             <div className="flex flex-wrap gap-4 pt-4">
+              {/* Explore Write-ups Button with GlowingEffect */}
               <div className="relative p-0.5 group">
                 <GlowingEffect
                   disabled={false}
-                  proximity={40}
+                  proximity={64}
                   spread={40}
                   glow={true}
                 />
@@ -84,10 +85,11 @@ export default function Home() {
                 </Button>
               </div>
 
+              {/* View Projects Button with GlowingEffect */}
               <div className="relative p-0.5 group">
                 <GlowingEffect
                   disabled={false}
-                  proximity={40}
+                  proximity={64}
                   spread={40}
                   glow={true}
                 />
@@ -96,10 +98,11 @@ export default function Home() {
                 </Button>
               </div>
 
+              {/* About Me Button with GlowingEffect */}
               <div className="relative p-0.5 group">
                 <GlowingEffect
                   disabled={false}
-                  proximity={40}
+                  proximity={64}
                   spread={40}
                   glow={true}
                 />
@@ -134,7 +137,7 @@ export default function Home() {
               <GlowingEffect
                 disabled={false}
                 proximity={80}
-                spread={100}
+                spread={60}
                 blur={0}
                 variant="default"
                 glow={true}
