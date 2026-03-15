@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { TerminalText } from "@/components/TerminalText"
 import { GlitchText } from "@/components/GlitchText"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
-import { Shield, Terminal, Zap, Lock, ChevronRight, CheckCircle2 } from "lucide-react"
+import { Shield, Terminal, Zap, Lock, ChevronRight, CheckCircle2, User } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 
@@ -25,7 +25,7 @@ export default function Home() {
   React.useEffect(() => {
     const roleInterval = setInterval(() => {
       setCurrentRoleIndex((prev) => (prev + 1) % roles.length)
-    }, 8000)
+    }, 5000)
     return () => clearInterval(roleInterval)
   }, [])
 
@@ -34,7 +34,7 @@ export default function Home() {
       setName("Claritys")
       setTimeout(() => {
         setName("Elang")
-      }, 1200)
+      }, 800)
     }, 7000)
     return () => clearInterval(nameGlitchInterval)
   }, [])
@@ -82,13 +82,18 @@ export default function Home() {
             </p>
 
             <div className="flex flex-wrap gap-4 pt-4">
-              <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-none h-14 px-8 font-headline font-bold" asChild>
+              <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-none h-14 px-8 font-headline font-bold shadow-[0_0_20px_rgba(34,197,94,0.3)]" asChild>
                 <Link href="/ctf">
                   EXPLORE WRITE-UPS <ChevronRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button size="lg" variant="outline" className="border-secondary text-secondary hover:bg-secondary/10 rounded-none h-14 px-8 font-headline font-bold" asChild>
                 <Link href="/projects">VIEW PROJECTS</Link>
+              </Button>
+              <Button size="lg" variant="ghost" className="text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-none h-14 px-8 font-headline font-bold flex items-center gap-2" asChild>
+                <Link href="/about">
+                  <User className="h-4 w-4" /> ABOUT ME
+                </Link>
               </Button>
             </div>
 
