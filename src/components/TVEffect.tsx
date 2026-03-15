@@ -5,9 +5,20 @@ export function TVEffect() {
   const [active, setActive] = React.useState(true)
 
   React.useEffect(() => {
-    // Menjalankan efek TV selama 3 detik saat komponen dimuat
-    const timer = setTimeout(() => setActive(false), 3000)
-    return () => clearTimeout(timer)
+    // Efek awal saat halaman dimuat (3 detik)
+    const initialTimer = setTimeout(() => setActive(false), 3000)
+
+    // Efek berulang setiap 5 detik
+    const interval = setInterval(() => {
+      setActive(true)
+      // Tampilkan efek selama 150ms untuk simulasi "flicker" singkat
+      setTimeout(() => setActive(false), 150)
+    }, 5000)
+
+    return () => {
+      clearTimeout(initialTimer)
+      clearInterval(interval)
+    }
   }, [])
 
   if (!active) return null
