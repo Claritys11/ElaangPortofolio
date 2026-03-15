@@ -1,9 +1,9 @@
-
 "use client"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { TerminalText } from "@/components/TerminalText"
+import { HackerEffect } from "@/components/HackerEffect"
 import { Shield, Terminal, Zap, Lock, ChevronRight } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -23,11 +23,15 @@ export default function Home() {
               <span>Status: Active Session</span>
             </div>
             
-            <h1 className="text-5xl md:text-7xl font-headline font-bold leading-tight">
-              Deciphering the <span className="text-primary neon-glow">Digital Chaos</span>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-headline font-bold leading-tight min-h-[1.2em]">
+              <HackerEffect words={["Hi, I'm Elang", "Hi, I'm Claritys"]} />
+              <br />
+              <span className="text-primary neon-glow">
+                <HackerEffect words={["CTF Player", "Programmer", "Student"]} />
+              </span>
             </h1>
 
-            <p className="text-xl text-muted-foreground max-w-lg">
+            <p className="text-xl text-muted-foreground max-w-lg h-20">
               <TerminalText 
                 text="Professional CTF enthusiast and cybersecurity researcher specializing in web penetration testing and cryptanalysis."
               />
@@ -70,15 +74,15 @@ export default function Home() {
                   <div className="w-3 h-3 rounded-full bg-green-500/50" />
                 </div>
                 <div className="text-[10px] text-muted-foreground font-code flex items-center">
-                  <Lock className="h-3 w-3 mr-1" /> cipher-synth --secure-mode
+                  <Lock className="h-3 w-3 mr-1" /> session --secure-mode
                 </div>
               </div>
               <CardContent className="p-6 space-y-4">
                 <div className="space-y-2 font-code text-sm">
                   <p className="text-primary">$ whoami</p>
-                  <p className="text-foreground">CipherSynth [Security Enthusiast]</p>
+                  <p className="text-foreground">Elang [Security Enthusiast]</p>
                   <p className="text-primary pt-2">$ cat skill-matrix.json</p>
-                  <div className="pl-4 text-secondary-foreground/80 space-y-1">
+                  <div className="pl-4 text-secondary/80 space-y-1">
                     <p>{"{"}</p>
                     <p className="pl-4">"web": ["XSS", "SQLi", "SSRF"],</p>
                     <p className="pl-4">"pwn": ["Buffer Overflow", "ROP"],</p>
