@@ -40,63 +40,71 @@ export default function Home() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-8">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium uppercase tracking-widest">
-              <Zap className="h-3 w-3" />
-              <span>Status: Active Session</span>
-            </div>
-            
-            <div className="space-y-2">
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-headline font-bold leading-tight">
-                Hi, I'm <span className="text-primary">Elang</span>
-              </h1>
-              <div className="h-[1.2em] text-4xl md:text-6xl lg:text-7xl font-headline font-bold">
+          <div className="relative group p-1 rounded-xl">
+            <GlowingEffect
+              disabled={false}
+              proximity={64}
+              spread={80}
+              glow={true}
+            />
+            <div className="relative z-10 space-y-8 bg-background/40 backdrop-blur-sm p-8 rounded-lg border border-border/50">
+              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium uppercase tracking-widest">
+                <Zap className="h-3 w-3" />
+                <span>Status: Active Session</span>
+              </div>
+              
+              <div className="space-y-2">
+                <h1 className="text-4xl md:text-6xl lg:text-7xl font-headline font-bold leading-tight">
+                  Hi, I'm <span className="text-primary">Elang</span>
+                </h1>
+                <div className="h-[1.2em] text-4xl md:text-6xl lg:text-7xl font-headline font-bold">
+                  <TerminalText 
+                    key={`role-${currentRoleIndex}`} 
+                    text={roles[currentRoleIndex].text} 
+                    speed={100}
+                    delay={500}
+                    className={roles[currentRoleIndex].color}
+                  />
+                </div>
+              </div>
+
+              <p className="text-xl text-muted-foreground max-w-lg h-20">
                 <TerminalText 
-                  key={`role-${currentRoleIndex}`} 
-                  text={roles[currentRoleIndex].text} 
+                  text="Student developer focused on Cybersecurity and Software Engineering. Passionate about CTF competitions, digital forensics, and building useful applications."
                   speed={100}
-                  delay={500}
-                  className={roles[currentRoleIndex].color}
+                  delay={700}
                 />
-              </div>
-            </div>
+              </p>
 
-            <p className="text-xl text-muted-foreground max-w-lg h-20">
-              <TerminalText 
-                text="Student developer focused on Cybersecurity and Software Engineering. Passionate about CTF competitions, digital forensics, and building useful applications."
-                speed={100}
-                delay={700}
-              />
-            </p>
-
-            <div className="flex flex-wrap gap-4 pt-4">
-              <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-none h-14 px-8 font-headline font-bold shadow-[0_0_20px_rgba(34,197,94,0.3)]" asChild>
-                <Link href="/ctf">
-                  EXPLORE WRITE-UPS <ChevronRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" className="border-secondary text-secondary hover:bg-secondary/10 rounded-none h-14 px-8 font-headline font-bold" asChild>
-                <Link href="/projects">VIEW PROJECTS</Link>
-              </Button>
-              <Button size="lg" variant="ghost" className="text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-none h-14 px-8 font-headline font-bold flex items-center gap-2" asChild>
-                <Link href="/about">
-                  <User className="h-4 w-4" /> ABOUT ME
-                </Link>
-              </Button>
-            </div>
-
-            <div className="grid grid-cols-3 gap-8 pt-12 border-t border-border/50">
-              <div>
-                <p className="text-2xl font-bold font-headline text-foreground">50+</p>
-                <p className="text-sm text-muted-foreground uppercase tracking-wider">CTF Flags</p>
+              <div className="flex flex-wrap gap-4 pt-4">
+                <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-none h-14 px-8 font-headline font-bold shadow-[0_0_20px_rgba(34,197,94,0.3)]" asChild>
+                  <Link href="/ctf">
+                    EXPLORE WRITE-UPS <ChevronRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" className="border-secondary text-secondary hover:bg-secondary/10 rounded-none h-14 px-8 font-headline font-bold" asChild>
+                  <Link href="/projects">VIEW PROJECTS</Link>
+                </Button>
+                <Button size="lg" variant="ghost" className="text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-none h-14 px-8 font-headline font-bold flex items-center gap-2" asChild>
+                  <Link href="/about">
+                    <User className="h-4 w-4" /> ABOUT ME
+                  </Link>
+                </Button>
               </div>
-              <div>
-                <p className="text-2xl font-bold font-headline text-foreground">12</p>
-                <p className="text-sm text-muted-foreground uppercase tracking-wider">Open Source</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold font-headline text-foreground">5</p>
-                <p className="text-sm text-muted-foreground uppercase tracking-wider">Certificates</p>
+
+              <div className="grid grid-cols-3 gap-8 pt-12 border-t border-border/50">
+                <div>
+                  <p className="text-2xl font-bold font-headline text-foreground">50+</p>
+                  <p className="text-sm text-muted-foreground uppercase tracking-wider">CTF Flags</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold font-headline text-foreground">12</p>
+                  <p className="text-sm text-muted-foreground uppercase tracking-wider">Open Source</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold font-headline text-foreground">5</p>
+                  <p className="text-sm text-muted-foreground uppercase tracking-wider">Certificates</p>
+                </div>
               </div>
             </div>
           </div>

@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress"
 import { User, Terminal, Briefcase, GraduationCap, Code2, Globe, Heart, Instagram } from "lucide-react"
 import awd from "./awd.png";
 import Image from "next/image"
+import { GlowingEffect } from "@/components/ui/glowing-effect"
 
 const skills = [
   { name: "Web Application Security", level: 65 },
@@ -23,8 +24,13 @@ export default function AboutPage() {
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="grid md:grid-cols-3 gap-12">
         <div className="md:col-span-1 space-y-8">
-          <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-lg blur opacity-25" />
+          <div className="relative group p-1 rounded-xl border border-border">
+            <GlowingEffect
+              disabled={false}
+              proximity={64}
+              spread={40}
+              glow={true}
+            />
             <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-primary/50">
               <Image
                 src={awd} 
@@ -88,21 +94,29 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="space-y-6">
-            <h2 className="text-2xl font-headline font-bold flex items-center">
-              <Code2 className="h-6 w-6 mr-3 text-secondary" />
-              Technical Arsenal
-            </h2>
-            <div className="grid gap-6">
-              {skills.map((skill) => (
-                <div key={skill.name} className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="font-medium">{skill.name}</span>
-                    <span className="text-primary font-code">{skill.level}%</span>
+          <div className="relative group p-1 rounded-xl border border-border">
+            <GlowingEffect
+              disabled={false}
+              proximity={64}
+              spread={40}
+              glow={true}
+            />
+            <div className="relative bg-background/60 backdrop-blur-sm p-6 rounded-lg">
+              <h2 className="text-2xl font-headline font-bold flex items-center mb-6">
+                <Code2 className="h-6 w-6 mr-3 text-secondary" />
+                Technical Arsenal
+              </h2>
+              <div className="grid gap-6">
+                {skills.map((skill) => (
+                  <div key={skill.name} className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="font-medium">{skill.name}</span>
+                      <span className="text-primary font-code">{skill.level}%</span>
+                    </div>
+                    <Progress value={skill.level} className="h-1 bg-muted" />
                   </div>
-                  <Progress value={skill.level} className="h-1 bg-muted" />
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
 
@@ -142,16 +156,24 @@ export default function AboutPage() {
                   <div className="flex items-center justify-center w-10 h-10 rounded-full border border-border bg-card group-hover:border-primary transition-colors shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
                     <div className="w-2 h-2 rounded-full bg-primary" />
                   </div>
-                  <Card className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-card border-border hover:border-primary/50 transition-colors">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-bold">{job.role}</h4>
-                        <time className="text-[10px] font-code text-muted-foreground">{job.period}</time>
-                      </div>
-                      <p className="text-xs text-primary mb-2">{job.company}</p>
-                      <p className="text-sm text-muted-foreground">{job.desc}</p>
-                    </CardContent>
-                  </Card>
+                  <div className="relative w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-0.5 rounded-xl border border-border">
+                    <GlowingEffect
+                      disabled={false}
+                      proximity={64}
+                      spread={40}
+                      glow={true}
+                    />
+                    <Card className="relative bg-card/60 backdrop-blur-sm border-none hover:bg-card/80 transition-colors">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-bold">{job.role}</h4>
+                          <time className="text-[10px] font-code text-muted-foreground">{job.period}</time>
+                        </div>
+                        <p className="text-xs text-primary mb-2">{job.company}</p>
+                        <p className="text-sm text-muted-foreground">{job.desc}</p>
+                      </CardContent>
+                    </Card>
+                  </div>
                 </div>
               ))}
             </div>
