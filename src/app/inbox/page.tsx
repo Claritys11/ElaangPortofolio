@@ -128,7 +128,8 @@ export default function SecureInboxPage() {
   const handleDelete = (id: string | null | undefined) => {
     if (!id) return;
     
-    if (window.confirm("Confirm deletion of this record? This cannot be undone.")) {
+    const confirmMsg = "Are you sure you want to delete this record? This action cannot be undone."
+    if (typeof window !== "undefined" && window.confirm(confirmMsg)) {
       const docRef = doc(db, "ctfWriteups", id)
       deleteDocumentNonBlocking(docRef)
       
