@@ -6,13 +6,17 @@ export function TVEffect() {
 
   React.useEffect(() => {
     // Efek awal saat halaman dimuat (3 detik)
-    const initialTimer = setTimeout(() => setActive(false), 3000)
+    const initialTimer = setTimeout(() => {
+      setActive(false)
+    }, 3000)
 
     // Efek berulang setiap 5 detik
     const interval = setInterval(() => {
       setActive(true)
-      // Tampilkan efek selama 150ms untuk simulasi "flicker" singkat
-      setTimeout(() => setActive(false), 150)
+      // Tampilkan efek selama 400ms untuk simulasi "flicker" yang lebih terasa
+      setTimeout(() => {
+        setActive(false)
+      }, 400)
     }, 5000)
 
     return () => {
@@ -23,5 +27,13 @@ export function TVEffect() {
 
   if (!active) return null
 
-  return <div className="tv-screen" aria-hidden="true" />
+  return (
+    <div 
+      className="tv-screen" 
+      aria-hidden="true" 
+      style={{
+        animation: 'tv-flicker 0.15s infinite'
+      }}
+    />
+  )
 }
