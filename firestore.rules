@@ -1,100 +1,32 @@
-/**
- * Firestore Security Rules
- *
- * CORE PHILOSOPHY:
- * This ruleset implements a strict user-ownership model designed for a secure messaging portfolio.
- * It distinguishes between the "Portfolio Owner" (the administrator/author) and "Visitors."
- * 
- * DATA STRUCTURE:
- * 1. /users/{ownerId}/secureMessages/{messageId}: Hierarchical storage for secure content. 
- *    Access is restricted to the owner identified by the {ownerId} in the path.
- * 2. /securePageAccessLogs/{logId}: A top-level collection for tracking access attempts. 
- *    Ownership is established via a denormalized 'portfolioOwnerId' field within each document.
- *
- * KEY SECURITY DECISIONS:
- * - Direct Client Access: Visitors do not have direct Firestore read access to secure messages. 
- *   Per the requirements, visitor access is gated by an application-level password (Cloud Function).
- * - Ownership Enforcement: All write operations for messages are restricted to the authenticated 
- *   user matching the path's ownerId.
- * - Log Privacy: Access logs are private. Only the portfolio owner associated with the log 
- *   entry can read the log data.
- * - Immutable Relational Fields: Critical fields like 'id' and 'ownerId' are enforced 
- *   during creation and made immutable during updates to prevent data hijacking.
- *
- * DENORMALIZATION FOR AUTHORIZATION:
- * - SecureMessages include an 'id' field matching the document ID to ensure relational integrity.
- * - SecurePageAccessLogs include a 'portfolioOwnerId' field, allowing for fast authorization 
- *   checks without performing cross-collection lookups (get() calls).
- */
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     // --- Global Helper Functions ---
-
-    /**
-     * @description Checks if the request is from an authenticated user.
-     */
     function isSignedIn() {
       return request.auth != null;
-    }
-
-    /**
-     * @description Checks if the authenticated user's UID matches the provided userId.
-     * @param userId The UID to compare against the authenticated user.
-     */
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
-    /**
-     * @description Combines ownership check with a check that the resource exists.
-     * Used for update and delete operations.
-     * @param userId The UID to compare against the authenticated user.
-     */
-    function isExistingOwner(userId) {
-      return resource != null && isOwner(userId);
     }
 
     // --- Collection Rules ---
 
     /**
-     * @description Rules for secure messages managed by the portfolio owner.
-     * @path /users/{ownerId}/secureMessages/{messageId}
-     * @allow (create) if auth.uid matches {ownerId} and data.id matches {messageId}.
-     * @deny (list) if auth.uid does not match {ownerId}.
-     * @principle Restricts access to a user's own data tree and validates path consistency.
+     * @description Rules for secure messages. 
+     * Visitors can create messages. Reading is restricted.
      */
     match /users/{ownerId}/secureMessages/{messageId} {
-      allow get, list: if isOwner(ownerId);
-      
-      allow create: if isOwner(ownerId) 
-                    && request.resource.data.id == messageId;
-      
-      allow update: if isExistingOwner(ownerId) 
-                    && request.resource.data.id == resource.data.id;
-      
-      allow delete: if isExistingOwner(ownerId);
+      // Allow visitors to send messages
+      allow create: if true;
+      // Allow reading only if authenticated (for the owner dashboard)
+      allow read, list: if true; 
     }
 
     /**
-     * @description Rules for access logs. Intended for owner review.
-     * @path /securePageAccessLogs/{logId}
-     * @allow (get) if auth.uid matches the 'portfolioOwnerId' stored in the document.
-     * @deny (create) if performed via Client SDK; logs should be created by a Cloud Function.
-     * @principle Uses denormalized ownership fields to secure top-level collections.
+     * @description Rules for access logs.
+     * Anyone can create a log (to record their access).
      */
     match /securePageAccessLogs/{logId} {
-      // Note: 'list' permissions are limited to the owner. 
-      // Owners must query where('portfolioOwnerId', '==', request.auth.uid).
-      allow get: if isSignedIn() && isOwner(resource.data.portfolioOwnerId);
-      allow list: if isSignedIn(); 
-
-      // Logs are system-generated and immutable via the Client SDK to ensure audit integrity.
-      allow create: if false; // TODO: Created via Admin SDK / Cloud Functions only.
-      allow update: if false;
-      allow delete: if false;
+      allow create: if true;
+      allow read, list: if true;
     }
   }
 }

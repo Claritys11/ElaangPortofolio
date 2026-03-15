@@ -4,7 +4,7 @@ import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Terminal, Shield, Award, Cpu, User, Menu, X, Mail } from "lucide-react"
+import { Terminal, Shield, Award, Cpu, User, Menu, X, Mail, Inbox } from "lucide-react"
 import { ThemeToggle } from "@/components/ThemeToggle"
 
 const navItems = [
@@ -13,6 +13,7 @@ const navItems = [
   { name: "Projects", href: "/projects", icon: Cpu },
   { name: "Achievements", href: "/achievements", icon: Award },
   { name: "Contact", href: "/contact", icon: Mail },
+  { name: "Inbox", href: "/inbox", icon: Inbox },
 ]
 
 export function Navbar() {

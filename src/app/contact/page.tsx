@@ -9,25 +9,42 @@ import { Label } from "@/components/ui/label"
 import { Mail, Github, Linkedin, MessageSquare, Send, Globe, Terminal, Shield } from "lucide-react"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
 import { useToast } from "@/hooks/use-toast"
+import { useFirestore } from "@/firebase"
+import { collection, doc, serverTimestamp } from "firebase/firestore"
+import { addDocumentNonBlocking } from "@/firebase/non-blocking-updates"
 
 export default function ContactPage() {
   const { toast } = useToast()
+  const db = useFirestore()
   const [isSubmitting, setIsSubmitting] = React.useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
+
+    const formData = new FormData(e.currentTarget)
+    const name = formData.get("name") as string
+    const email = formData.get("email") as string
+    const subject = formData.get("subject") as string
+    const message = formData.get("message") as string
+
+    const messagesRef = collection(db, "users", "admin", "secureMessages")
     
-    // Simulate a network request
+    addDocumentNonBlocking(messagesRef, {
+      title: subject,
+      content: `From: ${name} (${email})\n\n${message}`,
+      createdAt: new Date().toISOString(),
+      username: name,
+    })
+
     setTimeout(() => {
       setIsSubmitting(false)
       toast({
         title: "SIGNAL TRANSMITTED",
         description: "Your message has been encrypted and sent to the secure node.",
       })
-      const form = e.target as HTMLFormElement
-      form.reset()
-    }, 1500)
+      e.currentTarget.reset()
+    }, 1000)
   }
 
   return (
@@ -45,7 +62,6 @@ export default function ContactPage() {
       </div>
 
       <div className="grid lg:grid-cols-5 gap-8">
-        {/* Contact Info Card */}
         <div className="lg:col-span-2 space-y-6">
           <div className="relative h-full rounded-xl border border-border p-1 group">
             <GlowingEffect
@@ -111,7 +127,6 @@ export default function ContactPage() {
           </div>
         </div>
 
-        {/* Message Form Card */}
         <div className="lg:col-span-3">
           <div className="relative rounded-xl border border-border p-1">
             <GlowingEffect
@@ -143,6 +158,7 @@ export default function ContactPage() {
                       <Label htmlFor="name" className="text-xs uppercase font-code tracking-widest text-muted-foreground">Identifier</Label>
                       <Input 
                         id="name" 
+                        name="name"
                         placeholder="Your Alias" 
                         required 
                         className="bg-muted/50 border-border focus:border-primary/50 transition-colors"
@@ -152,6 +168,7 @@ export default function ContactPage() {
                       <Label htmlFor="email" className="text-xs uppercase font-code tracking-widest text-muted-foreground">Return Node</Label>
                       <Input 
                         id="email" 
+                        name="email"
                         type="email" 
                         placeholder="email@provider.com" 
                         required 
@@ -163,6 +180,7 @@ export default function ContactPage() {
                     <Label htmlFor="subject" className="text-xs uppercase font-code tracking-widest text-muted-foreground">Subject Line</Label>
                     <Input 
                       id="subject" 
+                      name="subject"
                       placeholder="Protocol: Collaboration / Inquiry" 
                       required 
                       className="bg-muted/50 border-border focus:border-primary/50 transition-colors"
@@ -172,6 +190,7 @@ export default function ContactPage() {
                     <Label htmlFor="message" className="text-xs uppercase font-code tracking-widest text-muted-foreground">Payload Content</Label>
                     <Textarea 
                       id="message" 
+                      name="message"
                       placeholder="System.out.println('Your message here...');" 
                       required 
                       className="min-h-[150px] bg-muted/50 border-border focus:border-primary/50 transition-colors resize-none"
