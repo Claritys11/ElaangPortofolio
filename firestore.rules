@@ -1,3 +1,4 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -9,22 +10,19 @@ service cloud.firestore {
 
     // --- Collection Rules ---
 
-    /**
-     * @description Rules for secure messages. 
-     * Visitors can create messages. Reading is allowed for the simulated password-gated dashboard.
-     */
     match /users/{ownerId}/secureMessages/{messageId} {
       allow create: if true;
-      allow read, list: if true; 
+      allow read, list, update, delete: if true; 
     }
 
-    /**
-     * @description Rules for access logs.
-     * Anyone can create a log and read them for the simulated dashboard.
-     */
     match /securePageAccessLogs/{logId} {
       allow create: if true;
       allow read, list: if true;
+    }
+
+    match /ctfWriteups/{writeupId} {
+      allow read, list: if true;
+      allow create, update, delete: if true;
     }
   }
 }

@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "SecureMessage": {
@@ -74,6 +75,25 @@
         "username",
         "accessSuccessful"
       ]
+    },
+    "CTFWriteup": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "CTFWriteup",
+      "type": "object",
+      "description": "Detailed write-up for a CTF challenge, including competition info, difficulty, and exploitation steps.",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "competition": { "type": "string" },
+        "category": { "type": "string" },
+        "difficulty": { "type": "string", "enum": ["Easy", "Medium", "Hard"] },
+        "date": { "type": "string", "format": "date" },
+        "summary": { "type": "string" },
+        "content": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "competition", "category", "difficulty", "date", "summary", "content"]
     }
   },
   "auth": {
@@ -83,44 +103,17 @@
     ]
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/users/{ownerId}/secureMessages/{messageId}",
-        "definition": {
-          "entityName": "SecureMessage",
-          "schema": {
-            "$ref": "#/backend/entities/SecureMessage"
-          },
-          "description": "Collection for secure messages created and managed by the portfolio owner. Access to the content by visitors is gated by an application-level password handled by a Cloud Function. Includes denormalized 'ownerId' for authorization independence in rules.",
-          "params": [
-            {
-              "name": "ownerId",
-              "description": "The unique Firebase UID of the portfolio owner."
-            },
-            {
-              "name": "messageId",
-              "description": "The unique identifier for a specific SecureMessage document."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/securePageAccessLogs/{logId}",
-        "definition": {
-          "entityName": "SecurePageAccessLog",
-          "schema": {
-            "$ref": "#/backend/entities/SecurePageAccessLog"
-          },
-          "description": "Collection storing logs of access attempts to the secure page. Log entries are typically created by a trusted Cloud Function, which also manages the 'accessSuccessful' and 'ipAddress' fields. Includes denormalized 'portfolioOwnerId' for authorization independence, allowing only the designated portfolio owner to read these logs directly or via a Cloud Function.",
-          "params": [
-            {
-              "name": "logId",
-              "description": "The unique identifier for a specific access log entry."
-            }
-          ]
-        }
-      }
-    ],
-    "reasoning": "The recommended Firestore structure for the secure messaging feature emphasizes security, scalability, and debuggability by strictly adhering to the core design principles. The primary challenge, 'password-based access', is addressed by implementing an application-level security layer (a Cloud Function) that acts as a gatekeeper, thereby allowing Firestore security rules to remain simple and `request.auth.uid`-dependent. \n\n**Authorization Independence via Denormalization:**\n*   **Secure Messages (`/users/{ownerId}/secureMessages/{messageId}`):** Each `SecureMessage` document will explicitly include an `ownerId` field. This `ownerId` will match the `{ownerId}` wildcard in the path, making authorization rules atomic (e.g., `allow read, write: if request.auth.uid == resource.data.ownerId;`). This eliminates the need for `get()` calls in security rules, ensuring atomic operations and simplifying debugging.\n*   **Secure Page Access Logs (`/securePageAccessLogs/{logId}`):** Each `SecurePageAccessLog` document will include a `portfolioOwnerId` field. This denormalized field links the log entry to the specific portfolio owner, enabling straightforward security rules (e.g., `allow read: if request.auth.uid == resource.data.portfolioOwnerId;`). Again, no `get()` calls are needed to determine ownership for authorization.\n\n**QAPs (Rules are not Filters) and Segregation for Secure List Operations:**\n*   **Secure Messages:** The `secureMessages` collection is structured hierarchically under `/users/{ownerId}/`. This segregation ensures that all documents within a given `ownerId`'s `secureMessages` subcollection share the same security posture (owner-only CRUD). When the portfolio owner authenticates via Firebase (`request.auth.uid`), they can securely `list` their own messages without filtering by a password in the rules. For visitors, the Cloud Function handles the 'password' verification and then fetches the specific messages, returning them to the client. The client never directly performs a `list` on this collection via Firestore for password-gated access.\n*   **Secure Page Access Logs:** The `securePageAccessLogs` collection is a top-level collection, but each document contains `portfolioOwnerId`. This ensures homogeneous security posture within the collection, where all logs are viewable only by their respective `portfolioOwnerId`. The `list` operation for logs by the portfolio owner is therefore secure. Similarly, visitors accessing logs (via the secure page) do so through the Cloud Function, which fetches the relevant logs, maintaining QAP compliance for direct Firestore access.\n\nThis design ensures that Firestore rules are concise, robust, and explicitly tied to `request.auth.uid` for content management and log viewing by the portfolio owner, while leveraging a Cloud Function to handle the application-level 'password' authentication for visitors, securely serving the data without compromising Firestore's direct security posture."
+    "/users/{ownerId}/secureMessages/{messageId}": {
+      "schema": { "$ref": "#/backend/entities/SecureMessage" },
+      "description": "Secure messages for the owner."
+    },
+    "/securePageAccessLogs/{logId}": {
+      "schema": { "$ref": "#/backend/entities/SecurePageAccessLog" },
+      "description": "Logs of access attempts."
+    },
+    "/ctfWriteups/{writeupId}": {
+      "schema": { "$ref": "#/backend/entities/CTFWriteup" },
+      "description": "Publicly viewable CTF write-ups."
+    }
   }
 }

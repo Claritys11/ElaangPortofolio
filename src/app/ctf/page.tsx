@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -8,60 +9,27 @@ import { Terminal, Search, ExternalLink, Calendar, Tag, Layers, Trophy } from "l
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
+import { useFirestore, useCollection, useMemoFirebase } from "@/firebase"
+import { collection, query, orderBy } from "firebase/firestore"
 
 const categories = ["All", "Web", "Pwn", "Crypto", "Reverse", "Forensics"]
-
-export const writeups = [
-  {
-    id: "sqli-rce-pico",
-    title: "SQLi to RCE on Legacy CMS",
-    competition: "PicoCTF 2023",
-    category: "Web",
-    difficulty: "Hard",
-    date: "2023-11-15",
-    summary: "Bypassing a strict WAF to achieve remote code execution via a multi-stage blind SQL injection.",
-    tags: ["SQLi", "WAF Bypass", "PHP"]
-  },
-  {
-    id: "rop-chain-htb",
-    title: "ROP Chain Magic",
-    competition: "HackTheBox Business",
-    category: "Pwn",
-    difficulty: "Medium",
-    date: "2023-10-02",
-    summary: "Constructing a Return Oriented Programming chain to bypass NX and ASLR on a binary.",
-    tags: ["ROP", "Exploit", "Pwn"]
-  },
-  {
-    id: "aes-ecb-cyber",
-    title: "Broken AES-ECB Implementation",
-    competition: "CyberApocalypse",
-    category: "Crypto",
-    difficulty: "Easy",
-    date: "2023-08-12",
-    summary: "Exploiting the lack of diffusion in ECB mode to recover sensitive session tokens.",
-    tags: ["AES", "ECB", "Oracle"]
-  },
-  {
-    id: "malware-flare",
-    title: "Deep Dive into packed Malware",
-    competition: "Flare-On 9",
-    category: "Reverse",
-    difficulty: "Hard",
-    date: "2023-09-20",
-    summary: "Unpacking a custom obfuscator and reversing the core C2 communication logic.",
-    tags: ["Malware", "RE", "Ghidra"]
-  }
-]
 
 export default function CTFPage() {
   const [viewMode, setViewMode] = React.useState<"category" | "platform">("category")
   const [activeFilter, setActiveFilter] = React.useState("All")
   const [searchQuery, setSearchQuery] = React.useState("")
 
-  const filteredWriteups = writeups.filter(w => {
-    const matchesSearch = w.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          w.summary.toLowerCase().includes(searchQuery.toLowerCase())
+  const db = useFirestore()
+  
+  const writeupsQuery = useMemoFirebase(() => {
+    return query(collection(db, "ctfWriteups"), orderBy("createdAt", "desc"))
+  }, [db])
+
+  const { data: writeups, isLoading } = useCollection(writeupsQuery)
+
+  const filteredWriteups = (writeups || []).filter(w => {
+    const matchesSearch = w.title?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          w.summary?.toLowerCase().includes(searchQuery.toLowerCase())
     
     if (viewMode === "category") {
       const matchesCategory = activeFilter === "All" || w.category === activeFilter
@@ -72,7 +40,7 @@ export default function CTFPage() {
     }
   })
 
-  const platforms = ["All", ...Array.from(new Set(writeups.map(w => w.competition)))]
+  const platforms = ["All", ...Array.from(new Set((writeups || []).map(w => w.competition)))]
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -142,7 +110,12 @@ export default function CTFPage() {
           </TabsList>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredWriteups.length > 0 ? (
+            {isLoading ? (
+               <div className="col-span-full py-20 text-center">
+                 <Terminal className="h-12 w-12 text-primary animate-spin mx-auto mb-4 opacity-50" />
+                 <p className="text-muted-foreground font-code">Decrypting Records...</p>
+               </div>
+            ) : filteredWriteups.length > 0 ? (
               filteredWriteups.map((w) => (
                 <Link key={w.id} href={`/ctf/${w.id}`} className="block group">
                   <div className="relative h-full rounded-xl border-[0.75px] border-border p-1">
@@ -178,7 +151,7 @@ export default function CTFPage() {
                         {w.summary}
                       </p>
                       <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t border-border/50">
-                        {w.tags.map(tag => (
+                        {(w.tags || []).map(tag => (
                           <span key={tag} className="flex items-center text-[10px] text-muted-foreground font-code bg-muted px-2 py-0.5 rounded">
                             <Tag className="h-2 w-2 mr-1" /> {tag}
                           </span>
