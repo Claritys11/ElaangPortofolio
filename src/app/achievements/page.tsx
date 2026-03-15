@@ -1,9 +1,8 @@
-
 "use client"
 
-import { Card, CardContent } from "@/components/ui/card"
 import { Award, Shield, Trophy, CheckCircle2, Star, ExternalLink } from "lucide-react"
 import Image from "next/image"
+import { GlowingEffect } from "@/components/ui/glowing-effect"
 
 const certifications = [
   {
@@ -71,36 +70,44 @@ export default function AchievementsPage() {
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
         {certifications.map((cert, idx) => (
-          <Card key={idx} className="bg-card border-border overflow-hidden group hover:neon-border transition-all">
-            <div className="relative h-56">
-              <Image 
-                src={cert.image} 
-                alt={cert.title}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-                data-ai-hint="certificate document"
-              />
-              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
-              <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-sm p-2 rounded">
-                <ExternalLink className="h-4 w-4 text-primary" />
+          <div key={idx} className="relative group rounded-xl border border-border p-1">
+            <GlowingEffect
+              spread={40}
+              glow={true}
+              disabled={false}
+              proximity={64}
+              inactiveZone={0.01}
+              borderWidth={2}
+            />
+            <div className="relative bg-background rounded-lg overflow-hidden h-full flex flex-col">
+              <div className="relative h-56">
+                <Image 
+                  src={cert.image} 
+                  alt={cert.title}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  data-ai-hint="certificate document"
+                />
+                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
+                <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-sm p-2 rounded">
+                  <ExternalLink className="h-4 w-4 text-primary" />
+                </div>
               </div>
-            </div>
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
+              <div className="p-6 flex-1 flex flex-col justify-between">
                 <div>
                   <p className="text-[10px] font-code text-primary uppercase mb-1">{cert.issuer}</p>
                   <h3 className="text-lg font-headline font-bold">{cert.title}</h3>
-                  <div className="flex items-center text-xs text-muted-foreground mt-2 font-code">
-                    <CheckCircle2 className="h-3 w-3 mr-1 text-green-500" />
-                    Verified: {cert.id}
-                  </div>
                 </div>
-                <div className="text-right">
+                <div className="flex items-center justify-between mt-4">
+                  <div className="flex items-center text-xs text-muted-foreground font-code">
+                    <CheckCircle2 className="h-3 w-3 mr-1 text-green-500" />
+                    {cert.id}
+                  </div>
                   <p className="text-xs text-muted-foreground">{cert.date}</p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         ))}
       </div>
 
@@ -113,13 +120,23 @@ export default function AchievementsPage() {
         {achievements.map((item, idx) => {
           const Icon = item.icon
           return (
-            <div key={idx} className="p-6 rounded-lg bg-muted/40 border border-border hover:bg-muted/60 transition-colors flex flex-col h-full">
-              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <Icon className="h-6 w-6 text-primary" />
+            <div key={idx} className="relative group rounded-xl border border-border p-1">
+              <GlowingEffect
+                spread={40}
+                glow={true}
+                disabled={false}
+                proximity={64}
+                inactiveZone={0.01}
+                borderWidth={2}
+              />
+              <div className="relative p-6 h-full flex flex-col bg-background rounded-lg border border-border group-hover:bg-muted/10 transition-colors">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                  <Icon className="h-6 w-6 text-primary" />
+                </div>
+                <p className="text-xs font-code text-secondary mb-1">{item.platform}</p>
+                <h3 className="text-lg font-headline font-bold mb-2">{item.title}</h3>
+                <p className="text-sm text-muted-foreground">{item.description}</p>
               </div>
-              <p className="text-xs font-code text-secondary mb-1">{item.platform}</p>
-              <h3 className="text-lg font-headline font-bold mb-2">{item.title}</h3>
-              <p className="text-sm text-muted-foreground">{item.description}</p>
             </div>
           )
         })}

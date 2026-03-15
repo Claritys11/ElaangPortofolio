@@ -1,14 +1,13 @@
-
 "use client"
 
 import * as React from "react"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Terminal, Search, ExternalLink, Calendar, Tag, Layers, Trophy } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { GlowingEffect } from "@/components/ui/glowing-effect"
 
 const categories = ["All", "Web", "Pwn", "Crypto", "Reverse", "Forensics"]
 
@@ -146,9 +145,17 @@ export default function CTFPage() {
             {filteredWriteups.length > 0 ? (
               filteredWriteups.map((w) => (
                 <Link key={w.id} href={`/ctf/${w.id}`} className="block group">
-                  <Card className="h-full bg-card border-border hover:border-primary/50 transition-all">
-                    <CardHeader>
-                      <div className="flex justify-between items-start mb-2">
+                  <div className="relative h-full rounded-xl border-[0.75px] border-border p-1">
+                    <GlowingEffect
+                      spread={40}
+                      glow={true}
+                      disabled={false}
+                      proximity={64}
+                      inactiveZone={0.01}
+                      borderWidth={2}
+                    />
+                    <div className="relative h-full flex flex-col bg-background p-6 rounded-lg border border-border group-hover:border-primary/50 transition-colors">
+                      <div className="flex justify-between items-start mb-4">
                         <Badge variant="secondary" className="bg-secondary/10 text-secondary border-none">
                           {viewMode === "category" ? w.competition : w.category}
                         </Badge>
@@ -161,29 +168,27 @@ export default function CTFPage() {
                           {w.difficulty}
                         </span>
                       </div>
-                      <CardTitle className="text-xl font-headline group-hover:text-primary transition-colors">
+                      <h3 className="text-xl font-headline font-bold mb-2 group-hover:text-primary transition-colors">
                         {w.title}
-                      </CardTitle>
-                      <CardDescription className="flex items-center text-xs mt-1">
+                      </h3>
+                      <p className="flex items-center text-xs text-muted-foreground mb-4">
                         <Calendar className="h-3 w-3 mr-1" /> {w.date}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground line-clamp-3">
+                      </p>
+                      <p className="text-sm text-muted-foreground line-clamp-3 mb-6 flex-1">
                         {w.summary}
                       </p>
-                    </CardContent>
-                    <CardFooter className="flex flex-wrap gap-2 pt-0">
-                      {w.tags.map(tag => (
-                        <span key={tag} className="flex items-center text-[10px] text-muted-foreground font-code bg-muted px-2 py-0.5 rounded">
-                          <Tag className="h-2 w-2 mr-1" /> {tag}
-                        </span>
-                      ))}
-                      <div className="ml-auto text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                        <ExternalLink className="h-4 w-4" />
+                      <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t border-border/50">
+                        {w.tags.map(tag => (
+                          <span key={tag} className="flex items-center text-[10px] text-muted-foreground font-code bg-muted px-2 py-0.5 rounded">
+                            <Tag className="h-2 w-2 mr-1" /> {tag}
+                          </span>
+                        ))}
+                        <div className="ml-auto text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                          <ExternalLink className="h-4 w-4" />
+                        </div>
                       </div>
-                    </CardFooter>
-                  </Card>
+                    </div>
+                  </div>
                 </Link>
               ))
             ) : (
