@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -95,6 +94,52 @@
   60% { transform: translate(2px, 2px); }
   80% { transform: translate(2px, -2px); }
   100% { transform: translate(0); }
+}
+
+@keyframes tv-flicker {
+  0% { opacity: 0.98; transform: skewX(0deg); }
+  5% { opacity: 0.95; transform: skewX(0.5deg); }
+  10% { opacity: 0.99; transform: skewX(-0.5deg); }
+  15% { opacity: 0.92; transform: skewX(0deg); }
+  20% { opacity: 0.99; }
+  100% { opacity: 1; }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.tv-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%,
+    rgba(0, 0, 0, 0.1) 50%
+  );
+  background-size: 100% 4px;
+  animation: tv-flicker 0.15s infinite;
+}
+
+.tv-screen::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(34, 197, 94, 0.05) 50%,
+    transparent 100%
+  );
+  animation: scanline 4s linear infinite;
 }
 
 .animate-glitch {

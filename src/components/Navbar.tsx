@@ -27,7 +27,7 @@ export function Navbar() {
               <Shield className="h-6 w-6 text-primary" />
             </div>
             <span className="font-headline font-bold text-xl tracking-tighter text-foreground">
-              CipherSynth<span className="text-primary">.</span>
+              Elaang's<span className="text-primary">.</span>
             </span>
           </Link>
 
