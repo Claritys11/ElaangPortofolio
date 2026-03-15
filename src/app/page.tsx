@@ -1,14 +1,30 @@
+
 "use client"
 
+import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { TerminalText } from "@/components/TerminalText"
-import { HackerEffect } from "@/components/HackerEffect"
+import { GlitchText } from "@/components/GlitchText"
 import { Shield, Terminal, Zap, Lock, ChevronRight } from "lucide-react"
 import Link from "next/link"
-import Image from "next/image"
+
+const heroItems = [
+  { name: "Claritys", role: "CTF Player" },
+  { name: "Elang", role: "Programmer" },
+  { name: "Elang", role: "Student" },
+]
 
 export default function Home() {
+  const [currentIndex, setCurrentIndex] = React.useState(0)
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % heroItems.length)
+    }, 3500) // Medium speed transition
+    return () => clearInterval(interval)
+  }, [])
+
   return (
     <div className="relative overflow-hidden bg-grid-pattern min-h-[calc(100vh-64px)]">
       {/* Background Glow */}
@@ -23,13 +39,18 @@ export default function Home() {
               <span>Status: Active Session</span>
             </div>
             
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-headline font-bold leading-tight min-h-[1.2em]">
-              <HackerEffect words={["Hi, I'm Elang", "Hi, I'm Claritys"]} />
-              <br />
-              <span className="text-primary neon-glow">
-                <HackerEffect words={["CTF Player", "Programmer", "Student"]} />
-              </span>
-            </h1>
+            <div className="space-y-2">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-headline font-bold leading-tight">
+                Hi, I'm <GlitchText text={heroItems[currentIndex].name} className="text-primary neon-glow" />
+              </h1>
+              <div className="h-[1.2em] text-4xl md:text-6xl lg:text-7xl font-headline font-bold text-foreground opacity-90">
+                <TerminalText 
+                  key={currentIndex} 
+                  text={heroItems[currentIndex].role} 
+                  className="text-secondary"
+                />
+              </div>
+            </div>
 
             <p className="text-xl text-muted-foreground max-w-lg h-20">
               <TerminalText 
@@ -82,7 +103,7 @@ export default function Home() {
                   <p className="text-primary">$ whoami</p>
                   <p className="text-foreground">Elang [Security Enthusiast]</p>
                   <p className="text-primary pt-2">$ cat skill-matrix.json</p>
-                  <div className="pl-4 text-secondary/80 space-y-1">
+                  <div className="pl-4 text-secondary font-bold space-y-1">
                     <p>{"{"}</p>
                     <p className="pl-4">"web": ["XSS", "SQLi", "SSRF"],</p>
                     <p className="pl-4">"pwn": ["Buffer Overflow", "ROP"],</p>
