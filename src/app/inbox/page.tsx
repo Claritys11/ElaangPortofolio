@@ -12,12 +12,22 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Terminal, Lock, MessageSquare, History, User, Plus, Trash2, Save, X, Database, Key, Loader2 } from "lucide-react"
+import { Terminal, Lock, MessageSquare, History, User, Plus, Trash2, Save, X, Database, Key, Loader2, AlertCircle } from "lucide-react"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { format } from "date-fns"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 export default function SecureInboxPage() {
   const { toast } = useToast()
@@ -26,6 +36,10 @@ export default function SecureInboxPage() {
   const [password, setPassword] = React.useState("")
   const [activeTab, setActiveTab] = React.useState("messages")
   const db = useFirestore()
+
+  // Deletion State
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
+  const [idToDelete, setIdToDelete] = React.useState<string | null>(null)
 
   // Write-up Form State
   const [isEditing, setIsEditing] = React.useState(false)
@@ -140,34 +154,31 @@ export default function SecureInboxPage() {
     setIsEditing(true)
   }
 
-  const handleDelete = (id: string | null | undefined) => {
-    if (!id || !db) {
-      toast({
-        variant: "destructive",
-        title: "Operation Aborted",
-        description: "Document identifier missing."
-      });
-      return;
-    }
-    
-    const confirmDelete = window.confirm("Are you sure you want to delete this record? This action cannot be undone.");
-    
-    if (confirmDelete) {
-      const docRef = doc(db, "ctfWriteups", id)
-      deleteDocumentNonBlocking(docRef)
-      
-      toast({ 
-        title: "Record Purged", 
-        description: "Data successfully removed from Firestore nodes." 
-      })
+  const triggerDelete = (id: string | null | undefined) => {
+    if (!id) return
+    setIdToDelete(id)
+    setDeleteDialogOpen(true)
+  }
 
-      // If the deleted record was being edited, clear the editor
-      if (editingId === id) {
-        setIsEditing(false)
-        setEditingId(null)
-        resetForm()
-      }
+  const confirmDelete = () => {
+    if (!idToDelete || !db) return
+
+    const docRef = doc(db, "ctfWriteups", idToDelete)
+    deleteDocumentNonBlocking(docRef)
+    
+    toast({ 
+      title: "Record Purged", 
+      description: "Data successfully removed from Firestore nodes." 
+    })
+
+    if (editingId === idToDelete) {
+      setIsEditing(false)
+      setEditingId(null)
+      resetForm()
     }
+
+    setDeleteDialogOpen(false)
+    setIdToDelete(null)
   }
 
   const handleNewEntry = () => {
@@ -324,7 +335,7 @@ export default function SecureInboxPage() {
                             className="h-7 w-7 text-destructive hover:bg-destructive/10" 
                             onClick={(e) => { 
                               e.stopPropagation(); 
-                              handleDelete(w.id); 
+                              triggerDelete(w.id); 
                             }}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
@@ -347,7 +358,7 @@ export default function SecureInboxPage() {
                     </div>
                     <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                       {editingId && (
-                        <Button variant="destructive" size="sm" onClick={() => handleDelete(editingId)} className="flex-1 sm:flex-none">
+                        <Button variant="destructive" size="sm" onClick={() => triggerDelete(editingId)} className="flex-1 sm:flex-none">
                           <Trash2 className="h-4 w-4 mr-1" /> Delete
                         </Button>
                       )}
@@ -498,6 +509,29 @@ export default function SecureInboxPage() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="border-border bg-card">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+              <AlertCircle className="h-5 w-5" /> Confirm Purge
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
+              This action will permanently delete the selected write-up record from the Firestore database. This protocol cannot be reversed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="border-border hover:bg-muted">ABORT</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              EXECUTE DELETE
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
