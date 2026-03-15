@@ -65,7 +65,7 @@ export default function Home() {
               <TerminalText 
                 text="Student developer focused on Cybersecurity and Software Engineering. Passionate about CTF competitions, digital forensics, and building useful applications."
                 speed={100}
-                delay={800}
+                delay={700}
               />
             </p>
 
