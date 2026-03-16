@@ -8,6 +8,7 @@ export function ShellIntro({ onComplete }: { onComplete: () => void }) {
   const [input, setInput] = React.useState("")
   const [history, setHistory] = React.useState<string[]>([])
   const [isAuthorized, setIsAuthorized] = React.useState(false)
+  const [isAutoTyping, setIsAutoTyping] = React.useState(false)
   const scrollRef = React.useRef<HTMLDivElement>(null)
 
   const bootLines = [
@@ -17,6 +18,8 @@ export function ShellIntro({ onComplete }: { onComplete: () => void }) {
     "----------------------------------------",
     "WELCOME TO CLARITY_NODE V2.0.4",
     "SYSTEM STATUS: RESTRICTED ACCESS",
+    "----------------------------------------",
+    "COMMAND REQUIRED: './letmein'",
     "----------------------------------------"
   ]
 
@@ -36,17 +39,20 @@ export function ShellIntro({ onComplete }: { onComplete: () => void }) {
         currentLine++
       } else {
         clearInterval(interval)
-        // Tunggu 6 detik sebelum auto-typing dimulai sesuai permintaan
+        // Tunggu 6 detik sebelum auto-typing dimulai
         setTimeout(() => {
-          startAutoTyping()
+          if (!isAuthorized) {
+            startAutoTyping()
+          }
         }, 6000)
       }
     }, 200)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [isAuthorized])
 
   const startAutoTyping = () => {
+    setIsAutoTyping(true)
     const command = "./letmein"
     let i = 0
     const typeInterval = setInterval(() => {
@@ -55,7 +61,6 @@ export function ShellIntro({ onComplete }: { onComplete: () => void }) {
         i++
       } else {
         clearInterval(typeInterval)
-        // Eksekusi perintah secara otomatis setelah selesai mengetik
         setTimeout(() => {
           handleExecute("./letmein")
         }, 500)
@@ -86,7 +91,7 @@ export function ShellIntro({ onComplete }: { onComplete: () => void }) {
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !isAuthorized) {
+    if (e.key === "Enter" && !isAuthorized && !isAutoTyping) {
       handleExecute(input)
     }
   }
@@ -117,11 +122,12 @@ export function ShellIntro({ onComplete }: { onComplete: () => void }) {
                 autoFocus
                 className="bg-transparent border-none outline-none flex-1 text-primary caret-primary focus:ring-0"
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={(e) => !isAutoTyping && setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 spellCheck={false}
                 autoComplete="off"
-                readOnly={isAuthorized}
+                readOnly={isAuthorized || isAutoTyping}
+                placeholder={!input ? "type command..." : ""}
               />
             </div>
           )}
