@@ -137,11 +137,15 @@ export default function AboutPage() {
               ))}
             </div>
           </div>
-          <div className="p-4 md:p-6 rounded-lg bg-primary/5 border border-primary/20 space-y-4">
-            <h3 className="text-lg font-headline font-bold flex items-center">
-              <Heart className="h-5 w-5 mr-2 text-primary" />Philosophy
-            </h3>
-            <p className="text-sm text-muted-foreground italic">"Sorry, Wish We Could Go To The Moon Together." -D. M.</p>
+          
+          <div className="relative group p-1 rounded-xl border border-border">
+            <GlowingEffect disabled={false} proximity={64} spread={40} glow={true} />
+            <div className="relative p-4 md:p-6 rounded-lg bg-primary/5 border-none space-y-4">
+              <h3 className="text-lg font-headline font-bold flex items-center">
+                <Heart className="h-5 w-5 mr-2 text-primary" />Philosophy
+              </h3>
+              <p className="text-sm text-muted-foreground italic">"Sorry, Wish We Could Go To The Moon Together." -D. M.</p>
+            </div>
           </div>
         </div>
       </div>
