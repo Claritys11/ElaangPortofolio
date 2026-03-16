@@ -7,6 +7,7 @@ import Image from "next/image"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
 import { useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy } from "firebase/firestore"
+import { cn } from "@/lib/utils"
 
 export default function AchievementsPage() {
   const db = useFirestore()
@@ -40,7 +41,13 @@ export default function AchievementsPage() {
         <>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
             {certifications.length > 0 ? certifications.map((cert, idx) => (
-              <div key={cert.id || idx} className="relative group rounded-xl border border-border p-1">
+              <a 
+                key={cert.id || idx} 
+                href={cert.imageUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="relative group rounded-xl border border-border p-1 block transition-transform hover:scale-[1.02]"
+              >
                 <GlowingEffect
                   spread={40}
                   glow={true}
@@ -63,7 +70,7 @@ export default function AchievementsPage() {
                       </div>
                     )}
                     <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
-                    <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-sm p-2 rounded">
+                    <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-sm p-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">
                       <ExternalLink className="h-4 w-4 text-primary" />
                     </div>
                   </div>
@@ -82,7 +89,7 @@ export default function AchievementsPage() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </a>
             )) : (
               <div className="col-span-full text-center py-10 opacity-50 font-code text-sm">No visual credentials recorded.</div>
             )}
