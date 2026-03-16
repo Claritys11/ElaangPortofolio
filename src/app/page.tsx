@@ -177,7 +177,8 @@ export default function Home() {
                       <p>{"{"}</p>
                       <p className="pl-4">"web": ["XSS", "SQLi", "SSRF"],</p>
                       <p className="pl-4">"pwn": ["Buffer Overflow", "ROP"],</p>
-                      <p className="pl-4">"rev": ["x86-64", "MIPS"]</p>
+                      <p className="pl-4">"rev": ["x86-64", "MIPS"],</p>
+                      <p className="pl-4">"foren": ["Memory", "Disk", "Network"]</p>
                       <p>{"}"}</p>
                     </div>
                     <p className="text-primary pt-2">$ {terminalLoaded ? "cat latest-activity.log" : "loading session-data..."}</p>
