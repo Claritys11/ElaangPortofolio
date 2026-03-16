@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { 
-  Terminal, Lock, MessageSquare, History, User, Plus, Trash2, 
+  Terminal, Lock, MessageSquare, History, Plus, Trash2, 
   Save, Database, Key, Loader2, AlertCircle, Cpu, Award, Image as ImageIcon, Link as LinkIcon 
 } from "lucide-react"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
@@ -207,7 +207,7 @@ export default function SecureInboxPage() {
               <ScrollArea className="h-[600px] border rounded-lg bg-card/30">
                 <div className="p-4 space-y-2">
                   {writeupsLoading ? <Loader2 className="animate-spin mx-auto mt-10" /> : writeups?.map(w => (
-                    <div key={w.id} className={cn("p-3 rounded-lg border flex justify-between group items-center cursor-pointer", editingId === w.id ? "bg-primary/10 border-primary/50" : "bg-card border-border/50")} onClick={() => { setEditMode("writeup"); setEditingId(w.id); setWriteupForm({ ...w, tags: (w.tags || []).join(', ') }) }}>
+                    <div key={w.id} className={cn("p-3 rounded-lg border flex justify-between group items-center cursor-pointer", editingId === w.id ? "bg-primary/10 border-primary/50" : "bg-card border-border/50")} onClick={() => { setEditMode("writeup"); setEditingId(w.id); setWriteupForm({ title: w.title || "", competition: w.competition || "", category: w.category || "Web", difficulty: w.difficulty || "Medium", date: w.date || format(new Date(), 'yyyy-MM-dd'), summary: w.summary || "", content: w.content || "", flag: w.flag || "", tags: (w.tags || []).join(', ') }) }}>
                       <div className="truncate"><p className="text-sm font-bold truncate">{w.title}</p><p className="text-[10px] text-muted-foreground">{w.competition}</p></div>
                       <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); triggerDelete(w.id, "ctfWriteups") }} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4 text-destructive" /></Button>
                     </div>
@@ -219,24 +219,24 @@ export default function SecureInboxPage() {
               {editMode === "writeup" ? (
                 <Card className="p-6 space-y-4">
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2"><Label>Title</Label><Input value={writeupForm.title} onChange={e => setWriteupForm({...writeupForm, title: e.target.value})} /></div>
-                    <div className="space-y-2"><Label>Competition</Label><Input value={writeupForm.competition} onChange={e => setWriteupForm({...writeupForm, competition: e.target.value})} /></div>
+                    <div className="space-y-2"><Label>Title</Label><Input value={writeupForm.title || ""} onChange={e => setWriteupForm({...writeupForm, title: e.target.value})} /></div>
+                    <div className="space-y-2"><Label>Competition</Label><Input value={writeupForm.competition || ""} onChange={e => setWriteupForm({...writeupForm, competition: e.target.value})} /></div>
                   </div>
                   <div className="grid grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label>Category</Label>
-                      <Select value={writeupForm.category} onValueChange={v => setWriteupForm({...writeupForm, category: v})}>
+                      <Select value={writeupForm.category || "Web"} onValueChange={v => setWriteupForm({...writeupForm, category: v})}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>{["Web", "Pwn", "Crypto", "Reverse", "Forensics"].map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-2"><Label>Difficulty</Label><Select value={writeupForm.difficulty} onValueChange={v => setWriteupForm({...writeupForm, difficulty: v})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{["Easy", "Medium", "Hard"].map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent></Select></div>
-                    <div className="space-y-2"><Label>Date</Label><Input type="date" value={writeupForm.date} onChange={e => setWriteupForm({...writeupForm, date: e.target.value})} /></div>
+                    <div className="space-y-2"><Label>Difficulty</Label><Select value={writeupForm.difficulty || "Medium"} onValueChange={v => setWriteupForm({...writeupForm, difficulty: v})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{["Easy", "Medium", "Hard"].map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent></Select></div>
+                    <div className="space-y-2"><Label>Date</Label><Input type="date" value={writeupForm.date || ""} onChange={e => setWriteupForm({...writeupForm, date: e.target.value})} /></div>
                   </div>
-                  <div className="space-y-2"><Label>Flag</Label><Input value={writeupForm.flag} onChange={e => setWriteupForm({...writeupForm, flag: e.target.value})} className="font-code text-primary" /></div>
-                  <div className="space-y-2"><Label>Tags (comma separated)</Label><Input value={writeupForm.tags} onChange={e => setWriteupForm({...writeupForm, tags: e.target.value})} /></div>
-                  <div className="space-y-2"><Label>Summary</Label><Textarea value={writeupForm.summary} onChange={e => setWriteupForm({...writeupForm, summary: e.target.value})} /></div>
-                  <div className="space-y-2"><Label>Content</Label><Textarea value={writeupForm.content} onChange={e => setWriteupForm({...writeupForm, content: e.target.value})} className="min-h-[200px]" /></div>
+                  <div className="space-y-2"><Label>Flag</Label><Input value={writeupForm.flag || ""} onChange={e => setWriteupForm({...writeupForm, flag: e.target.value})} className="font-code text-primary" /></div>
+                  <div className="space-y-2"><Label>Tags (comma separated)</Label><Input value={writeupForm.tags || ""} onChange={e => setWriteupForm({...writeupForm, tags: e.target.value})} /></div>
+                  <div className="space-y-2"><Label>Summary</Label><Textarea value={writeupForm.summary || ""} onChange={e => setWriteupForm({...writeupForm, summary: e.target.value})} /></div>
+                  <div className="space-y-2"><Label>Content</Label><Textarea value={writeupForm.content || ""} onChange={e => setWriteupForm({...writeupForm, content: e.target.value})} className="min-h-[200px]" /></div>
                   <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setEditMode(null)}>Cancel</Button><Button onClick={saveWriteup}><Save className="h-4 w-4 mr-2" /> Save</Button></div>
                 </Card>
               ) : <div className="h-full border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-muted-foreground p-20 text-center"><Database className="h-10 w-10 mb-4 opacity-20" /><p>Select a write-up node to edit or create a new entry.</p></div>}
@@ -253,7 +253,7 @@ export default function SecureInboxPage() {
               <ScrollArea className="h-[600px] border rounded-lg bg-card/30">
                 <div className="p-4 space-y-2">
                   {projectsLoading ? <Loader2 className="animate-spin mx-auto mt-10" /> : projects?.map(p => (
-                    <div key={p.id} className={cn("p-3 rounded-lg border flex justify-between group items-center cursor-pointer", editingId === p.id ? "bg-primary/10 border-primary/50" : "bg-card border-border/50")} onClick={() => { setEditMode("project"); setEditingId(p.id); setProjectForm({ ...p, tags: (p.tags || []).join(', ') }) }}>
+                    <div key={p.id} className={cn("p-3 rounded-lg border flex justify-between group items-center cursor-pointer", editingId === p.id ? "bg-primary/10 border-primary/50" : "bg-card border-border/50")} onClick={() => { setEditMode("project"); setEditingId(p.id); setProjectForm({ title: p.title || "", description: p.description || "", imageUrl: p.imageUrl || "", category: p.category || "Security Tooling", tags: (p.tags || []).join(', ') }) }}>
                       <div className="truncate"><p className="text-sm font-bold truncate">{p.title}</p><p className="text-[10px] text-muted-foreground">{p.category}</p></div>
                       <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); triggerDelete(p.id, "projects") }} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4 text-destructive" /></Button>
                     </div>
@@ -265,8 +265,8 @@ export default function SecureInboxPage() {
               {editMode === "project" ? (
                 <Card className="p-6 space-y-4">
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2"><Label>Project Title</Label><Input value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} /></div>
-                    <div className="space-y-2"><Label>Category</Label><Input value={projectForm.category} onChange={e => setProjectForm({...projectForm, category: e.target.value})} /></div>
+                    <div className="space-y-2"><Label>Project Title</Label><Input value={projectForm.title || ""} onChange={e => setProjectForm({...projectForm, title: e.target.value})} /></div>
+                    <div className="space-y-2"><Label>Category</Label><Input value={projectForm.category || ""} onChange={e => setProjectForm({...projectForm, category: e.target.value})} /></div>
                   </div>
                   
                   <div className="space-y-4 border-y py-4 my-2">
@@ -278,7 +278,7 @@ export default function SecureInboxPage() {
                       </div>
                     </div>
                     {imageSource === "url" ? (
-                      <Input placeholder="https://image-source.com/assets/..." value={projectForm.imageUrl} onChange={e => setProjectForm({...projectForm, imageUrl: e.target.value})} />
+                      <Input placeholder="https://image-source.com/assets/..." value={projectForm.imageUrl || ""} onChange={e => setProjectForm({...projectForm, imageUrl: e.target.value})} />
                     ) : (
                       <div className="space-y-2">
                         <Input type="file" accept="image/*" onChange={e => handleImageUpload(e, (url) => setProjectForm({...projectForm, imageUrl: url}))} className="cursor-pointer" />
@@ -292,8 +292,8 @@ export default function SecureInboxPage() {
                     )}
                   </div>
 
-                  <div className="space-y-2"><Label>Technical Description</Label><Textarea value={projectForm.description} onChange={e => setProjectForm({...projectForm, description: e.target.value})} className="min-h-[120px]" /></div>
-                  <div className="space-y-2"><Label>Stack Tags (comma separated)</Label><Input value={projectForm.tags} onChange={e => setProjectForm({...projectForm, tags: e.target.value})} placeholder="React, Rust, Cryptography" /></div>
+                  <div className="space-y-2"><Label>Technical Description</Label><Textarea value={projectForm.description || ""} onChange={e => setProjectForm({...projectForm, description: e.target.value})} className="min-h-[120px]" /></div>
+                  <div className="space-y-2"><Label>Stack Tags (comma separated)</Label><Input value={projectForm.tags || ""} onChange={e => setProjectForm({...projectForm, tags: e.target.value})} placeholder="React, Rust, Cryptography" /></div>
                   
                   <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setEditMode(null)}>Cancel</Button><Button onClick={saveProject}><Save className="h-4 w-4 mr-2" /> Save Project</Button></div>
                 </Card>
@@ -311,7 +311,7 @@ export default function SecureInboxPage() {
               <ScrollArea className="h-[600px] border rounded-lg bg-card/30">
                 <div className="p-4 space-y-2">
                   {achievementsLoading ? <Loader2 className="animate-spin mx-auto mt-10" /> : achievements?.map(a => (
-                    <div key={a.id} className={cn("p-3 rounded-lg border flex justify-between group items-center cursor-pointer", editingId === a.id ? "bg-primary/10 border-primary/50" : "bg-card border-border/50")} onClick={() => { setEditMode("achievement"); setEditingId(a.id); setAchievementForm({ ...a }) }}>
+                    <div key={a.id} className={cn("p-3 rounded-lg border flex justify-between group items-center cursor-pointer", editingId === a.id ? "bg-primary/10 border-primary/50" : "bg-card border-border/50")} onClick={() => { setEditMode("achievement"); setEditingId(a.id); setAchievementForm({ title: a.title || "", issuer: a.issuer || "", platform: a.platform || "", description: a.description || "", imageUrl: a.imageUrl || "", date: a.date || format(new Date(), 'yyyy-MM-dd') }) }}>
                       <div className="truncate"><p className="text-sm font-bold truncate">{a.title}</p><p className="text-[10px] text-muted-foreground">{a.issuer}</p></div>
                       <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); triggerDelete(a.id, "achievements") }} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4 text-destructive" /></Button>
                     </div>
@@ -323,12 +323,12 @@ export default function SecureInboxPage() {
               {editMode === "achievement" ? (
                 <Card className="p-6 space-y-4">
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2"><Label>Title</Label><Input value={achievementForm.title} onChange={e => setAchievementForm({...achievementForm, title: e.target.value})} /></div>
-                    <div className="space-y-2"><Label>Issuer / Organization</Label><Input value={achievementForm.issuer} onChange={e => setAchievementForm({...achievementForm, issuer: e.target.value})} /></div>
+                    <div className="space-y-2"><Label>Title</Label><Input value={achievementForm.title || ""} onChange={e => setAchievementForm({...achievementForm, title: e.target.value})} /></div>
+                    <div className="space-y-2"><Label>Issuer / Organization</Label><Input value={achievementForm.issuer || ""} onChange={e => setAchievementForm({...achievementForm, issuer: e.target.value})} /></div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2"><Label>Platform / Category</Label><Input value={achievementForm.platform} onChange={e => setAchievementForm({...achievementForm, platform: e.target.value})} /></div>
-                    <div className="space-y-2"><Label>Date Achieved</Label><Input value={achievementForm.date} onChange={e => setAchievementForm({...achievementForm, date: e.target.value})} placeholder="e.g. Nov 2024" /></div>
+                    <div className="space-y-2"><Label>Platform / Category</Label><Input value={achievementForm.platform || ""} onChange={e => setAchievementForm({...achievementForm, platform: e.target.value})} /></div>
+                    <div className="space-y-2"><Label>Date Achieved</Label><Input value={achievementForm.date || ""} onChange={e => setAchievementForm({...achievementForm, date: e.target.value})} placeholder="e.g. Nov 2024" /></div>
                   </div>
                   
                   <div className="space-y-4 border-y py-4 my-2">
@@ -340,7 +340,7 @@ export default function SecureInboxPage() {
                       </div>
                     </div>
                     {imageSource === "url" ? (
-                      <Input placeholder="https://..." value={achievementForm.imageUrl} onChange={e => setAchievementForm({...achievementForm, imageUrl: e.target.value})} />
+                      <Input placeholder="https://..." value={achievementForm.imageUrl || ""} onChange={e => setAchievementForm({...achievementForm, imageUrl: e.target.value})} />
                     ) : (
                       <Input type="file" accept="image/*" onChange={e => handleImageUpload(e, (url) => setAchievementForm({...achievementForm, imageUrl: url}))} />
                     )}
@@ -351,7 +351,7 @@ export default function SecureInboxPage() {
                     )}
                   </div>
 
-                  <div className="space-y-2"><Label>Description / Context</Label><Textarea value={achievementForm.description} onChange={e => setAchievementForm({...achievementForm, description: e.target.value})} /></div>
+                  <div className="space-y-2"><Label>Description / Context</Label><Textarea value={achievementForm.description || ""} onChange={e => setAchievementForm({...achievementForm, description: e.target.value})} /></div>
                   
                   <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setEditMode(null)}>Cancel</Button><Button onClick={saveAchievement}><Save className="h-4 w-4 mr-2" /> Save Record</Button></div>
                 </Card>
