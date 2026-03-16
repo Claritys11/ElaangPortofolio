@@ -1,8 +1,8 @@
-
 "use client"
 
 import * as React from "react"
 import { ShellIntro } from "./ShellIntro"
+import { motion, AnimatePresence } from "motion/react"
 
 export function ShellGate({ children }: { children: React.ReactNode }) {
   const [showIntro, setShowIntro] = React.useState<boolean | null>(null)
@@ -24,9 +24,20 @@ export function ShellGate({ children }: { children: React.ReactNode }) {
   // Prevent flash of content while checking session
   if (showIntro === null) return null
 
-  if (showIntro) {
-    return <ShellIntro onComplete={handleComplete} />
-  }
-
-  return <>{children}</>
+  return (
+    <AnimatePresence mode="wait">
+      {showIntro ? (
+        <ShellIntro key="intro" onComplete={handleComplete} />
+      ) : (
+        <motion.div 
+          key="content"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, ease: "easeOut" }}
+        >
+          {children}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
 }
