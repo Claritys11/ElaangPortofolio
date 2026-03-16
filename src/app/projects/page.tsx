@@ -7,6 +7,7 @@ import { Cpu, ShieldCheck, Box, Loader2, ExternalLink } from "lucide-react"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
 import { useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy } from "firebase/firestore"
+import { cn } from "@/lib/utils"
 
 export default function ProjectsPage() {
   const db = useFirestore()
@@ -113,5 +114,3 @@ export default function ProjectsPage() {
     </div>
   )
 }
-
-import { cn } from "@/lib/utils"
