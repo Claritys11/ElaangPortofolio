@@ -2,12 +2,17 @@
 "use client"
 
 import * as React from "react"
-import { Award, Shield, Trophy, CheckCircle2, Star, ExternalLink, Loader2 } from "lucide-react"
+import { Award, Shield, Trophy, CheckCircle2, Star, ExternalLink, Loader2, X, ZoomIn } from "lucide-react"
 import Image from "next/image"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
 import { useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy } from "firebase/firestore"
 import { cn } from "@/lib/utils"
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 export default function AchievementsPage() {
   const db = useFirestore()
@@ -41,55 +46,67 @@ export default function AchievementsPage() {
         <>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
             {certifications.length > 0 ? certifications.map((cert, idx) => (
-              <a 
-                key={cert.id || idx} 
-                href={cert.imageUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="relative group rounded-xl border border-border p-1 block transition-transform hover:scale-[1.02]"
-              >
-                <GlowingEffect
-                  spread={40}
-                  glow={true}
-                  disabled={false}
-                  proximity={64}
-                  inactiveZone={0.01}
-                  borderWidth={2}
-                />
-                <div className="relative bg-background rounded-lg overflow-hidden h-full flex flex-col">
-                  <div className="relative h-56 bg-muted/20">
-                    {cert.imageUrl ? (
-                      <img 
-                        src={cert.imageUrl} 
-                        alt={cert.title}
-                        className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Award className="h-12 w-12 text-primary opacity-20" />
+              <Dialog key={cert.id || idx}>
+                <DialogTrigger asChild>
+                  <div className="relative group rounded-xl border border-border p-1 block cursor-zoom-in transition-transform hover:scale-[1.02]">
+                    <GlowingEffect
+                      spread={40}
+                      glow={true}
+                      disabled={false}
+                      proximity={64}
+                      inactiveZone={0.01}
+                      borderWidth={2}
+                    />
+                    <div className="relative bg-background rounded-lg overflow-hidden h-full flex flex-col">
+                      <div className="relative h-56 bg-muted/20">
+                        {cert.imageUrl ? (
+                          <img 
+                            src={cert.imageUrl} 
+                            alt={cert.title}
+                            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Award className="h-12 w-12 text-primary opacity-20" />
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors" />
+                        <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-sm p-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                          <ZoomIn className="h-4 w-4 text-primary" />
+                        </div>
                       </div>
-                    )}
-                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
-                    <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-sm p-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                      <ExternalLink className="h-4 w-4 text-primary" />
+                      <div className="p-6 flex-1 flex flex-col justify-between border-t border-border/50">
+                        <div>
+                          <p className="text-[10px] font-code text-primary uppercase mb-1">{cert.issuer}</p>
+                          <h3 className="text-lg font-headline font-bold">{cert.title}</h3>
+                          <p className="text-xs text-muted-foreground mt-2 line-clamp-2 italic">{cert.description}</p>
+                        </div>
+                        <div className="flex items-center justify-between mt-4">
+                          <div className="flex items-center text-xs text-muted-foreground font-code">
+                            <CheckCircle2 className="h-3 w-3 mr-1 text-primary" />
+                            VERIFIED
+                          </div>
+                          <p className="text-xs text-muted-foreground">{cert.date}</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div className="p-6 flex-1 flex flex-col justify-between border-t border-border/50">
-                    <div>
-                      <p className="text-[10px] font-code text-primary uppercase mb-1">{cert.issuer}</p>
-                      <h3 className="text-lg font-headline font-bold">{cert.title}</h3>
-                      <p className="text-xs text-muted-foreground mt-2 line-clamp-2 italic">{cert.description}</p>
-                    </div>
-                    <div className="flex items-center justify-between mt-4">
-                      <div className="flex items-center text-xs text-muted-foreground font-code">
-                        <CheckCircle2 className="h-3 w-3 mr-1 text-primary" />
-                        VERIFIED
-                      </div>
-                      <p className="text-xs text-muted-foreground">{cert.date}</p>
+                </DialogTrigger>
+                <DialogContent className="max-w-5xl bg-background/95 backdrop-blur-md border-primary/20 p-0 overflow-hidden">
+                  <div className="relative w-full h-full flex items-center justify-center bg-black/20">
+                    <img 
+                      src={cert.imageUrl} 
+                      alt={cert.title} 
+                      className="max-w-full max-h-[85vh] object-contain shadow-2xl"
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent text-white">
+                      <p className="text-xs font-code text-primary uppercase mb-1">{cert.issuer}</p>
+                      <h2 className="text-xl font-headline font-bold">{cert.title}</h2>
+                      <p className="text-sm opacity-80">{cert.description}</p>
                     </div>
                   </div>
-                </div>
-              </a>
+                </DialogContent>
+              </Dialog>
             )) : (
               <div className="col-span-full text-center py-10 opacity-50 font-code text-sm">No visual credentials recorded.</div>
             )}
