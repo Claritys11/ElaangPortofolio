@@ -2,7 +2,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Force deployment update: 2025-05-24T12:00:00Z
+    // Last Sync: 2024-05-24T15:00:00Z - Force Update Permissions
     
     // Publicly readable collections
     match /ctfWriteups/{writeupId} {
