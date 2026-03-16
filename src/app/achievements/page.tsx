@@ -11,6 +11,8 @@ import { cn } from "@/lib/utils"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
 
@@ -101,8 +103,8 @@ export default function AchievementsPage() {
                     />
                     <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent text-white">
                       <p className="text-xs font-code text-primary uppercase mb-1">{cert.issuer}</p>
-                      <h2 className="text-xl font-headline font-bold">{cert.title}</h2>
-                      <p className="text-sm opacity-80">{cert.description}</p>
+                      <DialogTitle className="text-xl font-headline font-bold">{cert.title}</DialogTitle>
+                      <DialogDescription className="text-sm opacity-80 text-white/90">{cert.description}</DialogDescription>
                     </div>
                   </div>
                 </DialogContent>
