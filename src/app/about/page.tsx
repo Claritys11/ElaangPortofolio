@@ -43,10 +43,10 @@ export default function AboutPage() {
               <a href="https://claritys.my.id" target="_blank" rel="noopener noreferrer" className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors">
                 <Globe className="h-4 w-4 mr-3" /> claritys.my.id
               </a>
-              <a href="https://github.com/Claritys11" target="_blank" rel="noopener noreferrer" className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors">
+              <a href={process.env.NEXT_PUBLIC_GITHUB_URL} target="_blank" rel="noopener noreferrer" className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors">
                 <Terminal className="h-4 w-4 mr-3" /> github.com/Claritys11
               </a>
-              <a href="https://www.instagram.com/elanggslibaw/" target="_blank" rel="noopener noreferrer" className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors">
+              <a href={process.env.NEXT_PUBLIC_INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors">
                 <Instagram className="h-4 w-4 mr-3" /> @elanggslibaw
               </a>
             </div>
@@ -79,7 +79,7 @@ export default function AboutPage() {
               <User className="h-5 w-5" />
               <span className="font-code text-sm font-bold uppercase tracking-widest">Profile</span>
             </div>
-            <h1 className="text-3xl md:text-5xl font-headline font-bold">Hi, I'm <span className="text-primary neon-glow">Elang Dimas Syadewa</span></h1>
+            <h1 className="text-3xl md:text-5xl font-headline font-bold">Hi, I'm <span className="text-primary neon-glow">{process.env.NEXT_PUBLIC_NAME}</span></h1>
             <p className="text-base md:text-xl text-muted-foreground leading-relaxed">
               I'm a student passionate about cybersecurity, software, and web development. I enjoy solving complex problems, building projects, and exploring new technologies. Through Capture The Flag (CTF) challenges and coding projects, I continuously sharpen my skills in analysis, problem-solving, and developing practical solutions, while also improving my communication, collaboration, and adaptability.
             </p>

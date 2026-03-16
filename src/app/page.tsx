@@ -86,7 +86,7 @@ export default function Home() {
             
             <div className="space-y-2">
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-headline font-bold leading-tight">
-                Hi, I'm <span className="text-primary">Elang</span>
+                Hi, I'm <span className="text-primary">{process.env.NEXT_PUBLIC_NAME?.split(' ')[0]}</span>
               </h1>
               <div className="min-h-[1.2em] text-3xl md:text-6xl lg:text-7xl font-headline font-bold">
                 <TerminalText 
@@ -164,7 +164,7 @@ export default function Home() {
                 <CardContent className="p-4 md:p-6 space-y-4">
                   <div className="space-y-2 font-code text-xs md:text-sm">
                     <p className="text-primary">$ whoami</p>
-                    <p className="text-foreground">Elang [Security Enthusiast]</p>
+                    <p className="text-foreground">{process.env.NEXT_PUBLIC_NAME} [Security Enthusiast]</p>
                     <p className="text-primary pt-2">$ cat skill-matrix.json</p>
                     <div className="pl-4 text-primary brightness-150 font-bold space-y-1">
                       <p>{"{"}</p>
@@ -195,7 +195,7 @@ export default function Home() {
                             <span>SUCCESS: Node synchronization complete</span>
                           </div>
                         )}
-                        <p className="text-[9px] md:text-[10px] text-muted-foreground mt-1 ml-5">Status: Operational | Identity: Elang</p>
+                        <p className="text-[9px] md:text-[10px] text-muted-foreground mt-1 ml-5">Status: Operational | Identity: {process.env.NEXT_PUBLIC_NAME}</p>
                       </div>
                     )}
                   </div>

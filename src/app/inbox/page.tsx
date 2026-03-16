@@ -60,11 +60,16 @@ export default function SecureInboxPage() {
     title: "", issuer: "", platform: "", description: "", imageUrl: "", date: format(new Date(), 'yyyy-MM-dd')
   })
 
-  const SYSTEM_PASSWORD = "admin123"
+  const SYSTEM_USERNAME = process.env.ADMIN_USERNAME;
+  const SYSTEM_PASSWORD = process.env.ADMIN_PASSWORD;
+
+  if (!SYSTEM_USERNAME || !SYSTEM_PASSWORD) {
+    throw new Error("Missing environment variables: ADMIN_USERNAME and ADMIN_PASSWORD");
+  }
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
-    if (password === SYSTEM_PASSWORD && username.trim() !== "") {
+    if (password === SYSTEM_PASSWORD && username === SYSTEM_USERNAME) {
       setIsAuthenticated(true)
       const logsRef = collection(db, "securePageAccessLogs")
       addDocumentNonBlocking(logsRef, {

@@ -8,7 +8,7 @@ import { FirebaseClientProvider } from '@/firebase';
 import { ShellGate } from '@/components/ShellGate';
 
 export const metadata: Metadata = {
-  title: 'Elaang\'s Portfolio | Cybersecurity Specialist',
+  title: process.env.NEXT_PUBLIC_NAME?.split(' ')[0]+'\'s Portfolio | Cybersecurity Specialist',
   description: 'A professional cybersecurity portfolio and CTF write-up repository.',
 };
 

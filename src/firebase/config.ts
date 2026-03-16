@@ -1,8 +1,16 @@
 export const firebaseConfig = {
-  "projectId": "studio-1871293026-71172",
-  "appId": "1:96679641856:web:2d1742832e672457d969e5",
-  "apiKey": "AIzaSyC3xAFwKR-YCaXbu3vKp6o1bGWb0S_xzoA",
-  "authDomain": "studio-1871293026-71172.firebaseapp.com",
-  "measurementId": "",
-  "messagingSenderId": "96679641856"
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
 };
+
+if (!firebaseConfig.projectId || !firebaseConfig.appId || !firebaseConfig.apiKey || !firebaseConfig.authDomain) {
+    throw new Error("Missing Firebase configuration. Please check your .env.local file");
+}
+
+if (!process.env.NEXT_PUBLIC_NAME || !process.env.NEXT_PUBLIC_EMAIL || !process.env.NEXT_PUBLIC_GITHUB_URL || !process.env.NEXT_PUBLIC_INSTAGRAM_URL) {
+    throw new Error("Missing profile configuration. Please check your .env.local file");
+}
