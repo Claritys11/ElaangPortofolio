@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as React from "react"
@@ -37,7 +36,7 @@ export function ShellIntro({ onComplete }: { onComplete: () => void }) {
         currentLine++
       } else {
         clearInterval(interval)
-        // Start auto-typing after 6 seconds of boot completion (as requested)
+        // Tunggu 6 detik sebelum auto-typing dimulai sesuai permintaan
         setTimeout(() => {
           startAutoTyping()
         }, 6000)
@@ -56,7 +55,7 @@ export function ShellIntro({ onComplete }: { onComplete: () => void }) {
         i++
       } else {
         clearInterval(typeInterval)
-        // Execute command
+        // Eksekusi perintah secara otomatis setelah selesai mengetik
         setTimeout(() => {
           handleExecute("./letmein")
         }, 500)

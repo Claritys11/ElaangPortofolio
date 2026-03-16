@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as React from "react"
@@ -73,6 +72,7 @@ export default function Home() {
 
   return (
     <div className="relative overflow-hidden bg-grid-pattern min-h-[calc(100vh-64px)] flex items-center">
+      {/* Dynamic Background Elements */}
       <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-primary/5 rounded-full blur-[80px] md:blur-[120px]" />
       <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-secondary/5 rounded-full blur-[80px] md:blur-[120px]" />
 
