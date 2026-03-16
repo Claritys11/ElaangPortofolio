@@ -1,9 +1,11 @@
+
 import type {Metadata} from 'next';
 import './globals.css';
 import { Navbar } from '@/components/Navbar';
 import { Toaster } from '@/components/ui/toaster';
 import { TVEffect } from '@/components/TVEffect';
 import { FirebaseClientProvider } from '@/firebase';
+import { ShellGate } from '@/components/ShellGate';
 
 export const metadata: Metadata = {
   title: 'Elaang\'s Portfolio | Cybersecurity Specialist',
@@ -24,12 +26,14 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased text-foreground min-h-screen selection:bg-primary/30 selection:text-primary">
         <FirebaseClientProvider>
-          <TVEffect />
-          <Navbar />
-          <main className="pt-16">
-            {children}
-          </main>
-          <Toaster />
+          <ShellGate>
+            <TVEffect />
+            <Navbar />
+            <main className="pt-16">
+              {children}
+            </main>
+            <Toaster />
+          </ShellGate>
         </FirebaseClientProvider>
       </body>
     </html>

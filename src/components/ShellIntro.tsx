@@ -1,0 +1,108 @@
+
+"use client"
+
+import * as React from "react"
+import { Terminal, ShieldCheck } from "lucide-react"
+
+export function ShellIntro({ onComplete }: { onComplete: () => void }) {
+  const [input, setInput] = React.useState("")
+  const [history, setHistory] = React.useState<string[]>([
+    "INITIALIZING SECURE UPLINK...",
+    "NODE ESTABLISHED AT 127.0.0.1",
+    "ENCRYPTION: AES-256-GCM ACTIVE",
+    "----------------------------------------",
+    "WELCOME TO CLARITY_NODE V2.0.4",
+    "SYSTEM STATUS: RESTRICTED ACCESS",
+    "TYPE './letmein' TO AUTHORIZE SESSION",
+    "----------------------------------------"
+  ])
+  const [isAuthorized, setIsAuthorized] = React.useState(false)
+  const scrollRef = React.useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+    }
+  }, [history])
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      const command = input.trim().toLowerCase()
+      setHistory(prev => [...prev, `$ ${input}`])
+      
+      if (command === "./letmein") {
+        setHistory(prev => [
+          ...prev, 
+          "AUTHORIZING...", 
+          "IDENTITY VERIFIED.", 
+          "DECRYPTING PORTFOLIO SIGNAL..."
+        ])
+        setIsAuthorized(true)
+        setTimeout(() => {
+          onComplete()
+        }, 1500)
+      } else if (command === "help") {
+        setHistory(prev => [...prev, "Available commands: ./letmein, help, clear"])
+      } else if (command === "clear") {
+        setHistory([])
+      } else {
+        setHistory(prev => [...prev, `sh: command not found: ${command}`])
+      }
+      setInput("")
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-[200] bg-black font-code p-6 flex flex-col items-center justify-center overflow-hidden selection:bg-primary/30 selection:text-primary">
+      <div className="w-full max-w-2xl h-[400px] flex flex-col border border-primary/20 bg-black/50 p-6 rounded-lg shadow-[0_0_30px_rgba(34,197,94,0.1)]">
+        <div 
+          ref={scrollRef}
+          className="flex-1 overflow-y-auto space-y-1 mb-4 scrollbar-hide text-sm md:text-base"
+        >
+          {history.map((line, i) => (
+            <div 
+              key={i} 
+              className={cn(
+                "animate-in fade-in slide-in-from-left-2 duration-300",
+                line.startsWith("IDENTITY") ? "text-primary font-bold" : 
+                line.startsWith("$") ? "text-secondary" : "text-primary/80"
+              )}
+            >
+              {line}
+            </div>
+          ))}
+          {!isAuthorized && (
+            <div className="flex items-center w-full text-primary mt-2">
+              <span className="mr-2 text-secondary">$</span>
+              <input
+                autoFocus
+                className="bg-transparent border-none outline-none flex-1 text-primary caret-primary focus:ring-0"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                spellCheck={false}
+                autoComplete="off"
+              />
+            </div>
+          )}
+        </div>
+        
+        <div className="flex items-center justify-between border-t border-primary/10 pt-4 text-[10px] uppercase tracking-widest text-primary/40">
+          <div className="flex items-center gap-2">
+            <Terminal className="h-3 w-3" />
+            <span>Secure Terminal Session</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="h-3 w-3" />
+            <span>Encrypted</span>
+          </div>
+        </div>
+      </div>
+      
+      {/* Background Matrix-like Scanlines */}
+      <div className="absolute inset-0 pointer-events-none opacity-5 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]" />
+    </div>
+  )
+}
+
+import { cn } from "@/lib/utils"
