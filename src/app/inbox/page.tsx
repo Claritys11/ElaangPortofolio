@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { 
   Terminal, Lock, MessageSquare, History, User, Plus, Trash2, 
-  Save, X, Database, Key, Loader2, AlertCircle, Cpu, Award, Image as ImageIcon, Link as LinkIcon 
+  Save, Database, Key, Loader2, AlertCircle, Cpu, Award, Image as ImageIcon, Link as LinkIcon 
 } from "lucide-react"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -141,7 +141,7 @@ export default function SecureInboxPage() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center p-4">
-        <div className="w-full max-md relative rounded-xl border border-border p-1">
+        <div className="w-full max-w-md relative rounded-xl border border-border p-1">
           <GlowingEffect spread={40} glow={true} disabled={false} />
           <Card className="relative bg-card border-none">
             <CardHeader className="text-center">
