@@ -3,11 +3,9 @@
 
 import * as React from "react"
 import { Award, Shield, Trophy, CheckCircle2, Star, ExternalLink, Loader2, X, ZoomIn } from "lucide-react"
-import Image from "next/image"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
-import { useFirestore, useCollection, useMemoFirebase } from "@/firebase"
-import { collection, query, orderBy } from "firebase/firestore"
-import { cn } from "@/lib/utils"
+import { fetchJson } from "@/lib/api-client"
+import type { AchievementRecord } from "@/lib/portfolio-types"
 import {
   Dialog,
   DialogContent,
@@ -17,12 +15,38 @@ import {
 } from "@/components/ui/dialog"
 
 export default function AchievementsPage() {
-  const db = useFirestore()
-  const achievementsQuery = useMemoFirebase(() => query(collection(db, "achievements"), orderBy("createdAt", "desc")), [db])
-  const { data: dbAchievements, isLoading } = useCollection(achievementsQuery)
+  const [dbAchievements, setDbAchievements] = React.useState<AchievementRecord[]>([])
+  const [isLoading, setIsLoading] = React.useState(true)
 
-  const certifications = (dbAchievements || []).filter(a => a.imageUrl && a.issuer)
-  const quickStats = (dbAchievements || []).filter(a => !a.imageUrl || a.platform)
+  React.useEffect(() => {
+    let isActive = true
+
+    const loadAchievements = async () => {
+      try {
+        const achievements = await fetchJson<AchievementRecord[]>("/api/public/achievements")
+        if (isActive) {
+          setDbAchievements(achievements)
+        }
+      } catch {
+        if (isActive) {
+          setDbAchievements([])
+        }
+      } finally {
+        if (isActive) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    void loadAchievements()
+
+    return () => {
+      isActive = false
+    }
+  }, [])
+
+  const certifications = dbAchievements.filter((achievement) => achievement.imageUrl && achievement.issuer)
+  const quickStats = dbAchievements.filter((achievement) => !achievement.imageUrl || achievement.platform)
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

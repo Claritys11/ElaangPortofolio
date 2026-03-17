@@ -22,18 +22,47 @@ import {
   EyeOff
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { useFirestore, useDoc, useMemoFirebase } from "@/firebase"
-import { doc } from "firebase/firestore"
+import { fetchJson } from "@/lib/api-client"
+import type { WriteupRecord } from "@/lib/portfolio-types"
 
 export default function WriteupDetailPage() {
   const params = useParams()
   const router = useRouter()
   const id = params.id as string
   const [isFlagRevealed, setIsFlagRevealed] = React.useState(false)
+  const [data, setData] = React.useState<WriteupRecord | null>(null)
+  const [isLoading, setIsLoading] = React.useState(true)
 
-  const db = useFirestore()
-  const writeupRef = useMemoFirebase(() => doc(db, "ctfWriteups", id), [db, id])
-  const { data, isLoading } = useDoc(writeupRef)
+  React.useEffect(() => {
+    let isActive = true
+
+    const loadWriteup = async () => {
+      try {
+        const nextWriteup = await fetchJson<WriteupRecord>(`/api/public/writeups/${id}`)
+        if (isActive) {
+          setData(nextWriteup)
+        }
+      } catch {
+        if (isActive) {
+          setData(null)
+        }
+      } finally {
+        if (isActive) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    if (id) {
+      void loadWriteup()
+    } else {
+      setIsLoading(false)
+    }
+
+    return () => {
+      isActive = false
+    }
+  }, [id])
 
   if (isLoading) {
     return (

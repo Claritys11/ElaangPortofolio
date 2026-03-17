@@ -5,16 +5,40 @@ import * as React from "react"
 import { Badge } from "@/components/ui/badge"
 import { Cpu, ShieldCheck, Box, Loader2, ExternalLink } from "lucide-react"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
-import { useFirestore, useCollection, useMemoFirebase } from "@/firebase"
-import { collection, query, orderBy } from "firebase/firestore"
 import { cn } from "@/lib/utils"
+import { fetchJson } from "@/lib/api-client"
+import type { ProjectRecord } from "@/lib/portfolio-types"
 
 export default function ProjectsPage() {
-  const db = useFirestore()
-  const projectsQuery = useMemoFirebase(() => query(collection(db, "projects"), orderBy("createdAt", "desc")), [db])
-  const { data: dbProjects, isLoading } = useCollection(projectsQuery)
+  const [displayProjects, setDisplayProjects] = React.useState<ProjectRecord[]>([])
+  const [isLoading, setIsLoading] = React.useState(true)
 
-  const displayProjects = dbProjects || []
+  React.useEffect(() => {
+    let isActive = true
+
+    const loadProjects = async () => {
+      try {
+        const projects = await fetchJson<ProjectRecord[]>("/api/public/projects")
+        if (isActive) {
+          setDisplayProjects(projects)
+        }
+      } catch {
+        if (isActive) {
+          setDisplayProjects([])
+        }
+      } finally {
+        if (isActive) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    void loadProjects()
+
+    return () => {
+      isActive = false
+    }
+  }, [])
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

@@ -4,8 +4,11 @@ import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Terminal, Shield, Award, Cpu, User, Menu, X, Mail, Inbox } from "lucide-react"
+import { Terminal, Shield, Award, Cpu, User, Menu, X, Mail } from "lucide-react"
 import { ThemeToggle } from "@/components/ThemeToggle"
+import { fetchJson } from "@/lib/api-client"
+import { getDefaultProfileSettings, normalizeProfileSettings } from "@/lib/about-default"
+import type { ProfileSettingsRecord } from "@/lib/portfolio-types"
 
 const navItems = [
   { name: "About", href: "/about", icon: User },
@@ -13,12 +16,41 @@ const navItems = [
   { name: "Projects", href: "/projects", icon: Cpu },
   { name: "Achievements", href: "/achievements", icon: Award },
   { name: "Contact", href: "/contact", icon: Mail },
-  { name: "Inbox", href: "/inbox", icon: Inbox },
 ]
 
 export function Navbar() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = React.useState(false)
+  const [profileSettings, setProfileSettings] = React.useState<ProfileSettingsRecord>(getDefaultProfileSettings)
+
+  React.useEffect(() => {
+    let active = true
+
+    const loadProfile = async () => {
+      try {
+        const payload = await fetchJson<ProfileSettingsRecord>("/api/public/profile")
+        if (!active) {
+          return
+        }
+
+        setProfileSettings(normalizeProfileSettings(payload))
+      } catch {
+        if (!active) {
+          return
+        }
+
+        setProfileSettings(getDefaultProfileSettings())
+      }
+    }
+
+    void loadProfile()
+
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const brandName = (profileSettings.displayName ?? "My Name").split(" ")[0] || "My"
 
   return (
     <nav className="fixed top-0 w-full z-50 border-b border-border/40 bg-background/80 backdrop-blur-md">
@@ -29,7 +61,7 @@ export function Navbar() {
               <Shield className="h-6 w-6 text-primary" />
             </div>
             <span className="font-headline font-bold text-xl tracking-tighter text-foreground">
-              Elaang's<span className="text-primary">.</span>
+              {brandName}&apos;s<span className="text-primary">.</span>
             </span>
           </Link>
 

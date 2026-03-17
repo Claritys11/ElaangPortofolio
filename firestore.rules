@@ -2,28 +2,63 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Last Sync: 2024-05-24T16:00:00Z - Forced Deployment for Dynamic Statistics
-    
-    // Publicly readable collections for Portfolio visibility
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email is string
+        && request.auth.token.email == 'elangdimassyadewa@gmail.com';
+    }
+
+    function isValidContactMessage() {
+      return request.resource.data.keys().hasOnly(['title', 'content', 'createdAt', 'updatedAt', 'username', 'source'])
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 200
+        && request.resource.data.content is string
+        && request.resource.data.content.size() > 0
+        && request.resource.data.content.size() <= 6000
+        && request.resource.data.createdAt is string
+        && request.resource.data.updatedAt is string
+        && request.resource.data.username is string
+        && request.resource.data.username.size() > 0
+        && request.resource.data.username.size() <= 120
+        && request.resource.data.source is string
+        && request.resource.data.source == 'contact-form';
+    }
+
+    function isValidAccessLog() {
+      return request.resource.data.keys().hasOnly(['username', 'accessedAt', 'accessSuccessful', 'ip', 'createdAt'])
+        && request.resource.data.username is string
+        && request.resource.data.username.size() > 0
+        && request.resource.data.username.size() <= 120
+        && request.resource.data.accessedAt is string
+        && request.resource.data.accessSuccessful is bool
+        && request.resource.data.ip is string
+        && request.resource.data.ip.size() <= 200
+        && request.resource.data.createdAt is string;
+    }
+
     match /ctfWriteups/{writeupId} {
       allow read, list: if true;
-      allow write: if true; // Restricted via app logic/password in Inbox
+      allow create, update, delete: if isAdmin();
     }
     match /projects/{projectId} {
       allow read, list: if true;
-      allow write: if true; 
+      allow create, update, delete: if isAdmin();
     }
     match /achievements/{achievementId} {
       allow read, list: if true;
-      allow write: if true;
+      allow create, update, delete: if isAdmin();
     }
-    
-    // Support and Admin logs
+
     match /securePageAccessLogs/{logId} {
-      allow create, read, list: if true;
+      allow read, list: if isAdmin();
+      allow create: if isAdmin() || isValidAccessLog();
+      allow update, delete: if false;
     }
     match /users/{ownerId}/secureMessages/{messageId} {
-      allow read, write, list: if true;
+      allow read, list: if ownerId == 'admin' && isAdmin();
+      allow create: if ownerId == 'admin' && (isAdmin() || isValidContactMessage());
+      allow update, delete: if ownerId == 'admin' && isAdmin();
     }
   }
 }

@@ -9,8 +9,8 @@ import { Terminal, Search, ExternalLink, Calendar, Tag, Layers, Trophy } from "l
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
-import { useFirestore, useCollection, useMemoFirebase } from "@/firebase"
-import { collection, query, orderBy } from "firebase/firestore"
+import { fetchJson } from "@/lib/api-client"
+import type { WriteupRecord } from "@/lib/portfolio-types"
 
 const categories = ["All", "Web", "Pwn", "Crypto", "Reverse", "Forensics"]
 
@@ -19,15 +19,37 @@ export default function CTFPage() {
   const [activeFilter, setActiveFilter] = React.useState("All")
   const [searchQuery, setSearchQuery] = React.useState("")
 
-  const db = useFirestore()
-  
-  const writeupsQuery = useMemoFirebase(() => {
-    return query(collection(db, "ctfWriteups"), orderBy("createdAt", "desc"))
-  }, [db])
+  const [writeups, setWriteups] = React.useState<WriteupRecord[]>([])
+  const [isLoading, setIsLoading] = React.useState(true)
 
-  const { data: writeups, isLoading } = useCollection(writeupsQuery)
+  React.useEffect(() => {
+    let isActive = true
 
-  const filteredWriteups = (writeups || []).filter(w => {
+    const loadWriteups = async () => {
+      try {
+        const nextWriteups = await fetchJson<WriteupRecord[]>("/api/public/writeups")
+        if (isActive) {
+          setWriteups(nextWriteups)
+        }
+      } catch {
+        if (isActive) {
+          setWriteups([])
+        }
+      } finally {
+        if (isActive) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    void loadWriteups()
+
+    return () => {
+      isActive = false
+    }
+  }, [])
+
+  const filteredWriteups = writeups.filter(w => {
     const matchesSearch = w.title?.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           w.summary?.toLowerCase().includes(searchQuery.toLowerCase())
     
@@ -40,7 +62,7 @@ export default function CTFPage() {
     }
   })
 
-  const platforms = ["All", ...Array.from(new Set((writeups || []).map(w => w.competition)))]
+  const platforms = ["All", ...Array.from(new Set(writeups.map(w => w.competition).filter(Boolean) as string[]))]
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

@@ -10,16 +10,45 @@ import { Label } from "@/components/ui/label"
 import { Mail, Github, MessageSquare, Send, Globe, Shield, Instagram, Terminal } from "lucide-react"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
 import { useToast } from "@/hooks/use-toast"
-import { useFirestore } from "@/firebase"
-import { collection } from "firebase/firestore"
-import { addDocumentNonBlocking } from "@/firebase/non-blocking-updates"
+import { fetchJson } from "@/lib/api-client"
+import { getDefaultProfileSettings, normalizeProfileSettings } from "@/lib/about-default"
+import type { ProfileSettingsRecord } from "@/lib/portfolio-types"
 
 export default function ContactPage() {
   const { toast } = useToast()
-  const db = useFirestore()
   const [isSubmitting, setIsSubmitting] = React.useState(false)
+  const [profileSettings, setProfileSettings] = React.useState<ProfileSettingsRecord>(
+    getDefaultProfileSettings
+  )
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  React.useEffect(() => {
+    let active = true
+
+    const loadProfile = async () => {
+      try {
+        const payload = await fetchJson<ProfileSettingsRecord>("/api/public/profile")
+        if (!active) {
+          return
+        }
+
+        setProfileSettings(normalizeProfileSettings(payload))
+      } catch {
+        if (!active) {
+          return
+        }
+
+        setProfileSettings(getDefaultProfileSettings())
+      }
+    }
+
+    void loadProfile()
+
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const form = e.currentTarget
     setIsSubmitting(true)
@@ -30,23 +59,26 @@ export default function ContactPage() {
     const subject = formData.get("subject") as string
     const message = formData.get("message") as string
 
-    const messagesRef = collection(db, "users", "admin", "secureMessages")
-    
-    addDocumentNonBlocking(messagesRef, {
-      title: subject,
-      content: `From: ${name} (${email})\n\n${message}`,
-      createdAt: new Date().toISOString(),
-      username: name,
-    })
+    try {
+      await fetchJson<{ ok: true }>("/api/contact", {
+        method: "POST",
+        body: JSON.stringify({ name, email, subject, message }),
+      })
 
-    setTimeout(() => {
       setIsSubmitting(false)
       toast({
         title: "SIGNAL TRANSMITTED",
         description: "Your message has been encrypted and sent to the secure node.",
       })
       form.reset()
-    }, 1000)
+    } catch (error) {
+      setIsSubmitting(false)
+      toast({
+        variant: "destructive",
+        title: "TRANSMISSION FAILED",
+        description: error instanceof Error ? error.message : "Unable to deliver your signal.",
+      })
+    }
   }
 
   return (
@@ -88,7 +120,7 @@ export default function ContactPage() {
                       </div>
                       <div>
                         <p className="text-[10px] font-code uppercase text-muted-foreground">Email (PGP Encrypted)</p>
-                        <p className="font-medium">elangdimassyadewa@gmail.com</p>
+                        <p className="font-medium">{profileSettings.email}</p>
                       </div>
                     </div>
                     <div className="flex items-center text-sm group/item">
@@ -106,11 +138,11 @@ export default function ContactPage() {
                 <div>
                   <h2 className="text-xl font-headline font-bold mb-4">Social Hubs</h2>
                   <div className="grid grid-cols-2 gap-4">
-                    <a href="https://github.com/Claritys11" target="_blank" rel="noopener noreferrer" className="flex items-center p-3 rounded bg-muted/50 border border-border hover:border-primary/50 transition-colors">
+                    <a href={profileSettings.githubUrl} target="_blank" rel="noopener noreferrer" className="flex items-center p-3 rounded bg-muted/50 border border-border hover:border-primary/50 transition-colors">
                       <Github className="h-4 w-4 mr-3" />
                       <span className="text-sm font-medium">GitHub</span>
                     </a>
-                    <a href="https://www.instagram.com/elanggslibaw/" target="_blank" rel="noopener noreferrer" className="flex items-center p-3 rounded bg-muted/50 border border-border hover:border-secondary/50 transition-colors">
+                    <a href={profileSettings.instagramUrl} target="_blank" rel="noopener noreferrer" className="flex items-center p-3 rounded bg-muted/50 border border-border hover:border-secondary/50 transition-colors">
                       <Instagram className="h-4 w-4 mr-3" />
                       <span className="text-sm font-medium">Instagram</span>
                     </a>

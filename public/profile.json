@@ -1,0 +1,71 @@
+{
+  "displayName": "My Name",
+  "email": "email@domain.tld",
+  "websiteUrl": "https://domain.tld",
+  "githubUrl": "http://github.com/github",
+  "instagramUrl": "https://www.instagram.com",
+  "profileImageUrl": "/profile.jpg",
+  "aboutText": "I'm a student passionate about cybersecurity, software, and web development. I enjoy solving complex problems, building projects, and exploring new technologies. Through Capture The Flag (CTF) challenges and coding projects, I continuously sharpen my skills in analysis, problem-solving, and developing practical solutions, while also improving my communication, collaboration, and adaptability.",
+  "philosophyText": "\"Sorry, Wish We Could Go To The Moon Together.\" -D. M.",
+  "technicalArsenal": [
+    {
+      "name": "Web Application Security",
+      "level": 65
+    },
+    {
+      "name": "Network Penetration Testing",
+      "level": 60
+    },
+    {
+      "name": "Binary Exploitation",
+      "level": 70
+    },
+    {
+      "name": "Incident Response",
+      "level": 65
+    },
+    {
+      "name": "Reverse Engineering",
+      "level": 70
+    },
+    {
+      "name": "Digital Forensic",
+      "level": 80
+    },
+    {
+      "name": "Programming",
+      "level": 67
+    },
+    {
+      "name": "Public Speaking",
+      "level": 70
+    }
+  ],
+  "professionalJourney": [
+    {
+      "role": "Early Interest in Technology",
+      "company": "Junior High School",
+      "period": "2024",
+      "desc": "I started my journey with a strong curiosity about computers and how digital systems work. This curiosity led me to explore programming and technology more deeply."
+    },
+    {
+      "role": "Discovering Cybersecurity & CTF",
+      "company": "Vocational High School",
+      "period": "2025",
+      "desc": "I later discovered cybersecurity through Capture The Flag (CTF) challenges, where I developed skills in problem solving, digital forensics, and security analysis."
+    },
+    {
+      "role": "Building Technical Skills",
+      "company": "Vocational High School",
+      "period": "2025 - Now",
+      "desc": "Alongside cybersecurity, I continue improving my programming and software development skills by working on projects and experimenting with new technologies."
+    },
+    {
+      "role": "Future Goals",
+      "company": "Vocational High School",
+      "period": "Now - Future",
+      "desc": "My goal is to grow as a professional in cybersecurity and software development while continuing to learn, build, and participate in technical challenges."
+    }
+  ],
+  "updatedAt": "2026-03-17T08:55:19.562Z"
+}
