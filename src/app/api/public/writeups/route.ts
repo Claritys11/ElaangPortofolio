@@ -1,10 +1,8 @@
 import { NextResponse } from 'next/server';
-import { getAdminFirestore } from '@/lib/firebase-admin';
-import { serializeFirestoreDocument } from '@/lib/firestore-json';
+import { listWriteups } from '@/lib/server-storage';
 import type { WriteupRecord } from '@/lib/portfolio-types';
 
 export async function GET() {
-  const db = getAdminFirestore();
-  const snapshot = await db.collection('ctfWriteups').orderBy('createdAt', 'desc').get();
-  return NextResponse.json(snapshot.docs.map((doc) => serializeFirestoreDocument<WriteupRecord>(doc.id, doc.data())));
+  const rows = await listWriteups();
+  return NextResponse.json(rows satisfies WriteupRecord[]);
 }

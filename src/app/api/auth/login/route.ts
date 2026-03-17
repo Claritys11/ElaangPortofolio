@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createSessionToken, COOKIE_NAME, SESSION_TTL_MS } from '@/lib/session';
-import { getAdminFirestore } from '@/lib/firebase-admin';
-import { FieldValue } from 'firebase-admin/firestore';
+import { createAccessLog } from '@/lib/server-storage';
 
 export async function POST(req: NextRequest) {
   try {
@@ -19,13 +18,11 @@ export async function POST(req: NextRequest) {
 
     // Log the access attempt server-side regardless of outcome
     try {
-      const db = getAdminFirestore();
-      await db.collection('securePageAccessLogs').add({
+      await createAccessLog({
         username: username ?? '(unknown)',
         accessedAt: new Date().toISOString(),
         accessSuccessful: valid,
         ip: req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? 'unknown',
-        createdAt: FieldValue.serverTimestamp(),
       });
     } catch {
       // Non-fatal: logging failure should not block auth response

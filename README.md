@@ -34,6 +34,13 @@ This project uses environment variables to configure the application. You will n
 
 2. Fill in the required values in `.env.local`:
 
+   * `STORAGE_TYPE`: Server storage mode selector (`sqlite` or `firebase`).
+   * `NEXT_PUBLIC_STORAGE_TYPE`: Client-visible storage mode selector (`sqlite` or `firebase`). Keep it in sync with `STORAGE_TYPE`.
+   * `SQLITE_DB_PATH`: SQLite file path (e.g., `./data/portfolio.sqlite3`) when storage mode is `sqlite`.
+   * `NEXT_PUBLIC_FIREBASE_ADMIN_EMAIL`: Admin Firebase Auth email used for privileged client-side actions in `firebase` mode.
+   * `FIREBASE_ADMIN_PROJECT_ID`: Optional Firebase project ID for server-side Firestore access via service account.
+   * `FIREBASE_ADMIN_CLIENT_EMAIL`: Optional service account client email for server-side Firestore access.
+   * `FIREBASE_ADMIN_PRIVATE_KEY`: Optional service account private key for server-side Firestore access.
    * `NEXT_PUBLIC_FIREBASE_PROJECT_ID`: Your Firebase project ID.
    * `NEXT_PUBLIC_FIREBASE_APP_ID`: Your Firebase app ID.
    * `NEXT_PUBLIC_FIREBASE_API_KEY`: Your Firebase API key.
@@ -44,6 +51,13 @@ This project uses environment variables to configure the application. You will n
    * `NEXT_PUBLIC_EMAIL`: Your email address.
    * `NEXT_PUBLIC_GITHUB_URL`: Your GitHub profile URL.
    * `NEXT_PUBLIC_INSTAGRAM_URL`: Your Instagram profile URL.
+
+   Notes:
+   * `sqlite` mode activates internal `/api/*` endpoints backed by SQLite.
+   * `firebase` mode keeps `/api/*` network endpoints deactivated with HTTP 502, but the frontend routes through Firebase client SDK directly via `fetchJson`.
+   * For true server-only admin access in `firebase` mode, prefer setting `FIREBASE_ADMIN_CLIENT_EMAIL` and `FIREBASE_ADMIN_PRIVATE_KEY` from a service account.
+   * If service account env vars are omitted, the server falls back to Firebase Email/Password auth and expects `NEXT_PUBLIC_FIREBASE_ADMIN_EMAIL` plus `ADMIN_PASSWORD` to match a Firebase Authentication user.
+   * Update `firestore.rules` admin email matcher if you change `NEXT_PUBLIC_FIREBASE_ADMIN_EMAIL`.
 
 ### Running the Development Server
 

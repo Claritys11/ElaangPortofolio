@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAdminFirestore } from '@/lib/firebase-admin';
-import { FieldValue } from 'firebase-admin/firestore';
+import { createContactMessage } from '@/lib/server-storage';
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,14 +9,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'All fields are required.' }, { status: 400 });
     }
 
-    const db = getAdminFirestore();
-    await db.collection('users').doc('admin').collection('secureMessages').add({
-      title: String(subject),
-      content: `From: ${name} (${email})\n\n${message}`,
-      createdAt: new Date().toISOString(),
-      username: String(name),
-      source: 'contact-form',
-      updatedAt: FieldValue.serverTimestamp(),
+    await createContactMessage({
+      name: String(name),
+      email: String(email),
+      subject: String(subject),
+      message: String(message),
     });
 
     return NextResponse.json({ ok: true }, { status: 201 });

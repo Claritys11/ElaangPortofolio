@@ -30,6 +30,7 @@ import { format } from "date-fns"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { fetchJson } from "@/lib/api-client"
+import { getStorageType } from "@/lib/storage-type"
 import type {
   AccessLogRecord,
   AchievementRecord,
@@ -132,6 +133,7 @@ function createEmptyAchievementForm(): AchievementFormState {
 
 export default function SecureInboxPage() {
   const { toast } = useToast()
+  const isFirebaseStorage = getStorageType() === "firebase"
   const [isAuthenticated, setIsAuthenticated] = React.useState(false)
   const [isAuthLoading, setIsAuthLoading] = React.useState(true)
   const [isLoginLoading, setIsLoginLoading] = React.useState(false)
@@ -261,18 +263,52 @@ export default function SecureInboxPage() {
     }
   }, [handleUnauthorized, loadDashboardData])
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
     const file = event.target.files?.[0]
     event.target.value = ""
-    if (!file) {
+    if (!file) return
+
+    if (isFirebaseStorage) {
+      try {
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onloadend = () => {
+            const result = reader.result
+            if (typeof result === "string") {
+              resolve(result)
+            } else {
+              reject(new Error("Unable to encode image."))
+            }
+          }
+          reader.onerror = () => reject(new Error("Unable to encode image."))
+          reader.readAsDataURL(file)
+        })
+
+        setter(dataUrl)
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Upload failed",
+          description: error instanceof Error ? error.message : "Could not process image.",
+        })
+      }
+
       return
     }
 
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      setter(reader.result as string)
+    const form = new FormData()
+    form.append("file", file)
+
+    try {
+      const result = await fetchJson<{ url: string }>("/api/admin/upload", { method: "POST", body: form })
+      setter(result.url)
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Upload failed",
+        description: error instanceof Error ? error.message : "Could not upload image.",
+      })
     }
-    reader.readAsDataURL(file)
   }
 
   const handleLogin = async (event: React.FormEvent) => {
@@ -348,7 +384,7 @@ export default function SecureInboxPage() {
   const beginEditProject = (project: ProjectRecord) => {
     setEditMode("project")
     setEditingId(project.id)
-    setImageSource(project.imageUrl?.startsWith("data:") ? "upload" : "url")
+    setImageSource("url")
     setProjectForm({
       title: project.title || "",
       description: project.description || "",
@@ -369,7 +405,7 @@ export default function SecureInboxPage() {
   const beginEditAchievement = (achievement: AchievementRecord) => {
     setEditMode("achievement")
     setEditingId(achievement.id)
-    setImageSource(achievement.imageUrl?.startsWith("data:") ? "upload" : "url")
+    setImageSource("url")
     setAchievementForm({
       title: achievement.title || "",
       issuer: achievement.issuer || "",
@@ -708,7 +744,11 @@ export default function SecureInboxPage() {
                     ) : (
                       <div className="space-y-2">
                         <Input type="file" accept="image/*" onChange={(event) => handleImageUpload(event, (url) => setProjectForm({ ...projectForm, imageUrl: url }))} className="cursor-pointer" />
-                        <p className="text-[10px] text-muted-foreground">Local upload will be encoded as Base64 string before it reaches the server API.</p>
+                        <p className="text-[10px] text-muted-foreground">
+                          {isFirebaseStorage
+                            ? "Firebase mode uses Base64 data URL for image fields."
+                            : "SQLite mode uploads binary file and stores UUID URL."}
+                        </p>
                       </div>
                     )}
                     {projectForm.imageUrl && (
