@@ -1143,8 +1143,8 @@ export default function AdminPage() {
 
                     {profileForm.technicalArsenal.length ? (
                       profileForm.technicalArsenal.map((item, index) => (
-                        <div key={`skill-${index}`} className="grid gap-3 rounded-lg border border-border bg-background/50 p-3 md:grid-cols-12 md:items-end">
-                          <div className="space-y-2 md:col-span-7">
+                        <div key={`skill-${index}`} className="flex flex-col md:flex-row gap-3 rounded-lg border border-border bg-background/50 p-3 md:items-end">
+                          <div className="space-y-2 flex-[7]">
                             <Label className="text-xs">Skill Name</Label>
                             <Input
                               value={item.name}
@@ -1153,7 +1153,7 @@ export default function AdminPage() {
                               }
                             />
                           </div>
-                          <div className="space-y-2 md:col-span-4">
+                          <div className="space-y-2 flex-[3]">
                             <Label className="text-xs">Level (%)</Label>
                             <Input
                               type="number"
@@ -1171,7 +1171,6 @@ export default function AdminPage() {
                             type="button"
                             size="icon"
                             variant="ghost"
-                            className="md:col-span-1"
                             onClick={() => removeTechnicalArsenalItem(index)}
                           >
                             <Trash2 className="h-4 w-4 text-destructive" />
@@ -1218,8 +1217,8 @@ export default function AdminPage() {
                               />
                             </div>
                           </div>
-                          <div className="grid md:grid-cols-12 gap-3 items-end">
-                            <div className="md:col-span-11 space-y-2">
+                          <div className="flex gap-3 items-end">
+                            <div className="flex-1 space-y-2">
                               <Label className="text-xs">Period</Label>
                               <Input
                                 value={item.period}
