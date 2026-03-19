@@ -99,20 +99,19 @@ export default function AboutPage() {
           <div className="space-y-4">
             <h2 className="text-xl font-headline font-bold border-b border-border pb-2 text-center md:text-left">Education</h2>
             <div className="space-y-4">
-              <div className="flex gap-4">
-                <GraduationCap className="h-5 w-5 text-primary shrink-0" />
-                <div>
-                  <p className="text-sm font-bold">Junior High School</p>
-                  <p className="text-xs text-muted-foreground">SMPN 11 Malang, 2022 - 2025</p>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <GraduationCap className="h-5 w-5 text-primary shrink-0" />
-                <div>
-                  <p className="text-sm font-bold">Vocational High School</p>
-                  <p className="text-xs text-muted-foreground">SMK Telkom Malang, 2025 - Now</p>
-                </div>
-              </div>
+              {(profileSettings.educationHistory ?? []).length ? (
+                (profileSettings.educationHistory ?? []).map((entry, index) => (
+                  <div key={`education-${index}`} className="flex gap-4">
+                    <GraduationCap className="h-5 w-5 text-primary shrink-0" />
+                    <div>
+                      <p className="text-sm font-bold">{entry.level}</p>
+                      <p className="text-xs text-muted-foreground">{entry.school} • {entry.period}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-xs text-muted-foreground">No education entries yet.</p>
+              )}
             </div>
           </div>
         </div>

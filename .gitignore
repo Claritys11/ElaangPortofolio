@@ -40,10 +40,6 @@ next-env.d.ts
 .genkit/*
 .env.local
 
-# firebase
-firebase-debug.log
-firestore-debug.log
-
 # sqlite
 data/*.sqlite
 data/*.sqlite3

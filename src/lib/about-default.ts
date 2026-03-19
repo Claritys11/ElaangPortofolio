@@ -1,6 +1,8 @@
 import type {
+  EducationHistoryItem,
   ProfessionalJourneyItem,
   ProfileSettingsRecord,
+  SeoSettingsRecord,
   TechnicalArsenalItem,
 } from "@/lib/portfolio-types"
 
@@ -48,6 +50,32 @@ export const DEFAULT_PROFESSIONAL_JOURNEY: ProfessionalJourneyItem[] = [
   },
 ]
 
+export const DEFAULT_EDUCATION_HISTORY: EducationHistoryItem[] = [
+  {
+    level: "Junior High School",
+    school: "SMPN 11 Malang",
+    period: "2022 - 2025",
+  },
+  {
+    level: "Vocational High School",
+    school: "SMK Telkom Malang",
+    period: "2025 - Now",
+  },
+]
+
+export const DEFAULT_SEO_SETTINGS: SeoSettingsRecord = {
+  titleTemplate: "",
+  defaultTitle: "",
+  description: "",
+  canonicalUrl: "",
+  previewImageUrl: "",
+  siteName: "",
+  locale: "id_ID",
+  keywords: [],
+  jobTitle: "Cybersecurity Specialist",
+  sameAs: [],
+}
+
 function pickString(value: unknown, fallback: string): string {
   if (typeof value !== "string") {
     return fallback
@@ -66,6 +94,16 @@ function pickLevel(value: unknown, fallback: number): number {
   return Math.max(0, Math.min(100, Math.round(numeric)))
 }
 
+function pickStringArray(value: unknown, fallback: string[]): string[] {
+  if (!Array.isArray(value)) {
+    return [...fallback]
+  }
+
+  return value
+    .map((entry) => (typeof entry === "string" ? entry.trim() : ""))
+    .filter(Boolean)
+}
+
 function cloneTechnicalArsenal(entries: TechnicalArsenalItem[]): TechnicalArsenalItem[] {
   return entries.map((entry) => ({
     name: entry.name,
@@ -80,6 +118,29 @@ function cloneProfessionalJourney(entries: ProfessionalJourneyItem[]): Professio
     period: entry.period,
     desc: entry.desc,
   }))
+}
+
+function cloneEducationHistory(entries: EducationHistoryItem[]): EducationHistoryItem[] {
+  return entries.map((entry) => ({
+    level: entry.level,
+    school: entry.school,
+    period: entry.period,
+  }))
+}
+
+function cloneSeoSettings(value: SeoSettingsRecord): SeoSettingsRecord {
+  return {
+    titleTemplate: value.titleTemplate,
+    defaultTitle: value.defaultTitle,
+    description: value.description,
+    canonicalUrl: value.canonicalUrl,
+    previewImageUrl: value.previewImageUrl,
+    siteName: value.siteName,
+    locale: value.locale,
+    keywords: [...(value.keywords ?? [])],
+    jobTitle: value.jobTitle,
+    sameAs: [...(value.sameAs ?? [])],
+  }
 }
 
 function normalizeTechnicalArsenal(entries: unknown): TechnicalArsenalItem[] {
@@ -145,6 +206,55 @@ function normalizeProfessionalJourney(entries: unknown): ProfessionalJourneyItem
   return normalized.length ? normalized : cloneProfessionalJourney(DEFAULT_PROFESSIONAL_JOURNEY)
 }
 
+function normalizeEducationHistory(entries: unknown): EducationHistoryItem[] {
+  if (!Array.isArray(entries)) {
+    return cloneEducationHistory(DEFAULT_EDUCATION_HISTORY)
+  }
+
+  const normalized = entries
+    .map((entry) => {
+      if (!entry || typeof entry !== "object") {
+        return null
+      }
+
+      const source = entry as EducationHistoryItem
+      const level = typeof source.level === "string" ? source.level.trim() : ""
+      const school = typeof source.school === "string" ? source.school.trim() : ""
+      const period = typeof source.period === "string" ? source.period.trim() : ""
+
+      if (!level || !school || !period) {
+        return null
+      }
+
+      return {
+        level,
+        school,
+        period,
+      }
+    })
+    .filter((entry): entry is { level: string; school: string; period: string } => Boolean(entry))
+
+  return normalized.length ? normalized : cloneEducationHistory(DEFAULT_EDUCATION_HISTORY)
+}
+
+function normalizeSeoSettings(value: unknown): SeoSettingsRecord {
+  const defaults = DEFAULT_SEO_SETTINGS
+  const source = value && typeof value === "object" ? (value as SeoSettingsRecord) : {}
+
+  return {
+    titleTemplate: pickString(source.titleTemplate, defaults.titleTemplate ?? ""),
+    defaultTitle: pickString(source.defaultTitle, defaults.defaultTitle ?? ""),
+    description: pickString(source.description, defaults.description ?? ""),
+    canonicalUrl: pickString(source.canonicalUrl, defaults.canonicalUrl ?? ""),
+    previewImageUrl: pickString(source.previewImageUrl, defaults.previewImageUrl ?? ""),
+    siteName: pickString(source.siteName, defaults.siteName ?? ""),
+    locale: pickString(source.locale, defaults.locale ?? "id_ID"),
+    keywords: pickStringArray(source.keywords, defaults.keywords ?? []),
+    jobTitle: pickString(source.jobTitle, defaults.jobTitle ?? "Cybersecurity Specialist"),
+    sameAs: pickStringArray(source.sameAs, defaults.sameAs ?? []),
+  }
+}
+
 export function getDefaultProfileSettings(): ProfileSettingsRecord {
   return {
     displayName: "My Name",
@@ -157,6 +267,8 @@ export function getDefaultProfileSettings(): ProfileSettingsRecord {
     philosophyText: DEFAULT_PHILOSOPHY_TEXT,
     technicalArsenal: cloneTechnicalArsenal(DEFAULT_TECHNICAL_ARSENAL),
     professionalJourney: cloneProfessionalJourney(DEFAULT_PROFESSIONAL_JOURNEY),
+    educationHistory: cloneEducationHistory(DEFAULT_EDUCATION_HISTORY),
+    seo: cloneSeoSettings(DEFAULT_SEO_SETTINGS),
   }
 }
 
@@ -182,6 +294,8 @@ export function normalizeProfileSettings(
     ),
     technicalArsenal: normalizeTechnicalArsenal(value?.technicalArsenal),
     professionalJourney: normalizeProfessionalJourney(value?.professionalJourney),
+    educationHistory: normalizeEducationHistory(value?.educationHistory),
+    seo: normalizeSeoSettings(value?.seo),
     ...(typeof value?.updatedAt === "string" ? { updatedAt: value.updatedAt } : {}),
   }
 }

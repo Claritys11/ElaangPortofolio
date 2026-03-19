@@ -78,6 +78,25 @@ export interface ProfessionalJourneyItem {
   desc?: string;
 }
 
+export interface EducationHistoryItem {
+  level?: string;
+  school?: string;
+  period?: string;
+}
+
+export interface SeoSettingsRecord {
+  titleTemplate?: string;
+  defaultTitle?: string;
+  description?: string;
+  canonicalUrl?: string;
+  previewImageUrl?: string;
+  siteName?: string;
+  locale?: string;
+  keywords?: string[];
+  jobTitle?: string;
+  sameAs?: string[];
+}
+
 export interface ProfileSettingsRecord {
   displayName?: string;
   email?: string;
@@ -89,5 +108,7 @@ export interface ProfileSettingsRecord {
   philosophyText?: string;
   technicalArsenal?: TechnicalArsenalItem[];
   professionalJourney?: ProfessionalJourneyItem[];
+  educationHistory?: EducationHistoryItem[];
+  seo?: SeoSettingsRecord;
   updatedAt?: string;
 }

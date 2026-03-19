@@ -8,7 +8,7 @@ Portfolio pribadi bertema cyberpunk untuk menampilkan proyek, write-up CTF, achi
 
 - ⚡ Next.js 15 App Router + React 19 + Tailwind CSS
 - 🧠 AI flow support via Genkit (`src/ai`)
-- 🗂️ Dual storage mode: `sqlite` atau `firebase`
+- 🗂️ Mode storage SQLite untuk local maupun server deployment
 - 🔐 Admin dashboard dengan cookie session server-side
 - 🧾 Profile publik disimpan di `public/profile.json` (editable dari admin)
 
@@ -16,7 +16,7 @@ Portfolio pribadi bertema cyberpunk untuk menampilkan proyek, write-up CTF, achi
 
 - **Frontend:** Next.js, React, Tailwind CSS, Radix UI
 - **Backend/API:** Next Route Handlers (`src/app/api/**`)
-- **Data:** SQLite (`sqlite3`) atau Firebase/Firestore
+- **Data:** SQLite (`sqlite3`)
 - **Utilities:** date-fns, zod, Genkit
 
 ## 🧭 Arsitektur Storage
@@ -24,9 +24,6 @@ Portfolio pribadi bertema cyberpunk untuk menampilkan proyek, write-up CTF, achi
 | Mode | Cocok untuk | Perilaku |
 |---|---|---|
 | `sqlite` | Local dev paling simpel | API `/api/**` aktif, data utama di SQLite, profile tetap di `public/profile.json` |
-| `firebase` | Integrasi Firebase/Firestore | Request browser ke `/api/**` (non-auth, non-profile) dialihkan ke Firebase client; direct hit ke endpoint tersebut akan kena `502` dari middleware |
-
-> Rekomendasi untuk mulai cepat: pakai `sqlite` dulu, lalu migrasi ke `firebase` setelah env siap.
 
 ## 🚀 Quick Start
 
@@ -55,13 +52,13 @@ npm install
 cp .env.example .env.local
 ```
 
-Lalu isi `.env.local` sesuai mode yang dipilih.
+Lalu isi `.env.local` dengan nilai yang dibutuhkan.
 
 ---
 
 ## ⚙️ Setting Environment
 
-### Opsi A — Mode SQLite (paling cepat untuk development)
+### Mode SQLite (paling cepat untuk development)
 
 Gunakan template minimal ini:
 
@@ -80,36 +77,6 @@ Generate secret aman (contoh):
 ```bash
 openssl rand -base64 48
 ```
-
-### Opsi B — Mode Firebase
-
-```env
-STORAGE_TYPE="firebase"
-NEXT_PUBLIC_STORAGE_TYPE="firebase"
-
-ADMIN_USERNAME="admin"
-ADMIN_PASSWORD="harus-sesuai-untuk-login-admin-dan-fallback-firebase"
-ADMIN_SESSION_SECRET="isi-random-string-minimal-32-karakter"
-
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=""
-NEXT_PUBLIC_FIREBASE_APP_ID=""
-NEXT_PUBLIC_FIREBASE_API_KEY=""
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=""
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=""
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=""
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=""
-
-NEXT_PUBLIC_FIREBASE_ADMIN_EMAIL=""
-FIREBASE_ADMIN_PROJECT_ID=""
-FIREBASE_ADMIN_CLIENT_EMAIL=""
-FIREBASE_ADMIN_PRIVATE_KEY=""
-```
-
-#### Catatan penting Firebase
-
-- Cara **paling aman** untuk akses admin server-side: isi `FIREBASE_ADMIN_CLIENT_EMAIL` + `FIREBASE_ADMIN_PRIVATE_KEY` (service account).
-- Jika service account kosong, sistem fallback ke login email/password Firebase dan butuh `NEXT_PUBLIC_FIREBASE_ADMIN_EMAIL` + `ADMIN_PASSWORD` yang valid di Firebase Auth.
-- Di mode `firebase`, endpoint API non-auth/non-profile bisa mengembalikan `502` jika dipanggil langsung dari luar browser.
 
 ---
 
@@ -163,7 +130,6 @@ Setelah app jalan:
 src/app/                 # App Router pages + API routes
 src/app/api/             # Endpoint auth/admin/public/contact
 src/lib/                 # Storage, types, helper, session
-src/firebase/            # Firebase client config/provider
 public/profile.json      # Sumber data profile publik
 data/portfolio.sqlite3   # Database SQLite (jika mode sqlite)
 ```
@@ -183,16 +149,8 @@ pnpm install
 
 - Pastikan `ADMIN_SESSION_SECRET` ada dan panjangnya minimal 32 karakter.
 
-### 3) API `502` saat mode Firebase
-
-- Ini expected untuk endpoint non-auth/non-profile jika dipanggil langsung via network.
-- Akses dari UI tetap bekerja melalui layer Firebase client.
-
 ## 📌 Catatan
 
 - `NEXT_PUBLIC_NAME`, `NEXT_PUBLIC_EMAIL`, dll tidak lagi dipakai sebagai sumber utama profile.
 - Sumber profile utama sekarang adalah `public/profile.json`.
 
----
-
-Kalau kamu mau, README ini bisa saya lanjutkan dengan badge status (build/lint), diagram arsitektur, dan section deploy (Vercel/Firebase Hosting) biar lebih “portfolio-ready”.

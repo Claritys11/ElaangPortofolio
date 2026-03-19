@@ -1,9 +1,9 @@
-import { randomUUID } from 'crypto';
 import { mkdir } from 'fs/promises';
 import path from 'path';
 import sqlite3 from 'sqlite3';
 import {
   DEFAULT_ABOUT_TEXT,
+  DEFAULT_PHILOSOPHY_TEXT,
   getDefaultProfileSettings,
   mergeProfileSettings,
   normalizeProfileSettings,
@@ -24,6 +24,30 @@ type SqlParam = string | number | null;
 interface RunResult {
   lastID: number;
   changes: number;
+}
+
+interface D1Meta {
+  changes?: number;
+  last_row_id?: number;
+}
+
+interface D1RunResult {
+  meta?: D1Meta;
+}
+
+interface D1AllResult<T> {
+  results?: T[];
+}
+
+interface D1PreparedStatement {
+  bind(...values: SqlParam[]): D1PreparedStatement;
+  run(): Promise<D1RunResult>;
+  all<T>(): Promise<D1AllResult<T>>;
+  first<T>(): Promise<T | null>;
+}
+
+interface D1DatabaseBinding {
+  prepare(statement: string): D1PreparedStatement;
 }
 
 interface WriteupRow {
@@ -93,8 +117,11 @@ interface ProfileSettingsRow {
   instagram_url: string | null;
   profile_image_url: string | null;
   about_text: string | null;
+  philosophy_text: string | null;
   technical_arsenal_json: string | null;
   professional_journey_json: string | null;
+  education_history_json: string | null;
+  seo_settings_json: string | null;
   updated_at: string;
 }
 
@@ -111,7 +138,8 @@ interface LatestRow {
   createdAt: string | null;
 }
 
-let dbPromise: Promise<sqlite3.Database> | null = null;
+let migrationPromise: Promise<void> | null = null;
+let dbPromise: Promise<D1DatabaseBinding> | null = null;
 
 function getDbPath(): string {
   const configured = process.env.SQLITE_DB_PATH?.trim();
@@ -119,48 +147,115 @@ function getDbPath(): string {
   return path.isAbsolute(resolved) ? resolved : path.resolve(process.cwd(), resolved);
 }
 
-function run(db: sqlite3.Database, statement: string, params: SqlParam[] = []): Promise<RunResult> {
-  return new Promise((resolve, reject) => {
-    db.run(statement, params, function onRun(error: Error | null) {
-      if (error) {
-        reject(error);
-        return;
-      }
+class SqlitePreparedStatement implements D1PreparedStatement {
+  private values: SqlParam[] = [];
 
-      resolve({
-        lastID: this.lastID,
-        changes: this.changes,
+  constructor(
+    private readonly db: sqlite3.Database,
+    private readonly statement: string
+  ) {}
+
+  bind(...values: SqlParam[]): D1PreparedStatement {
+    this.values = values;
+    return this;
+  }
+
+  run(): Promise<D1RunResult> {
+    return new Promise((resolve, reject) => {
+      this.db.run(this.statement, this.values, function onRun(error: Error | null) {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        resolve({
+          meta: {
+            changes: this.changes,
+            last_row_id: this.lastID,
+          },
+        });
       });
     });
-  });
+  }
+
+  all<T>(): Promise<D1AllResult<T>> {
+    return new Promise((resolve, reject) => {
+      this.db.all(this.statement, this.values, (error, rows: T[]) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        resolve({
+          results: rows ?? [],
+        });
+      });
+    });
+  }
+
+  first<T>(): Promise<T | null> {
+    return new Promise((resolve, reject) => {
+      this.db.get(this.statement, this.values, (error, row: T | undefined) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        resolve(row ?? null);
+      });
+    });
+  }
 }
 
-function all<T>(db: sqlite3.Database, statement: string, params: SqlParam[] = []): Promise<T[]> {
-  return new Promise((resolve, reject) => {
-    db.all(statement, params, (error, rows: T[]) => {
+class SqliteDatabaseBinding implements D1DatabaseBinding {
+  constructor(private readonly db: sqlite3.Database) {}
+
+  prepare(statement: string): D1PreparedStatement {
+    return new SqlitePreparedStatement(this.db, statement);
+  }
+}
+
+async function openSqliteDatabaseBinding(): Promise<D1DatabaseBinding> {
+  const dbPath = getDbPath();
+  await mkdir(path.dirname(dbPath), { recursive: true });
+
+  const db = await new Promise<sqlite3.Database>((resolve, reject) => {
+    const connection = new sqlite3.Database(dbPath, (error) => {
       if (error) {
         reject(error);
         return;
       }
-      resolve(rows);
+
+      resolve(connection);
     });
   });
+
+  return new SqliteDatabaseBinding(db);
 }
 
-function get<T>(db: sqlite3.Database, statement: string, params: SqlParam[] = []): Promise<T | undefined> {
-  return new Promise((resolve, reject) => {
-    db.get(statement, params, (error, row: T | undefined) => {
-      if (error) {
-        reject(error);
-        return;
-      }
-      resolve(row);
-    });
-  });
+async function run(db: D1DatabaseBinding, statement: string, params: SqlParam[] = []): Promise<RunResult> {
+  const prepared = db.prepare(statement).bind(...params);
+  const result = await prepared.run();
+  return {
+    lastID: Number(result.meta?.last_row_id ?? 0),
+    changes: Number(result.meta?.changes ?? 0),
+  };
+}
+
+async function all<T>(db: D1DatabaseBinding, statement: string, params: SqlParam[] = []): Promise<T[]> {
+  const prepared = db.prepare(statement).bind(...params);
+  const result = await prepared.all<T>();
+  return result.results ?? [];
+}
+
+async function get<T>(db: D1DatabaseBinding, statement: string, params: SqlParam[] = []): Promise<T | undefined> {
+  const prepared = db.prepare(statement).bind(...params);
+  const row = await prepared.first<T>();
+  return row ?? undefined;
 }
 
 async function ensureTableColumn(
-  db: sqlite3.Database,
+  db: D1DatabaseBinding,
   tableName: string,
   columnName: string,
   columnDefinition: string
@@ -173,18 +268,21 @@ async function ensureTableColumn(
   }
 }
 
-async function ensureProfileSettingsColumns(db: sqlite3.Database): Promise<void> {
+async function ensureProfileSettingsColumns(db: D1DatabaseBinding): Promise<void> {
   await ensureTableColumn(db, 'profile_settings', 'display_name', 'display_name TEXT');
   await ensureTableColumn(db, 'profile_settings', 'email', 'email TEXT');
   await ensureTableColumn(db, 'profile_settings', 'website_url', 'website_url TEXT');
   await ensureTableColumn(db, 'profile_settings', 'github_url', 'github_url TEXT');
   await ensureTableColumn(db, 'profile_settings', 'instagram_url', 'instagram_url TEXT');
   await ensureTableColumn(db, 'profile_settings', 'profile_image_url', 'profile_image_url TEXT');
+  await ensureTableColumn(db, 'profile_settings', 'philosophy_text', 'philosophy_text TEXT');
   await ensureTableColumn(db, 'profile_settings', 'technical_arsenal_json', "technical_arsenal_json TEXT NOT NULL DEFAULT '[]'");
   await ensureTableColumn(db, 'profile_settings', 'professional_journey_json', "professional_journey_json TEXT NOT NULL DEFAULT '[]'");
+  await ensureTableColumn(db, 'profile_settings', 'education_history_json', "education_history_json TEXT NOT NULL DEFAULT '[]'");
+  await ensureTableColumn(db, 'profile_settings', 'seo_settings_json', "seo_settings_json TEXT NOT NULL DEFAULT '{}'");
 }
 
-async function migrate(db: sqlite3.Database): Promise<void> {
+async function migrate(db: D1DatabaseBinding): Promise<void> {
   await run(
     db,
     `CREATE TABLE IF NOT EXISTS writeups (
@@ -269,8 +367,11 @@ async function migrate(db: sqlite3.Database): Promise<void> {
       instagram_url TEXT,
       profile_image_url TEXT,
       about_text TEXT,
+      philosophy_text TEXT,
       technical_arsenal_json TEXT NOT NULL DEFAULT '[]',
       professional_journey_json TEXT NOT NULL DEFAULT '[]',
+      education_history_json TEXT NOT NULL DEFAULT '[]',
+      seo_settings_json TEXT NOT NULL DEFAULT '{}',
       updated_at TEXT NOT NULL
     )`
   );
@@ -290,10 +391,13 @@ async function migrate(db: sqlite3.Database): Promise<void> {
       instagram_url,
       profile_image_url,
       about_text,
+      philosophy_text,
       technical_arsenal_json,
       professional_journey_json,
+      education_history_json,
+      seo_settings_json,
       updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       'main',
       defaultProfileSettings.displayName ?? 'My Name',
@@ -303,8 +407,11 @@ async function migrate(db: sqlite3.Database): Promise<void> {
       defaultProfileSettings.instagramUrl ?? 'https://www.instagram.com',
       defaultProfileSettings.profileImageUrl ?? '/profile.jpg',
       defaultProfileSettings.aboutText ?? DEFAULT_ABOUT_TEXT,
+      defaultProfileSettings.philosophyText ?? DEFAULT_PHILOSOPHY_TEXT,
       JSON.stringify(defaultProfileSettings.technicalArsenal ?? []),
       JSON.stringify(defaultProfileSettings.professionalJourney ?? []),
+      JSON.stringify(defaultProfileSettings.educationHistory ?? []),
+      JSON.stringify(defaultProfileSettings.seo ?? {}),
       new Date().toISOString(),
     ]
   );
@@ -316,28 +423,22 @@ async function migrate(db: sqlite3.Database): Promise<void> {
   await run(db, 'CREATE INDEX IF NOT EXISTS idx_access_logs_accessed_at ON access_logs(accessed_at DESC)');
 }
 
-async function getDb(): Promise<sqlite3.Database> {
+async function getDb(): Promise<D1DatabaseBinding> {
   if (!dbPromise) {
-    dbPromise = (async () => {
-      const dbPath = getDbPath();
-      await mkdir(path.dirname(dbPath), { recursive: true });
-
-      const db = await new Promise<sqlite3.Database>((resolve, reject) => {
-        const connection = new sqlite3.Database(dbPath, (error) => {
-          if (error) {
-            reject(error);
-            return;
-          }
-          resolve(connection);
-        });
-      });
-
-      await migrate(db);
-      return db;
-    })();
+    dbPromise = openSqliteDatabaseBinding();
   }
 
-  return dbPromise;
+  const db = await dbPromise;
+
+  if (!migrationPromise) {
+    migrationPromise = migrate(db).catch((error) => {
+      migrationPromise = null;
+      throw error;
+    });
+  }
+
+  await migrationPromise;
+  return db;
 }
 
 function asOptionalString(value: unknown): string | undefined {
@@ -381,6 +482,23 @@ function parseJsonArray<T>(raw: string | null): T[] | undefined {
   try {
     const value: unknown = JSON.parse(raw);
     return Array.isArray(value) ? (value as T[]) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function parseJsonObject<T>(raw: string | null): T | undefined {
+  if (!raw) {
+    return undefined;
+  }
+
+  try {
+    const value: unknown = JSON.parse(raw);
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+      return undefined;
+    }
+
+    return value as T;
   } catch {
     return undefined;
   }
@@ -460,8 +578,11 @@ function mapProfileSettingsRow(row: ProfileSettingsRow): ProfileSettingsRecord {
     instagramUrl: row.instagram_url ?? undefined,
     profileImageUrl: row.profile_image_url ?? undefined,
     aboutText: row.about_text ?? undefined,
+    philosophyText: row.philosophy_text ?? undefined,
     technicalArsenal: parseJsonArray(row.technical_arsenal_json),
     professionalJourney: parseJsonArray(row.professional_journey_json),
+    educationHistory: parseJsonArray(row.education_history_json),
+    seo: parseJsonObject<NonNullable<ProfileSettingsRecord['seo']>>(row.seo_settings_json),
     updatedAt: row.updated_at,
   });
 
@@ -485,7 +606,7 @@ export async function getWriteupById(id: string): Promise<WriteupRecord | null> 
 
 export async function createWriteup(data: Partial<WriteupRecord>): Promise<string> {
   const db = await getDb();
-  const id = randomUUID();
+  const id = crypto.randomUUID();
   const now = new Date().toISOString();
 
   await run(
@@ -568,7 +689,7 @@ export async function listProjects(): Promise<ProjectRecord[]> {
 
 export async function createProject(data: Partial<ProjectRecord>): Promise<string> {
   const db = await getDb();
-  const id = randomUUID();
+  const id = crypto.randomUUID();
   const now = new Date().toISOString();
 
   await run(
@@ -642,7 +763,7 @@ export async function listAchievements(): Promise<AchievementRecord[]> {
 
 export async function createAchievement(data: Partial<AchievementRecord>): Promise<string> {
   const db = await getDb();
-  const id = randomUUID();
+  const id = crypto.randomUUID();
   const now = new Date().toISOString();
 
   await run(
@@ -720,7 +841,7 @@ export async function createContactMessage(input: {
   message: string;
 }): Promise<string> {
   const db = await getDb();
-  const id = randomUUID();
+  const id = crypto.randomUUID();
   const now = new Date().toISOString();
 
   await run(
@@ -761,7 +882,7 @@ export async function createAccessLog(input: {
   ip: string;
 }): Promise<string> {
   const db = await getDb();
-  const id = randomUUID();
+  const id = crypto.randomUUID();
   const now = new Date().toISOString();
 
   await run(
@@ -807,10 +928,13 @@ export async function updateProfileSettings(
       instagram_url,
       profile_image_url,
       about_text,
+      philosophy_text,
       technical_arsenal_json,
       professional_journey_json,
+      education_history_json,
+      seo_settings_json,
       updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT(id) DO UPDATE SET
        display_name = excluded.display_name,
        email = excluded.email,
@@ -819,8 +943,11 @@ export async function updateProfileSettings(
        instagram_url = excluded.instagram_url,
        profile_image_url = excluded.profile_image_url,
        about_text = excluded.about_text,
+       philosophy_text = excluded.philosophy_text,
        technical_arsenal_json = excluded.technical_arsenal_json,
        professional_journey_json = excluded.professional_journey_json,
+       education_history_json = excluded.education_history_json,
+       seo_settings_json = excluded.seo_settings_json,
        updated_at = excluded.updated_at`,
     [
       'main',
@@ -831,8 +958,11 @@ export async function updateProfileSettings(
       nextProfile.instagramUrl ?? null,
       nextProfile.profileImageUrl ?? null,
       nextProfile.aboutText ?? DEFAULT_ABOUT_TEXT,
+      nextProfile.philosophyText ?? DEFAULT_PHILOSOPHY_TEXT,
       JSON.stringify(nextProfile.technicalArsenal ?? []),
       JSON.stringify(nextProfile.professionalJourney ?? []),
+      JSON.stringify(nextProfile.educationHistory ?? []),
+      JSON.stringify(nextProfile.seo ?? {}),
       now,
     ]
   );

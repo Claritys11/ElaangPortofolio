@@ -1,5 +1,3 @@
-import { getStorageType } from '@/lib/storage-type';
-import * as firebaseStorage from '@/lib/firebase-rest-storage';
 import * as sqliteStorage from '@/lib/sqlite-storage';
 import type {
   AchievementRecord,
@@ -9,9 +7,6 @@ import type {
 } from '@/lib/portfolio-types';
 
 function getServerStorage() {
-  // Admin/auth routes always use SQLite regardless of STORAGE_TYPE.
-  // Firebase mode only affects public client routes (handled by firebase-client-api.ts).
-  void getStorageType(); // retain import reference
   return sqliteStorage;
 }
 
