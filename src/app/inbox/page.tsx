@@ -384,52 +384,68 @@ export default function AdminPage() {
     }
   }, [handleUnauthorized, loadDashboardData])
 
+  const uploadImageAsset = React.useCallback(
+    async (file: File, options?: { showSuccessToast?: boolean }) => {
+      if (!file.type.startsWith("image/")) {
+        const message = "Only image files are allowed."
+        toast({
+          variant: "destructive",
+          title: "Invalid file type",
+          description: message,
+        })
+        throw new Error(message)
+      }
+
+      const formData = new FormData()
+      formData.append("file", file)
+
+      try {
+        const payload = await fetchJson<UploadAssetResponse>("/api/admin/upload", {
+          method: "POST",
+          body: formData,
+        })
+
+        if (options?.showSuccessToast ?? true) {
+          toast({
+            title: "Image uploaded",
+            description: `Stored as ${payload.assetName}.`,
+          })
+        }
+
+        return payload.url
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Could not upload image."
+
+        if (message === "Unauthorized.") {
+          handleUnauthorized()
+          toast({
+            variant: "destructive",
+            title: "Session expired",
+            description: "Authenticate again to continue.",
+          })
+          throw new Error(message)
+        }
+
+        toast({
+          variant: "destructive",
+          title: "Upload failed",
+          description: message,
+        })
+        throw error instanceof Error ? error : new Error(message)
+      }
+    },
+    [handleUnauthorized, toast]
+  )
+
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
     const file = event.target.files?.[0]
     event.target.value = ""
     if (!file) return
 
-    if (!file.type.startsWith("image/")) {
-      toast({
-        variant: "destructive",
-        title: "Invalid file type",
-        description: "Only image files are allowed.",
-      })
-      return
-    }
-
-    const formData = new FormData()
-    formData.append("file", file)
-
     try {
-      const payload = await fetchJson<UploadAssetResponse>("/api/admin/upload", {
-        method: "POST",
-        body: formData,
-      })
-
-      setter(payload.url)
-      toast({
-        title: "Image uploaded",
-        description: `Stored as ${payload.assetName}.`,
-      })
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Could not upload image."
-
-      if (message === "Unauthorized.") {
-        handleUnauthorized()
-        toast({
-          variant: "destructive",
-          title: "Session expired",
-          description: "Authenticate again to continue.",
-        })
-        return
-      }
-
-      toast({
-        variant: "destructive",
-        title: "Upload failed",
-        description: message,
-      })
+      const imageUrl = await uploadImageAsset(file, { showSuccessToast: true })
+      setter(imageUrl)
+    } catch {
     }
   }
 
@@ -942,6 +958,7 @@ export default function AdminPage() {
                     <RichEditor 
                       content={writeupForm.content} 
                       onChange={(html) => setWriteupForm({ ...writeupForm, content: html })} 
+                      onImageUpload={(file) => uploadImageAsset(file, { showSuccessToast: true })}
                     />
                   </div>
                   <div className="flex justify-between gap-2">
