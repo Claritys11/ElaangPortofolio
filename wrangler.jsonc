@@ -17,10 +17,10 @@
   "d1_databases": [
     {
       "binding": "PORTFOLIO_DB",
-      "database_name": "sigma-portfolio",
-      // Replace these IDs after running: wrangler d1 create sigma-portfolio
-      "database_id": "ebb7b0ed-3093-4bd2-b4c6-b3ae49ab68eb",
-      "preview_database_id": "ebb7b0ed-3093-4bd2-b4c6-b3ae49ab68eb",
+      "database_name": "portfolio",
+      // Replace these IDs after running: wrangler d1 create portfolio
+      "database_id": "ee61b0be-4c30-496a-b247-6de5e43c9c75",
+      "preview_database_id": "ee61b0be-4c30-496a-b247-6de5e43c9c75",
       "migrations_dir": "database/migrations"
     }
   ]
