@@ -1,5 +1,5 @@
 
-# SigmaBangetPortfolioGweh
+# Elaang's Portfolio
 
 Cyberpunk-themed personal portfolio to showcase CTF write-ups, projects, achievements, and admin inbox management in one modern dashboard powered by Next.js 15.
 

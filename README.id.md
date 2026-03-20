@@ -1,4 +1,4 @@
-# SigmaBangetPortfolioGweh
+# Elaang's Portfolio
 
 Portfolio pribadi bertema cyberpunk untuk menampilkan proyek, write-up CTF, achievement, dan inbox admin dalam satu dashboard modern berbasis Next.js 15.
 
