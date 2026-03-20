@@ -1,3 +1,9 @@
+export interface AttachmentRecord {
+  name?: string;
+  url?: string;
+  contentType?: string;
+}
+
 export interface WriteupRecord {
   id: string;
   title?: string;
@@ -9,6 +15,7 @@ export interface WriteupRecord {
   content?: string;
   flag?: string;
   tags?: string[];
+  attachments?: AttachmentRecord[];
   createdAt?: string;
   updatedAt?: string;
 }
@@ -21,6 +28,7 @@ export interface ProjectRecord {
   projectUrl?: string;
   category?: string;
   tags?: string[];
+  attachments?: AttachmentRecord[];
   createdAt?: string;
   updatedAt?: string;
 }
@@ -33,6 +41,7 @@ export interface AchievementRecord {
   description?: string;
   imageUrl?: string;
   date?: string;
+  attachments?: AttachmentRecord[];
   createdAt?: string;
   updatedAt?: string;
 }

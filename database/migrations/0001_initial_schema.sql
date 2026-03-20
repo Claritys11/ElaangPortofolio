@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS writeups (
   content TEXT,
   flag TEXT,
   tags_json TEXT NOT NULL DEFAULT '[]',
+  attachments_json TEXT NOT NULL DEFAULT '[]',
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
@@ -21,6 +22,7 @@ CREATE TABLE IF NOT EXISTS projects (
   project_url TEXT,
   category TEXT,
   tags_json TEXT NOT NULL DEFAULT '[]',
+  attachments_json TEXT NOT NULL DEFAULT '[]',
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
@@ -33,6 +35,7 @@ CREATE TABLE IF NOT EXISTS achievements (
   description TEXT,
   image_url TEXT,
   date TEXT,
+  attachments_json TEXT NOT NULL DEFAULT '[]',
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );

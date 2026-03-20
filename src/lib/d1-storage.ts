@@ -8,6 +8,7 @@ import {
 } from '@/lib/about-default';
 import type {
   AccessLogRecord,
+  AttachmentRecord,
   AchievementRecord,
   HomeSummaryResponse,
   LatestActivityRecord,
@@ -63,6 +64,7 @@ interface WriteupRow {
   content: string | null;
   flag: string | null;
   tags_json: string | null;
+  attachments_json: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -75,6 +77,7 @@ interface ProjectRow {
   project_url: string | null;
   category: string | null;
   tags_json: string | null;
+  attachments_json: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -87,6 +90,7 @@ interface AchievementRow {
   description: string | null;
   image_url: string | null;
   date: string | null;
+  attachments_json: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -193,6 +197,33 @@ async function ensureTableColumn(
   }
 }
 
+async function ensureWriteupColumns(db: D1DatabaseBinding): Promise<void> {
+  await ensureTableColumn(
+    db,
+    'writeups',
+    'attachments_json',
+    "attachments_json TEXT NOT NULL DEFAULT '[]'"
+  );
+}
+
+async function ensureProjectColumns(db: D1DatabaseBinding): Promise<void> {
+  await ensureTableColumn(
+    db,
+    'projects',
+    'attachments_json',
+    "attachments_json TEXT NOT NULL DEFAULT '[]'"
+  );
+}
+
+async function ensureAchievementColumns(db: D1DatabaseBinding): Promise<void> {
+  await ensureTableColumn(
+    db,
+    'achievements',
+    'attachments_json',
+    "attachments_json TEXT NOT NULL DEFAULT '[]'"
+  );
+}
+
 async function ensureProfileSettingsColumns(db: D1DatabaseBinding): Promise<void> {
   await ensureTableColumn(db, 'profile_settings', 'display_name', 'display_name TEXT');
   await ensureTableColumn(db, 'profile_settings', 'alias_name', 'alias_name TEXT');
@@ -224,6 +255,7 @@ async function migrate(db: D1DatabaseBinding): Promise<void> {
       content TEXT,
       flag TEXT,
       tags_json TEXT NOT NULL DEFAULT '[]',
+      attachments_json TEXT NOT NULL DEFAULT '[]',
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     )`
@@ -239,6 +271,7 @@ async function migrate(db: D1DatabaseBinding): Promise<void> {
       project_url TEXT,
       category TEXT,
       tags_json TEXT NOT NULL DEFAULT '[]',
+      attachments_json TEXT NOT NULL DEFAULT '[]',
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     )`
@@ -254,6 +287,7 @@ async function migrate(db: D1DatabaseBinding): Promise<void> {
       description TEXT,
       image_url TEXT,
       date TEXT,
+      attachments_json TEXT NOT NULL DEFAULT '[]',
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     )`
@@ -307,6 +341,9 @@ async function migrate(db: D1DatabaseBinding): Promise<void> {
     )`
   );
 
+  await ensureWriteupColumns(db);
+  await ensureProjectColumns(db);
+  await ensureAchievementColumns(db);
   await ensureProfileSettingsColumns(db);
 
   const defaultProfileSettings = getDefaultProfileSettings();
@@ -392,6 +429,38 @@ function asOptionalStringArray(value: unknown): string[] | undefined {
     .filter(Boolean);
 }
 
+function asOptionalAttachmentArray(value: unknown): AttachmentRecord[] | undefined {
+  if (!Array.isArray(value)) {
+    return undefined;
+  }
+
+  const normalized: AttachmentRecord[] = [];
+
+  for (const entry of value) {
+    if (!entry || typeof entry !== 'object') {
+      continue;
+    }
+
+    const source = entry as AttachmentRecord;
+    const name = typeof source.name === 'string' ? source.name.trim() : '';
+    const url = typeof source.url === 'string' ? source.url.trim() : '';
+    const contentType =
+      typeof source.contentType === 'string' ? source.contentType.trim() : undefined;
+
+    if (!url) {
+      continue;
+    }
+
+    normalized.push({
+      name: name || url,
+      url,
+      ...(contentType ? { contentType } : {}),
+    });
+  }
+
+  return normalized;
+}
+
 function parseTags(raw: string | null): string[] {
   if (!raw) {
     return [];
@@ -409,6 +478,12 @@ function parseTags(raw: string | null): string[] {
   } catch {
     return [];
   }
+}
+
+function parseAttachments(raw: string | null): AttachmentRecord[] {
+  const value = parseJsonArray<AttachmentRecord>(raw);
+  const normalized = asOptionalAttachmentArray(value);
+  return normalized ?? [];
 }
 
 function parseJsonArray<T>(raw: string | null): T[] | undefined {
@@ -453,6 +528,7 @@ function mapWriteupRow(row: WriteupRow): WriteupRecord {
     content: row.content ?? undefined,
     flag: row.flag ?? undefined,
     tags: parseTags(row.tags_json),
+    attachments: parseAttachments(row.attachments_json),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -467,6 +543,7 @@ function mapProjectRow(row: ProjectRow): ProjectRecord {
     projectUrl: row.project_url ?? undefined,
     category: row.category ?? undefined,
     tags: parseTags(row.tags_json),
+    attachments: parseAttachments(row.attachments_json),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -481,6 +558,7 @@ function mapAchievementRow(row: AchievementRow): AchievementRecord {
     description: row.description ?? undefined,
     imageUrl: row.image_url ?? undefined,
     date: row.date ?? undefined,
+    attachments: parseAttachments(row.attachments_json),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -555,8 +633,8 @@ export async function createWriteup(data: Partial<WriteupRecord>): Promise<strin
   await run(
     db,
     `INSERT INTO writeups (
-      id, title, competition, category, difficulty, date, summary, content, flag, tags_json, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      id, title, competition, category, difficulty, date, summary, content, flag, tags_json, attachments_json, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       id,
       asOptionalString(data.title) ?? null,
@@ -568,6 +646,7 @@ export async function createWriteup(data: Partial<WriteupRecord>): Promise<strin
       asOptionalString(data.content) ?? null,
       asOptionalString(data.flag) ?? null,
       JSON.stringify(asOptionalStringArray(data.tags) ?? []),
+      JSON.stringify(asOptionalAttachmentArray(data.attachments) ?? []),
       asOptionalString(data.createdAt) ?? now,
       now,
     ]
@@ -585,6 +664,7 @@ export async function updateWriteup(id: string, data: Partial<WriteupRecord>): P
 
   const now = new Date().toISOString();
   const incomingTags = asOptionalStringArray(data.tags);
+  const incomingAttachments = asOptionalAttachmentArray(data.attachments);
 
   const result = await run(
     db,
@@ -598,6 +678,7 @@ export async function updateWriteup(id: string, data: Partial<WriteupRecord>): P
       content = ?,
       flag = ?,
       tags_json = ?,
+      attachments_json = ?,
       updated_at = ?
     WHERE id = ?`,
     [
@@ -610,6 +691,7 @@ export async function updateWriteup(id: string, data: Partial<WriteupRecord>): P
       asOptionalString(data.content) ?? existing.content,
       asOptionalString(data.flag) ?? existing.flag,
       incomingTags ? JSON.stringify(incomingTags) : existing.tags_json,
+      incomingAttachments ? JSON.stringify(incomingAttachments) : existing.attachments_json,
       now,
       id,
     ]
@@ -638,8 +720,8 @@ export async function createProject(data: Partial<ProjectRecord>): Promise<strin
   await run(
     db,
     `INSERT INTO projects (
-      id, title, description, image_url, project_url, category, tags_json, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      id, title, description, image_url, project_url, category, tags_json, attachments_json, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       id,
       asOptionalString(data.title) ?? null,
@@ -648,6 +730,7 @@ export async function createProject(data: Partial<ProjectRecord>): Promise<strin
       asOptionalString(data.projectUrl) ?? null,
       asOptionalString(data.category) ?? null,
       JSON.stringify(asOptionalStringArray(data.tags) ?? []),
+      JSON.stringify(asOptionalAttachmentArray(data.attachments) ?? []),
       asOptionalString(data.createdAt) ?? now,
       now,
     ]
@@ -665,6 +748,7 @@ export async function updateProject(id: string, data: Partial<ProjectRecord>): P
 
   const now = new Date().toISOString();
   const incomingTags = asOptionalStringArray(data.tags);
+  const incomingAttachments = asOptionalAttachmentArray(data.attachments);
 
   const result = await run(
     db,
@@ -675,6 +759,7 @@ export async function updateProject(id: string, data: Partial<ProjectRecord>): P
       project_url = ?,
       category = ?,
       tags_json = ?,
+      attachments_json = ?,
       updated_at = ?
     WHERE id = ?`,
     [
@@ -684,6 +769,7 @@ export async function updateProject(id: string, data: Partial<ProjectRecord>): P
       asOptionalString(data.projectUrl) ?? existing.project_url,
       asOptionalString(data.category) ?? existing.category,
       incomingTags ? JSON.stringify(incomingTags) : existing.tags_json,
+      incomingAttachments ? JSON.stringify(incomingAttachments) : existing.attachments_json,
       now,
       id,
     ]
@@ -712,8 +798,8 @@ export async function createAchievement(data: Partial<AchievementRecord>): Promi
   await run(
     db,
     `INSERT INTO achievements (
-      id, title, issuer, platform, description, image_url, date, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      id, title, issuer, platform, description, image_url, date, attachments_json, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       id,
       asOptionalString(data.title) ?? null,
@@ -722,6 +808,7 @@ export async function createAchievement(data: Partial<AchievementRecord>): Promi
       asOptionalString(data.description) ?? null,
       asOptionalString(data.imageUrl) ?? null,
       asOptionalString(data.date) ?? null,
+      JSON.stringify(asOptionalAttachmentArray(data.attachments) ?? []),
       asOptionalString(data.createdAt) ?? now,
       now,
     ]
@@ -738,6 +825,7 @@ export async function updateAchievement(id: string, data: Partial<AchievementRec
   }
 
   const now = new Date().toISOString();
+  const incomingAttachments = asOptionalAttachmentArray(data.attachments);
 
   const result = await run(
     db,
@@ -748,6 +836,7 @@ export async function updateAchievement(id: string, data: Partial<AchievementRec
       description = ?,
       image_url = ?,
       date = ?,
+      attachments_json = ?,
       updated_at = ?
     WHERE id = ?`,
     [
@@ -757,6 +846,7 @@ export async function updateAchievement(id: string, data: Partial<AchievementRec
       asOptionalString(data.description) ?? existing.description,
       asOptionalString(data.imageUrl) ?? existing.image_url,
       asOptionalString(data.date) ?? existing.date,
+      incomingAttachments ? JSON.stringify(incomingAttachments) : existing.attachments_json,
       now,
       id,
     ]

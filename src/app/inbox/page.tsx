@@ -69,6 +69,12 @@ interface DeleteTarget {
   collection: DeleteCollection
 }
 
+interface AttachmentFormState {
+  name: string
+  url: string
+  contentType: string
+}
+
 interface WriteupFormState {
   title: string
   competition: string
@@ -79,6 +85,7 @@ interface WriteupFormState {
   content: string
   flag: string
   tags: string
+  attachments: AttachmentFormState[]
 }
 
 interface ProjectFormState {
@@ -88,6 +95,7 @@ interface ProjectFormState {
   projectUrl: string
   category: string
   tags: string
+  attachments: AttachmentFormState[]
 }
 
 interface AchievementFormState {
@@ -97,6 +105,7 @@ interface AchievementFormState {
   description: string
   imageUrl: string
   date: string
+  attachments: AttachmentFormState[]
 }
 
 interface TechnicalArsenalFormState {
@@ -165,6 +174,7 @@ function createEmptyWriteupForm(): WriteupFormState {
     content: "",
     flag: "",
     tags: "",
+    attachments: [],
   }
 }
 
@@ -176,6 +186,7 @@ function createEmptyProjectForm(): ProjectFormState {
     projectUrl: "",
     category: "Security Tooling",
     tags: "",
+    attachments: [],
   }
 }
 
@@ -187,7 +198,53 @@ function createEmptyAchievementForm(): AchievementFormState {
     description: "",
     imageUrl: "",
     date: format(new Date(), "yyyy-MM-dd"),
+    attachments: [],
   }
+}
+
+function toAttachmentFormState(
+  attachments?: Array<{ name?: string; url?: string; contentType?: string }>
+): AttachmentFormState[] {
+  if (!Array.isArray(attachments)) {
+    return []
+  }
+
+  return attachments
+    .map((attachment) => {
+      const url = typeof attachment?.url === "string" ? attachment.url.trim() : ""
+      if (!url) {
+        return null
+      }
+
+      return {
+        name: typeof attachment?.name === "string" ? attachment.name.trim() : "",
+        url,
+        contentType: typeof attachment?.contentType === "string" ? attachment.contentType.trim() : "",
+      }
+    })
+    .filter((attachment): attachment is AttachmentFormState => Boolean(attachment))
+}
+
+function normalizeAttachmentPayload(attachments: AttachmentFormState[]) {
+  return attachments
+    .map((attachment) => {
+      const url = attachment.url.trim()
+      if (!url) {
+        return null
+      }
+
+      const name = attachment.name.trim()
+      const contentType = attachment.contentType.trim()
+
+      return {
+        name: name || url,
+        url,
+        ...(contentType ? { contentType } : {}),
+      }
+    })
+    .filter((attachment): attachment is { name: string; url: string; contentType?: string } =>
+      Boolean(attachment)
+    )
 }
 
 function parseCommaSeparatedValues(value: string): string[] {
@@ -384,9 +441,12 @@ export default function AdminPage() {
     }
   }, [handleUnauthorized, loadDashboardData])
 
-  const uploadImageAsset = React.useCallback(
-    async (file: File, options?: { showSuccessToast?: boolean }) => {
-      if (!file.type.startsWith("image/")) {
+  const uploadAsset = React.useCallback(
+    async (
+      file: File,
+      options?: { showSuccessToast?: boolean; requireImage?: boolean; successTitle?: string }
+    ) => {
+      if (options?.requireImage && !file.type.startsWith("image/")) {
         const message = "Only image files are allowed."
         toast({
           variant: "destructive",
@@ -407,14 +467,14 @@ export default function AdminPage() {
 
         if (options?.showSuccessToast ?? true) {
           toast({
-            title: "Image uploaded",
+            title: options?.successTitle ?? "File uploaded",
             description: `Stored as ${payload.assetName}.`,
           })
         }
 
-        return payload.url
+        return payload
       } catch (error) {
-        const message = error instanceof Error ? error.message : "Could not upload image."
+        const message = error instanceof Error ? error.message : "Could not upload file."
 
         if (message === "Unauthorized.") {
           handleUnauthorized()
@@ -437,6 +497,34 @@ export default function AdminPage() {
     [handleUnauthorized, toast]
   )
 
+  const uploadImageAsset = React.useCallback(
+    async (file: File, options?: { showSuccessToast?: boolean }) => {
+      const payload = await uploadAsset(file, {
+        showSuccessToast: options?.showSuccessToast,
+        requireImage: true,
+        successTitle: "Image uploaded",
+      })
+      return payload.url
+    },
+    [uploadAsset]
+  )
+
+  const uploadAttachmentAsset = React.useCallback(
+    async (file: File, options?: { showSuccessToast?: boolean }) => {
+      const payload = await uploadAsset(file, {
+        showSuccessToast: options?.showSuccessToast,
+        successTitle: "Attachment uploaded",
+      })
+
+      return {
+        name: payload.assetName || file.name,
+        url: payload.url,
+        contentType: payload.contentType || file.type || "",
+      } as AttachmentFormState
+    },
+    [uploadAsset]
+  )
+
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
     const file = event.target.files?.[0]
     event.target.value = ""
@@ -447,6 +535,58 @@ export default function AdminPage() {
       setter(imageUrl)
     } catch {
     }
+  }
+
+  const handleAttachmentUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    target: "writeup" | "project" | "achievement"
+  ) => {
+    const file = event.target.files?.[0]
+    event.target.value = ""
+    if (!file) return
+
+    try {
+      const attachment = await uploadAttachmentAsset(file, { showSuccessToast: true })
+
+      if (target === "writeup") {
+        setWriteupForm((prev) => ({ ...prev, attachments: [...prev.attachments, attachment] }))
+        return
+      }
+
+      if (target === "project") {
+        setProjectForm((prev) => ({ ...prev, attachments: [...prev.attachments, attachment] }))
+        return
+      }
+
+      setAchievementForm((prev) => ({ ...prev, attachments: [...prev.attachments, attachment] }))
+    } catch {
+    }
+  }
+
+  const removeAttachment = (
+    target: "writeup" | "project" | "achievement",
+    attachmentIndex: number
+  ) => {
+    if (target === "writeup") {
+      setWriteupForm((prev) => ({
+        ...prev,
+        attachments: prev.attachments.filter((_, index) => index !== attachmentIndex),
+      }))
+      return
+    }
+
+    if (target === "project") {
+      setProjectForm((prev) => ({
+        ...prev,
+        attachments: prev.attachments.filter((_, index) => index !== attachmentIndex),
+      }))
+      return
+    }
+
+    setAchievementForm((prev) => ({
+      ...prev,
+      attachments: prev.attachments.filter((_, index) => index !== attachmentIndex),
+    }))
   }
 
   const handleLogin = async (event: React.FormEvent) => {
@@ -508,6 +648,7 @@ export default function AdminPage() {
       content: writeup.content || "",
       flag: writeup.flag || "",
       tags: (writeup.tags || []).join(", "),
+      attachments: toAttachmentFormState(writeup.attachments),
     })
   }
 
@@ -529,6 +670,7 @@ export default function AdminPage() {
       projectUrl: project.projectUrl || "",
       category: project.category || "Security Tooling",
       tags: (project.tags || []).join(", "),
+      attachments: toAttachmentFormState(project.attachments),
     })
   }
 
@@ -550,6 +692,7 @@ export default function AdminPage() {
       description: achievement.description || "",
       imageUrl: achievement.imageUrl || "",
       date: achievement.date || format(new Date(), "yyyy-MM-dd"),
+      attachments: toAttachmentFormState(achievement.attachments),
     })
   }
 
@@ -557,6 +700,7 @@ export default function AdminPage() {
     const payload = {
       ...writeupForm,
       tags: writeupForm.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
+      attachments: normalizeAttachmentPayload(writeupForm.attachments),
     }
 
     try {
@@ -590,6 +734,7 @@ export default function AdminPage() {
     const payload = {
       ...projectForm,
       tags: projectForm.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
+      attachments: normalizeAttachmentPayload(projectForm.attachments),
     }
 
     try {
@@ -621,7 +766,10 @@ export default function AdminPage() {
   }
 
   const saveAchievement = async () => {
-    const payload = { ...achievementForm }
+    const payload = {
+      ...achievementForm,
+      attachments: normalizeAttachmentPayload(achievementForm.attachments),
+    }
 
     try {
       if (editingId) {
@@ -961,6 +1109,50 @@ export default function AdminPage() {
                       onImageUpload={(file) => uploadImageAsset(file, { showSuccessToast: true })}
                     />
                   </div>
+                  <div className="space-y-3 rounded-lg border border-border/60 bg-muted/20 p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <Label>Challenge Attachments</Label>
+                      <Input
+                        type="file"
+                        onChange={(event) => handleAttachmentUpload(event, "writeup")}
+                        className="max-w-xs"
+                      />
+                    </div>
+                    {writeupForm.attachments.length ? (
+                      <div className="space-y-2">
+                        {writeupForm.attachments.map((attachment, index) => (
+                          <div
+                            key={`${attachment.url}-${index}`}
+                            className="flex items-center justify-between gap-3 rounded-md border border-border bg-background/70 px-3 py-2"
+                          >
+                            <div className="min-w-0">
+                              <a
+                                href={attachment.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm font-medium text-primary hover:underline break-all"
+                              >
+                                {attachment.name || `Attachment ${index + 1}`}
+                              </a>
+                              {attachment.contentType ? (
+                                <p className="text-[10px] text-muted-foreground">{attachment.contentType}</p>
+                              ) : null}
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeAttachment("writeup", index)}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">No challenge attachments uploaded.</p>
+                    )}
+                  </div>
                   <div className="flex justify-between gap-2">
                     {editingId && (
                       <Button type="button" variant="destructive" onClick={() => triggerDelete(editingId, "ctfWriteups")}>
@@ -1042,6 +1234,50 @@ export default function AdminPage() {
                   </div>
                   <div className="space-y-2"><Label>Technical Description</Label><Textarea value={projectForm.description || ""} onChange={(event) => setProjectForm({ ...projectForm, description: event.target.value })} className="min-h-[120px]" /></div>
                   <div className="space-y-2"><Label>Stack Tags (comma separated)</Label><Input value={projectForm.tags || ""} onChange={(event) => setProjectForm({ ...projectForm, tags: event.target.value })} placeholder="React, Rust, Cryptography" /></div>
+                  <div className="space-y-3 rounded-lg border border-border/60 bg-muted/20 p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <Label>Project Attachments</Label>
+                      <Input
+                        type="file"
+                        onChange={(event) => handleAttachmentUpload(event, "project")}
+                        className="max-w-xs"
+                      />
+                    </div>
+                    {projectForm.attachments.length ? (
+                      <div className="space-y-2">
+                        {projectForm.attachments.map((attachment, index) => (
+                          <div
+                            key={`${attachment.url}-${index}`}
+                            className="flex items-center justify-between gap-3 rounded-md border border-border bg-background/70 px-3 py-2"
+                          >
+                            <div className="min-w-0">
+                              <a
+                                href={attachment.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm font-medium text-primary hover:underline break-all"
+                              >
+                                {attachment.name || `Attachment ${index + 1}`}
+                              </a>
+                              {attachment.contentType ? (
+                                <p className="text-[10px] text-muted-foreground">{attachment.contentType}</p>
+                              ) : null}
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeAttachment("project", index)}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">No project attachments uploaded.</p>
+                    )}
+                  </div>
                   <div className="flex justify-between gap-2">
                     {editingId && (
                       <Button type="button" variant="destructive" onClick={() => triggerDelete(editingId, "projects")}>
@@ -1120,6 +1356,50 @@ export default function AdminPage() {
                     )}
                   </div>
                   <div className="space-y-2"><Label>Description / Context</Label><Textarea value={achievementForm.description || ""} onChange={(event) => setAchievementForm({ ...achievementForm, description: event.target.value })} /></div>
+                  <div className="space-y-3 rounded-lg border border-border/60 bg-muted/20 p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <Label>Certificate Attachments</Label>
+                      <Input
+                        type="file"
+                        onChange={(event) => handleAttachmentUpload(event, "achievement")}
+                        className="max-w-xs"
+                      />
+                    </div>
+                    {achievementForm.attachments.length ? (
+                      <div className="space-y-2">
+                        {achievementForm.attachments.map((attachment, index) => (
+                          <div
+                            key={`${attachment.url}-${index}`}
+                            className="flex items-center justify-between gap-3 rounded-md border border-border bg-background/70 px-3 py-2"
+                          >
+                            <div className="min-w-0">
+                              <a
+                                href={attachment.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm font-medium text-primary hover:underline break-all"
+                              >
+                                {attachment.name || `Attachment ${index + 1}`}
+                              </a>
+                              {attachment.contentType ? (
+                                <p className="text-[10px] text-muted-foreground">{attachment.contentType}</p>
+                              ) : null}
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeAttachment("achievement", index)}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">No certificate attachments uploaded.</p>
+                    )}
+                  </div>
                   <div className="flex justify-between gap-2">
                     {editingId && (
                       <Button type="button" variant="destructive" onClick={() => triggerDelete(editingId, "achievements")}>

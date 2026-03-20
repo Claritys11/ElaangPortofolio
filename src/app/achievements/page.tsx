@@ -2,7 +2,7 @@
 "use client"
 
 import * as React from "react"
-import { Award, Trophy, CheckCircle2, Loader2, ZoomIn } from "lucide-react"
+import { Award, Trophy, CheckCircle2, Loader2, ZoomIn, Paperclip } from "lucide-react"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
 import { fetchJson } from "@/lib/api-client"
 import type { AchievementRecord } from "@/lib/portfolio-types"
@@ -128,6 +128,25 @@ export default function AchievementsPage() {
                           <p className="text-[10px] font-code text-primary uppercase mb-1">{cert.issuer}</p>
                           <h3 className="text-lg font-headline font-bold">{cert.title}</h3>
                           <p className="text-xs text-muted-foreground mt-2 line-clamp-2 italic">{cert.description}</p>
+                          {(cert.attachments || []).length > 0 && (
+                            <div className="mt-3 space-y-1">
+                              <p className="text-[10px] uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                                <Paperclip className="h-3 w-3" /> Attachments
+                              </p>
+                              {(cert.attachments || []).slice(0, 2).map((attachment, attachmentIndex) => (
+                                <a
+                                  key={`${attachment.url}-${attachmentIndex}`}
+                                  href={attachment.url || "#"}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block text-xs text-primary hover:underline break-all"
+                                  onClick={(event) => event.stopPropagation()}
+                                >
+                                  {attachment.name || `Attachment ${attachmentIndex + 1}`}
+                                </a>
+                              ))}
+                            </div>
+                          )}
                         </div>
                         <div className="flex items-center justify-between mt-4">
                           <div className="flex items-center text-xs text-muted-foreground font-code">
@@ -183,6 +202,24 @@ export default function AchievementsPage() {
                   <p className="text-xs font-code text-secondary mb-1">{item.platform || item.issuer}</p>
                   <h3 className="text-lg font-headline font-bold mb-2">{item.title}</h3>
                   <p className="text-sm text-muted-foreground line-clamp-3">{item.description}</p>
+                  {(item.attachments || []).length > 0 && (
+                    <div className="mt-3 space-y-1">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                        <Paperclip className="h-3 w-3" /> Attachments
+                      </p>
+                      {(item.attachments || []).slice(0, 2).map((attachment, attachmentIndex) => (
+                        <a
+                          key={`${attachment.url}-${attachmentIndex}`}
+                          href={attachment.url || "#"}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block text-xs text-primary hover:underline break-all"
+                        >
+                          {attachment.name || `Attachment ${attachmentIndex + 1}`}
+                        </a>
+                      ))}
+                    </div>
+                  )}
                   <div className="mt-auto pt-4 text-[10px] font-code text-muted-foreground">{item.date}</div>
                 </div>
               </div>

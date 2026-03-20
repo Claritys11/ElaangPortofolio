@@ -3,7 +3,7 @@
 
 import * as React from "react"
 import { Badge } from "@/components/ui/badge"
-import { Cpu, ShieldCheck, Box, Loader2, ExternalLink } from "lucide-react"
+import { Cpu, ShieldCheck, Box, Loader2, ExternalLink, Paperclip } from "lucide-react"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
 import { cn } from "@/lib/utils"
 import { fetchJson } from "@/lib/api-client"
@@ -114,6 +114,34 @@ export default function ProjectsPage() {
                       </span>
                     ))}
                   </div>
+                  {(project.attachments || []).length > 0 && (
+                    <div className="mt-4 space-y-1">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                        <Paperclip className="h-3 w-3" /> Attachments
+                      </p>
+                      {(project.attachments || []).slice(0, 3).map((attachment, attachmentIndex) => (
+                        <button
+                          key={`${attachment.url}-${attachmentIndex}`}
+                          type="button"
+                          onClick={(event) => {
+                            event.preventDefault()
+                            event.stopPropagation()
+                            if (attachment.url) {
+                              window.open(attachment.url, "_blank", "noopener,noreferrer")
+                            }
+                          }}
+                          className="block text-xs text-primary hover:underline break-all text-left"
+                        >
+                          {attachment.name || `Attachment ${attachmentIndex + 1}`}
+                        </button>
+                      ))}
+                      {(project.attachments || []).length > 3 && (
+                        <p className="text-[10px] text-muted-foreground">
+                          +{(project.attachments || []).length - 3} more attachment(s)
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </a>
               </div>
             </li>
