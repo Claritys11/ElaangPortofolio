@@ -59,6 +59,7 @@ CREATE TABLE IF NOT EXISTS access_logs (
 CREATE TABLE IF NOT EXISTS profile_settings (
   id TEXT PRIMARY KEY,
   display_name TEXT,
+  alias_name TEXT,
   email TEXT,
   website_url TEXT,
   github_url TEXT,

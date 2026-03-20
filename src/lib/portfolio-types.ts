@@ -99,6 +99,7 @@ export interface SeoSettingsRecord {
 
 export interface ProfileSettingsRecord {
   displayName?: string;
+  alias?: string;
   email?: string;
   websiteUrl?: string;
   githubUrl?: string;

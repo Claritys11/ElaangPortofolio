@@ -258,6 +258,7 @@ function normalizeSeoSettings(value: unknown): SeoSettingsRecord {
 export function getDefaultProfileSettings(): ProfileSettingsRecord {
   return {
     displayName: "My Name",
+    alias: "Claritys",
     email: "email@domain.tld",
     websiteUrl: "https://domain.tld",
     githubUrl: "http://github.com/github",
@@ -279,6 +280,7 @@ export function normalizeProfileSettings(
 
   return {
     displayName: pickString(value?.displayName, defaults.displayName ?? "My Name"),
+    alias: pickString(value?.alias, defaults.alias ?? "Claritys"),
     email: pickString(value?.email, defaults.email ?? "email@domain.tld"),
     websiteUrl: pickString(value?.websiteUrl, defaults.websiteUrl ?? "https://domain.tld"),
     githubUrl: pickString(value?.githubUrl, defaults.githubUrl ?? "http://github.com/github"),

@@ -1,6 +1,7 @@
 INSERT INTO profile_settings (
   id,
   display_name,
+  alias_name,
   email,
   website_url,
   github_url,
@@ -16,6 +17,7 @@ INSERT INTO profile_settings (
 ) VALUES (
   'main',
   'My Name',
+  'Claritys',
   'email@domain.tld',
   'https://domain.tld',
   'https://github.com/github',
@@ -31,6 +33,7 @@ INSERT INTO profile_settings (
 )
 ON CONFLICT(id) DO UPDATE SET
   display_name = excluded.display_name,
+  alias_name = excluded.alias_name,
   email = excluded.email,
   website_url = excluded.website_url,
   github_url = excluded.github_url,

@@ -113,6 +113,7 @@ interface AccessLogRow {
 interface ProfileSettingsRow {
   id: string;
   display_name: string | null;
+  alias_name: string | null;
   email: string | null;
   website_url: string | null;
   github_url: string | null;
@@ -192,6 +193,7 @@ async function ensureTableColumn(
 
 async function ensureProfileSettingsColumns(db: D1DatabaseBinding): Promise<void> {
   await ensureTableColumn(db, 'profile_settings', 'display_name', 'display_name TEXT');
+  await ensureTableColumn(db, 'profile_settings', 'alias_name', 'alias_name TEXT');
   await ensureTableColumn(db, 'profile_settings', 'email', 'email TEXT');
   await ensureTableColumn(db, 'profile_settings', 'website_url', 'website_url TEXT');
   await ensureTableColumn(db, 'profile_settings', 'github_url', 'github_url TEXT');
@@ -283,6 +285,7 @@ async function migrate(db: D1DatabaseBinding): Promise<void> {
     `CREATE TABLE IF NOT EXISTS profile_settings (
       id TEXT PRIMARY KEY,
       display_name TEXT,
+      alias_name TEXT,
       email TEXT,
       website_url TEXT,
       github_url TEXT,
@@ -307,6 +310,7 @@ async function migrate(db: D1DatabaseBinding): Promise<void> {
     `INSERT OR IGNORE INTO profile_settings (
       id,
       display_name,
+      alias_name,
       email,
       website_url,
       github_url,
@@ -319,10 +323,11 @@ async function migrate(db: D1DatabaseBinding): Promise<void> {
       education_history_json,
       seo_settings_json,
       updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       'main',
       defaultProfileSettings.displayName ?? 'My Name',
+      defaultProfileSettings.alias ?? 'Claritys',
       defaultProfileSettings.email ?? 'email@domain.tld',
       defaultProfileSettings.websiteUrl ?? 'https://domain.tld',
       defaultProfileSettings.githubUrl ?? 'http://github.com/github',
@@ -494,6 +499,7 @@ function mapAccessLogRow(row: AccessLogRow): AccessLogRecord {
 function mapProfileSettingsRow(row: ProfileSettingsRow): ProfileSettingsRecord {
   const normalized = normalizeProfileSettings({
     displayName: row.display_name ?? undefined,
+    alias: row.alias_name ?? undefined,
     email: row.email ?? undefined,
     websiteUrl: row.website_url ?? undefined,
     githubUrl: row.github_url ?? undefined,
@@ -844,6 +850,7 @@ export async function updateProfileSettings(
     `INSERT INTO profile_settings (
       id,
       display_name,
+      alias_name,
       email,
       website_url,
       github_url,
@@ -856,9 +863,10 @@ export async function updateProfileSettings(
       education_history_json,
       seo_settings_json,
       updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT(id) DO UPDATE SET
        display_name = excluded.display_name,
+       alias_name = excluded.alias_name,
        email = excluded.email,
        website_url = excluded.website_url,
        github_url = excluded.github_url,
@@ -874,6 +882,7 @@ export async function updateProfileSettings(
     [
       'main',
       nextProfile.displayName ?? null,
+      nextProfile.alias ?? null,
       nextProfile.email ?? null,
       nextProfile.websiteUrl ?? null,
       nextProfile.githubUrl ?? null,

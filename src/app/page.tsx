@@ -30,6 +30,7 @@ export default function Home() {
   const achievementCount = summary?.achievementCount ?? 0
   const latestActivity = summary?.latestActivity ?? null
   const displayName = profileSettings.displayName ?? "My Name"
+  const alias = profileSettings.alias ?? "Claritys"
   const shortName = displayName.split(" ")[0] || displayName
 
   React.useEffect(() => {
@@ -187,7 +188,7 @@ export default function Home() {
                 <CardContent className="p-4 md:p-6 space-y-4">
                   <div className="space-y-2 font-code text-xs md:text-sm">
                     <p className="text-primary">$ whoami</p>
-                    <p className="text-foreground">{displayName} | Claritys</p>
+                    <p className="text-foreground">{displayName} | {alias}</p>
                     <p className="text-primary pt-2">$ cat skill-matrix.json</p>
                     <div className="pl-4 text-primary brightness-150 font-bold space-y-1">
                       <p>{"{"}</p>

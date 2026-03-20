@@ -132,6 +132,7 @@ interface SeoFormState {
 
 interface ProfileFormState {
   displayName: string
+  alias: string
   email: string
   websiteUrl: string
   githubUrl: string
@@ -200,6 +201,7 @@ function toProfileFormState(profile?: ProfileSettingsRecord | null): ProfileForm
 
   return {
     displayName: normalized.displayName || "",
+    alias: normalized.alias || "",
     email: normalized.email || "",
     websiteUrl: normalized.websiteUrl || "",
     githubUrl: normalized.githubUrl || "",
@@ -1133,6 +1135,15 @@ export default function AdminPage() {
                             value={profileForm.displayName || ""}
                             onChange={(event) =>
                               setProfileForm((prev) => ({ ...prev, displayName: event.target.value }))
+                            }
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Alias</Label>
+                          <Input
+                            value={profileForm.alias || ""}
+                            onChange={(event) =>
+                              setProfileForm((prev) => ({ ...prev, alias: event.target.value }))
                             }
                           />
                         </div>
