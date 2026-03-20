@@ -3,11 +3,64 @@
 
 import * as React from "react"
 import { Badge } from "@/components/ui/badge"
-import { Cpu, ShieldCheck, Box, Loader2, ExternalLink, Paperclip } from "lucide-react"
+import { Cpu, ShieldCheck, Box, Loader2, ExternalLink, Paperclip, ChevronDown } from "lucide-react"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { cn } from "@/lib/utils"
 import { fetchJson } from "@/lib/api-client"
 import type { ProjectRecord } from "@/lib/portfolio-types"
+
+function ProjectAttachmentList({ attachments }: { attachments?: ProjectRecord["attachments"] }) {
+  const normalized = React.useMemo(() => {
+    return (attachments || [])
+      .map((attachment) => ({
+        name: typeof attachment?.name === "string" ? attachment.name.trim() : "",
+        url: typeof attachment?.url === "string" ? attachment.url.trim() : "",
+      }))
+      .filter((attachment) => Boolean(attachment.url))
+  }, [attachments])
+
+  if (!normalized.length) {
+    return null
+  }
+
+  return (
+    <Collapsible className="mt-4 rounded-lg border border-border/60 bg-muted/20 p-2">
+      <CollapsibleTrigger asChild>
+        <button
+          type="button"
+          onClick={(event) => {
+            event.preventDefault()
+            event.stopPropagation()
+          }}
+          className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-[10px] uppercase tracking-wider text-muted-foreground hover:bg-background/40"
+        >
+          <span className="flex items-center gap-1.5">
+            <Paperclip className="h-3 w-3" /> Attachments ({normalized.length})
+          </span>
+          <ChevronDown className="h-3.5 w-3.5" />
+        </button>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="mt-2 space-y-1.5">
+        {normalized.map((attachment, attachmentIndex) => (
+          <button
+            key={`${attachment.url}-${attachmentIndex}`}
+            type="button"
+            onClick={(event) => {
+              event.preventDefault()
+              event.stopPropagation()
+              window.open(attachment.url, "_blank", "noopener,noreferrer")
+            }}
+            className="flex w-full items-center justify-between gap-2 rounded-md border border-border/60 bg-background/70 px-2 py-1.5 text-left text-xs text-primary hover:border-primary/40"
+          >
+            <span className="truncate">{attachment.name || `Attachment ${attachmentIndex + 1}`}</span>
+            <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+          </button>
+        ))}
+      </CollapsibleContent>
+    </Collapsible>
+  )
+}
 
 export default function ProjectsPage() {
   const [displayProjects, setDisplayProjects] = React.useState<ProjectRecord[]>([])
@@ -114,34 +167,7 @@ export default function ProjectsPage() {
                       </span>
                     ))}
                   </div>
-                  {(project.attachments || []).length > 0 && (
-                    <div className="mt-4 space-y-1">
-                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-                        <Paperclip className="h-3 w-3" /> Attachments
-                      </p>
-                      {(project.attachments || []).slice(0, 3).map((attachment, attachmentIndex) => (
-                        <button
-                          key={`${attachment.url}-${attachmentIndex}`}
-                          type="button"
-                          onClick={(event) => {
-                            event.preventDefault()
-                            event.stopPropagation()
-                            if (attachment.url) {
-                              window.open(attachment.url, "_blank", "noopener,noreferrer")
-                            }
-                          }}
-                          className="block text-xs text-primary hover:underline break-all text-left"
-                        >
-                          {attachment.name || `Attachment ${attachmentIndex + 1}`}
-                        </button>
-                      ))}
-                      {(project.attachments || []).length > 3 && (
-                        <p className="text-[10px] text-muted-foreground">
-                          +{(project.attachments || []).length - 3} more attachment(s)
-                        </p>
-                      )}
-                    </div>
-                  )}
+                  <ProjectAttachmentList attachments={project.attachments} />
                 </a>
               </div>
             </li>

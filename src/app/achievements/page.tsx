@@ -2,7 +2,7 @@
 "use client"
 
 import * as React from "react"
-import { Award, Trophy, CheckCircle2, Loader2, ZoomIn, Paperclip } from "lucide-react"
+import { Award, Trophy, CheckCircle2, Loader2, ZoomIn, Paperclip, ChevronDown, ExternalLink } from "lucide-react"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
 import { fetchJson } from "@/lib/api-client"
 import type { AchievementRecord } from "@/lib/portfolio-types"
@@ -13,6 +13,78 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+
+function AchievementAttachmentList({
+  attachments,
+  stopCardAction = false,
+}: {
+  attachments?: AchievementRecord["attachments"]
+  stopCardAction?: boolean
+}) {
+  const normalized = React.useMemo(() => {
+    return (attachments || [])
+      .map((attachment) => ({
+        name: typeof attachment?.name === "string" ? attachment.name.trim() : "",
+        url: typeof attachment?.url === "string" ? attachment.url.trim() : "",
+      }))
+      .filter((attachment) => Boolean(attachment.url))
+  }, [attachments])
+
+  if (!normalized.length) {
+    return null
+  }
+
+  return (
+    <Collapsible className="mt-3 rounded-lg border border-border/60 bg-muted/20 p-2">
+      <CollapsibleTrigger asChild>
+        <button
+          type="button"
+          onClick={(event) => {
+            if (stopCardAction) {
+              event.stopPropagation()
+            }
+          }}
+          onPointerDown={(event) => {
+            if (stopCardAction) {
+              event.stopPropagation()
+            }
+          }}
+          className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-[10px] uppercase tracking-wider text-muted-foreground hover:bg-background/40"
+        >
+          <span className="flex items-center gap-1.5">
+            <Paperclip className="h-3 w-3" /> Attachments ({normalized.length})
+          </span>
+          <ChevronDown className="h-3.5 w-3.5" />
+        </button>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="mt-2 space-y-1.5">
+        {normalized.map((attachment, attachmentIndex) => (
+          <a
+            key={`${attachment.url}-${attachmentIndex}`}
+            href={attachment.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(event) => {
+              if (stopCardAction) {
+                event.stopPropagation()
+              }
+            }}
+            onPointerDown={(event) => {
+              if (stopCardAction) {
+                event.stopPropagation()
+              }
+            }}
+            className="flex items-center justify-between gap-2 rounded-md border border-border/60 bg-background/70 px-2 py-1.5 text-xs text-primary hover:border-primary/40"
+          >
+            <span className="truncate">{attachment.name || `Attachment ${attachmentIndex + 1}`}</span>
+            <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+          </a>
+        ))}
+      </CollapsibleContent>
+    </Collapsible>
+  )
+}
 
 export default function AchievementsPage() {
   const [dbAchievements, setDbAchievements] = React.useState<AchievementRecord[]>([])
@@ -128,25 +200,7 @@ export default function AchievementsPage() {
                           <p className="text-[10px] font-code text-primary uppercase mb-1">{cert.issuer}</p>
                           <h3 className="text-lg font-headline font-bold">{cert.title}</h3>
                           <p className="text-xs text-muted-foreground mt-2 line-clamp-2 italic">{cert.description}</p>
-                          {(cert.attachments || []).length > 0 && (
-                            <div className="mt-3 space-y-1">
-                              <p className="text-[10px] uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-                                <Paperclip className="h-3 w-3" /> Attachments
-                              </p>
-                              {(cert.attachments || []).slice(0, 2).map((attachment, attachmentIndex) => (
-                                <a
-                                  key={`${attachment.url}-${attachmentIndex}`}
-                                  href={attachment.url || "#"}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="block text-xs text-primary hover:underline break-all"
-                                  onClick={(event) => event.stopPropagation()}
-                                >
-                                  {attachment.name || `Attachment ${attachmentIndex + 1}`}
-                                </a>
-                              ))}
-                            </div>
-                          )}
+                          <AchievementAttachmentList attachments={cert.attachments} stopCardAction />
                         </div>
                         <div className="flex items-center justify-between mt-4">
                           <div className="flex items-center text-xs text-muted-foreground font-code">
@@ -202,24 +256,7 @@ export default function AchievementsPage() {
                   <p className="text-xs font-code text-secondary mb-1">{item.platform || item.issuer}</p>
                   <h3 className="text-lg font-headline font-bold mb-2">{item.title}</h3>
                   <p className="text-sm text-muted-foreground line-clamp-3">{item.description}</p>
-                  {(item.attachments || []).length > 0 && (
-                    <div className="mt-3 space-y-1">
-                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-                        <Paperclip className="h-3 w-3" /> Attachments
-                      </p>
-                      {(item.attachments || []).slice(0, 2).map((attachment, attachmentIndex) => (
-                        <a
-                          key={`${attachment.url}-${attachmentIndex}`}
-                          href={attachment.url || "#"}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block text-xs text-primary hover:underline break-all"
-                        >
-                          {attachment.name || `Attachment ${attachmentIndex + 1}`}
-                        </a>
-                      ))}
-                    </div>
-                  )}
+                  <AchievementAttachmentList attachments={item.attachments} />
                   <div className="mt-auto pt-4 text-[10px] font-code text-muted-foreground">{item.date}</div>
                 </div>
               </div>
