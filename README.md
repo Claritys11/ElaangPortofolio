@@ -5,7 +5,7 @@ Cyberpunk-themed personal portfolio to showcase CTF write-ups, projects, achieve
 
 > 🇮🇩 Indonesian version: [README.id.md](./README.id.md)
 
-![Portfolio Preview](./awd.png)
+![Portfolio Preview](./Huwutao.jpeg)
 
 ## ✨ Highlights
 
