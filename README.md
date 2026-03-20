@@ -90,6 +90,34 @@ Generate a secure secret (example):
 openssl rand -base64 48
 ```
 
+### Deploy checklist (Cloudflare Worker)
+
+Use environment files by runtime:
+
+- `.env.local` is used by `pnpm dev` (Next.js local dev).
+- `.dev.vars` is used by `pnpm preview` / `wrangler dev` (Worker local preview).
+
+Set production secrets in Cloudflare (required):
+
+```bash
+pnpm wrangler login
+pnpm wrangler secret put ADMIN_USERNAME
+pnpm wrangler secret put ADMIN_PASSWORD
+pnpm wrangler secret put ADMIN_SESSION_SECRET
+pnpm wrangler secret put GH_OWNER
+pnpm wrangler secret put GH_REPO
+pnpm wrangler secret put GH_TOKEN
+```
+
+First-time remote deployment order:
+
+```bash
+pnpm d1:create
+# copy database_id + preview_database_id into wrangler.jsonc
+pnpm d1:setup:remote
+pnpm deploy
+```
+
 ---
 
 ## 🏃 Running the Project
