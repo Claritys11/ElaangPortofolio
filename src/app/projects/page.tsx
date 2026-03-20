@@ -43,19 +43,22 @@ function ProjectAttachmentList({ attachments }: { attachments?: ProjectRecord["a
       </CollapsibleTrigger>
       <CollapsibleContent className="mt-2 space-y-1.5">
         {normalized.map((attachment, attachmentIndex) => (
-          <button
+          <a
             key={`${attachment.url}-${attachmentIndex}`}
-            type="button"
+            href={attachment.url}
+            target="_blank"
+            rel="noopener noreferrer"
             onClick={(event) => {
-              event.preventDefault()
               event.stopPropagation()
-              window.open(attachment.url, "_blank", "noopener,noreferrer")
+            }}
+            onPointerDown={(event) => {
+              event.stopPropagation()
             }}
             className="flex w-full items-center justify-between gap-2 rounded-md border border-border/60 bg-background/70 px-2 py-1.5 text-left text-xs text-primary hover:border-primary/40"
           >
             <span className="truncate">{attachment.name || `Attachment ${attachmentIndex + 1}`}</span>
             <ExternalLink className="h-3.5 w-3.5 shrink-0" />
-          </button>
+          </a>
         ))}
       </CollapsibleContent>
     </Collapsible>
