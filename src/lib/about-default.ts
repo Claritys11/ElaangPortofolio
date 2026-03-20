@@ -255,10 +255,23 @@ function normalizeSeoSettings(value: unknown): SeoSettingsRecord {
   }
 }
 
+function pickNavbarBrandMode(
+  value: unknown,
+  fallback: "default" | "custom"
+): "default" | "custom" {
+  if (value === "default" || value === "custom") {
+    return value
+  }
+
+  return fallback
+}
+
 export function getDefaultProfileSettings(): ProfileSettingsRecord {
   return {
     displayName: "My Name",
     alias: "Claritys",
+    navbarBrandMode: "default",
+    navbarBrandName: "",
     email: "email@domain.tld",
     websiteUrl: "https://domain.tld",
     githubUrl: "http://github.com/github",
@@ -281,6 +294,8 @@ export function normalizeProfileSettings(
   return {
     displayName: pickString(value?.displayName, defaults.displayName ?? "My Name"),
     alias: pickString(value?.alias, defaults.alias ?? "Claritys"),
+    navbarBrandMode: pickNavbarBrandMode(value?.navbarBrandMode, defaults.navbarBrandMode ?? "default"),
+    navbarBrandName: pickString(value?.navbarBrandName, defaults.navbarBrandName ?? ""),
     email: pickString(value?.email, defaults.email ?? "email@domain.tld"),
     websiteUrl: pickString(value?.websiteUrl, defaults.websiteUrl ?? "https://domain.tld"),
     githubUrl: pickString(value?.githubUrl, defaults.githubUrl ?? "http://github.com/github"),

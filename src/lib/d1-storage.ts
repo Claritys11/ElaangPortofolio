@@ -114,6 +114,8 @@ interface ProfileSettingsRow {
   id: string;
   display_name: string | null;
   alias_name: string | null;
+  navbar_brand_mode: string | null;
+  navbar_brand_name: string | null;
   email: string | null;
   website_url: string | null;
   github_url: string | null;
@@ -194,6 +196,8 @@ async function ensureTableColumn(
 async function ensureProfileSettingsColumns(db: D1DatabaseBinding): Promise<void> {
   await ensureTableColumn(db, 'profile_settings', 'display_name', 'display_name TEXT');
   await ensureTableColumn(db, 'profile_settings', 'alias_name', 'alias_name TEXT');
+  await ensureTableColumn(db, 'profile_settings', 'navbar_brand_mode', 'navbar_brand_mode TEXT');
+  await ensureTableColumn(db, 'profile_settings', 'navbar_brand_name', 'navbar_brand_name TEXT');
   await ensureTableColumn(db, 'profile_settings', 'email', 'email TEXT');
   await ensureTableColumn(db, 'profile_settings', 'website_url', 'website_url TEXT');
   await ensureTableColumn(db, 'profile_settings', 'github_url', 'github_url TEXT');
@@ -286,6 +290,8 @@ async function migrate(db: D1DatabaseBinding): Promise<void> {
       id TEXT PRIMARY KEY,
       display_name TEXT,
       alias_name TEXT,
+      navbar_brand_mode TEXT,
+      navbar_brand_name TEXT,
       email TEXT,
       website_url TEXT,
       github_url TEXT,
@@ -311,6 +317,8 @@ async function migrate(db: D1DatabaseBinding): Promise<void> {
       id,
       display_name,
       alias_name,
+      navbar_brand_mode,
+      navbar_brand_name,
       email,
       website_url,
       github_url,
@@ -323,11 +331,13 @@ async function migrate(db: D1DatabaseBinding): Promise<void> {
       education_history_json,
       seo_settings_json,
       updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       'main',
       defaultProfileSettings.displayName ?? 'My Name',
       defaultProfileSettings.alias ?? 'Claritys',
+      defaultProfileSettings.navbarBrandMode ?? 'default',
+      defaultProfileSettings.navbarBrandName ?? '',
       defaultProfileSettings.email ?? 'email@domain.tld',
       defaultProfileSettings.websiteUrl ?? 'https://domain.tld',
       defaultProfileSettings.githubUrl ?? 'http://github.com/github',
@@ -500,6 +510,11 @@ function mapProfileSettingsRow(row: ProfileSettingsRow): ProfileSettingsRecord {
   const normalized = normalizeProfileSettings({
     displayName: row.display_name ?? undefined,
     alias: row.alias_name ?? undefined,
+    navbarBrandMode:
+      row.navbar_brand_mode === 'custom' || row.navbar_brand_mode === 'default'
+        ? row.navbar_brand_mode
+        : undefined,
+    navbarBrandName: row.navbar_brand_name ?? undefined,
     email: row.email ?? undefined,
     websiteUrl: row.website_url ?? undefined,
     githubUrl: row.github_url ?? undefined,
@@ -851,6 +866,8 @@ export async function updateProfileSettings(
       id,
       display_name,
       alias_name,
+      navbar_brand_mode,
+      navbar_brand_name,
       email,
       website_url,
       github_url,
@@ -863,10 +880,12 @@ export async function updateProfileSettings(
       education_history_json,
       seo_settings_json,
       updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT(id) DO UPDATE SET
        display_name = excluded.display_name,
        alias_name = excluded.alias_name,
+       navbar_brand_mode = excluded.navbar_brand_mode,
+       navbar_brand_name = excluded.navbar_brand_name,
        email = excluded.email,
        website_url = excluded.website_url,
        github_url = excluded.github_url,
@@ -883,6 +902,8 @@ export async function updateProfileSettings(
       'main',
       nextProfile.displayName ?? null,
       nextProfile.alias ?? null,
+      nextProfile.navbarBrandMode ?? 'default',
+      nextProfile.navbarBrandName ?? '',
       nextProfile.email ?? null,
       nextProfile.websiteUrl ?? null,
       nextProfile.githubUrl ?? null,

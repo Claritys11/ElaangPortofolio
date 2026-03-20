@@ -100,6 +100,8 @@ export interface SeoSettingsRecord {
 export interface ProfileSettingsRecord {
   displayName?: string;
   alias?: string;
+  navbarBrandMode?: 'default' | 'custom';
+  navbarBrandName?: string;
   email?: string;
   websiteUrl?: string;
   githubUrl?: string;

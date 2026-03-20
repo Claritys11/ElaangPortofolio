@@ -20,7 +20,7 @@ export function ShellIntro({ onComplete }: { onComplete: () => void }) {
     "NODE ESTABLISHED AT 127.0.0.1",
     "ENCRYPTION: AES-256-GCM ACTIVE",
     "----------------------------------------",
-    "WELCOME TO CLARITY_NODE V2.0.4",
+    "WELCOME TO DFBRO_PORTFOLIO V2.0.4",
     "SYSTEM STATUS: RESTRICTED ACCESS",
     "----------------------------------------",
     "COMMAND REQUIRED: './letmein'",

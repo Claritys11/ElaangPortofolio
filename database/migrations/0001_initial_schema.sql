@@ -60,6 +60,8 @@ CREATE TABLE IF NOT EXISTS profile_settings (
   id TEXT PRIMARY KEY,
   display_name TEXT,
   alias_name TEXT,
+  navbar_brand_mode TEXT,
+  navbar_brand_name TEXT,
   email TEXT,
   website_url TEXT,
   github_url TEXT,

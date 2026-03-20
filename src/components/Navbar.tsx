@@ -50,7 +50,12 @@ export function Navbar() {
     }
   }, [])
 
-  const brandName = (profileSettings.displayName ?? "My Name").split(" ")[0] || "My"
+  const baseDefaultBrandName = (profileSettings.displayName ?? "My Name").split(" ")[0] || "My"
+  const defaultBrandName = `${baseDefaultBrandName}'s Portfolio`
+  const customBrandName = profileSettings.navbarBrandName?.trim()
+  const brandName = profileSettings.navbarBrandMode === "custom" && customBrandName
+    ? customBrandName
+    : defaultBrandName
 
   return (
     <nav className="fixed top-0 w-full z-50 border-b border-border/40 bg-background/80 backdrop-blur-md">
@@ -61,7 +66,7 @@ export function Navbar() {
               <Shield className="h-6 w-6 text-primary" />
             </div>
             <span className="font-headline font-bold text-xl tracking-tighter text-foreground">
-              {brandName}&apos;s<span className="text-primary">.</span>
+              {brandName}<span className="text-primary">.</span>
             </span>
           </Link>
 

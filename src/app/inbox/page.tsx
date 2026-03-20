@@ -133,6 +133,8 @@ interface SeoFormState {
 interface ProfileFormState {
   displayName: string
   alias: string
+  navbarBrandMode: "default" | "custom"
+  navbarBrandName: string
   email: string
   websiteUrl: string
   githubUrl: string
@@ -202,6 +204,8 @@ function toProfileFormState(profile?: ProfileSettingsRecord | null): ProfileForm
   return {
     displayName: normalized.displayName || "",
     alias: normalized.alias || "",
+    navbarBrandMode: normalized.navbarBrandMode === "custom" ? "custom" : "default",
+    navbarBrandName: normalized.navbarBrandName || "",
     email: normalized.email || "",
     websiteUrl: normalized.websiteUrl || "",
     githubUrl: normalized.githubUrl || "",
@@ -1144,6 +1148,37 @@ export default function AdminPage() {
                             value={profileForm.alias || ""}
                             onChange={(event) =>
                               setProfileForm((prev) => ({ ...prev, alias: event.target.value }))
+                            }
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Navbar Brand Mode</Label>
+                          <Select
+                            value={profileForm.navbarBrandMode}
+                            onValueChange={(value) =>
+                              setProfileForm((prev) => ({
+                                ...prev,
+                                navbarBrandMode: value === "custom" ? "custom" : "default",
+                              }))
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="default">Default (First Name + &apos;s)</SelectItem>
+                              <SelectItem value="custom">Custom</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Navbar Brand Name (Custom)</Label>
+                          <Input
+                            placeholder="e.g. Claritys"
+                            disabled={profileForm.navbarBrandMode !== "custom"}
+                            value={profileForm.navbarBrandName || ""}
+                            onChange={(event) =>
+                              setProfileForm((prev) => ({ ...prev, navbarBrandName: event.target.value }))
                             }
                           />
                         </div>
