@@ -33,6 +33,46 @@ interface GithubUploadResponse {
   errors?: Array<{ resource: string; code: string; field?: string; message: string }>;
 }
 
+const RELEASE_CACHE_TTL_MS = 10_000;
+
+type ReleaseCacheEntry = {
+  expiresAt: number;
+  value: GithubRelease | null;
+};
+
+const releaseByTagCache = new Map<string, ReleaseCacheEntry>();
+const releaseByTagInFlight = new Map<string, Promise<GithubRelease | null>>();
+
+function getReleaseCacheKey(owner: string, repo: string, tag: string): string {
+  return `${owner}/${repo}#${tag}`;
+}
+
+function setCachedRelease(owner: string, repo: string, tag: string, value: GithubRelease | null): void {
+  releaseByTagCache.set(getReleaseCacheKey(owner, repo, tag), {
+    value,
+    expiresAt: Date.now() + RELEASE_CACHE_TTL_MS,
+  });
+}
+
+function getCachedRelease(owner: string, repo: string, tag: string): GithubRelease | null | undefined {
+  const key = getReleaseCacheKey(owner, repo, tag);
+  const cached = releaseByTagCache.get(key);
+  if (!cached) {
+    return undefined;
+  }
+
+  if (cached.expiresAt <= Date.now()) {
+    releaseByTagCache.delete(key);
+    return undefined;
+  }
+
+  return cached.value;
+}
+
+function invalidateReleaseCache(owner: string, repo: string, tag: string): void {
+  releaseByTagCache.delete(getReleaseCacheKey(owner, repo, tag));
+}
+
 function readConfigFromEnv(): GithubStorageConfig {
   return {
     owner: process.env.GH_OWNER?.trim() ?? '',
@@ -139,17 +179,42 @@ export function getPublicUploadUrl(name: string): string {
 }
 
 async function getReleaseByTag(tag: string, config: GithubStorageConfig): Promise<GithubRelease | null> {
-  const endpoint = `https://api.github.com/repos/${config.owner}/${config.repo}/releases/tags/${encodeURIComponent(tag)}`;
-  const response = await fetch(endpoint, {
-    cache: 'no-store',
-    headers: githubHeaders(config.token),
-  });
-
-  if (!response.ok) {
-    return null;
+  const cacheKey = getReleaseCacheKey(config.owner, config.repo, tag);
+  const cached = getCachedRelease(config.owner, config.repo, tag);
+  if (cached !== undefined) {
+    return cached;
   }
 
-  return (await response.json()) as GithubRelease;
+  const inFlight = releaseByTagInFlight.get(cacheKey);
+  if (inFlight) {
+    return inFlight;
+  }
+
+  const endpoint = `https://api.github.com/repos/${config.owner}/${config.repo}/releases/tags/${encodeURIComponent(tag)}`;
+  const fetchPromise = (async () => {
+    try {
+      const response = await fetch(endpoint, {
+        cache: 'no-store',
+        headers: githubHeaders(config.token),
+      });
+
+      if (!response.ok) {
+        setCachedRelease(config.owner, config.repo, tag, null);
+        return null;
+      }
+
+      const release = (await response.json()) as GithubRelease;
+      setCachedRelease(config.owner, config.repo, tag, release);
+      return release;
+    } catch {
+      return null;
+    } finally {
+      releaseByTagInFlight.delete(cacheKey);
+    }
+  })();
+
+  releaseByTagInFlight.set(cacheKey, fetchPromise);
+  return fetchPromise;
 }
 
 async function createReleaseByTag(
@@ -192,9 +257,12 @@ async function createReleaseByTag(
     };
   }
 
+  const release = payload as GithubRelease;
+  setCachedRelease(config.owner, config.repo, tag, release);
+
   return {
     ok: true,
-    release: payload as GithubRelease,
+    release,
   };
 }
 
@@ -347,6 +415,7 @@ export async function uploadFileToGithubRelease(
 
     if (!response.ok) {
       if (response.status === 422 && payload?.errors?.some((entry) => entry.code === 'already_exists')) {
+        invalidateReleaseCache(config.owner, config.repo, releaseTag);
         const existingAsset = await getAssetByName(fileName, config);
         if (existingAsset.ok) {
           return {
@@ -374,6 +443,8 @@ export async function uploadFileToGithubRelease(
         status: response.status,
       };
     }
+
+    invalidateReleaseCache(config.owner, config.repo, releaseTag);
 
     return {
       ok: true,
@@ -418,6 +489,7 @@ export async function deleteFileFromGithubRelease(
 
   try {
     const config = resolveConfig(options);
+    const releaseTag = resolveTagFromFileName(fileName);
     const response = await fetch(asset.objectUrl, {
       method: 'DELETE',
       cache: 'no-store',
@@ -425,6 +497,7 @@ export async function deleteFileFromGithubRelease(
     });
 
     if (response.status === 204) {
+      invalidateReleaseCache(config.owner, config.repo, releaseTag);
       return {
         ok: true,
         message: `Asset '${fileName}' deleted successfully.`,
