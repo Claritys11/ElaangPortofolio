@@ -25,6 +25,8 @@ import {
   Image as ImageIcon,
   Link as LinkIcon,
   LogOut,
+  Download,
+  Upload,
 } from "lucide-react"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -263,6 +265,181 @@ interface LocalDraft<T> {
   data: T
 }
 
+interface DraftExportPayload<T> {
+  version: 1
+  kind: DraftKind
+  exportedAt: string
+  drafts: LocalDraft<T>[]
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+}
+
+function toStringField(source: Record<string, unknown>, key: string): string {
+  const value = source[key]
+  return typeof value === "string" ? value : ""
+}
+
+function parseAttachmentArray(value: unknown): AttachmentFormState[] | null {
+  if (value == null) {
+    return []
+  }
+
+  if (!Array.isArray(value)) {
+    return null
+  }
+
+  const result: AttachmentFormState[] = []
+
+  for (const item of value) {
+    if (!isRecord(item)) {
+      return null
+    }
+
+    const url = toStringField(item, "url").trim()
+    if (!url) {
+      return null
+    }
+
+    result.push({
+      name: toStringField(item, "name").trim(),
+      url,
+      contentType: toStringField(item, "contentType").trim(),
+    })
+  }
+
+  return result
+}
+
+function parseWriteupDraftData(value: unknown): WriteupFormState | null {
+  if (!isRecord(value)) {
+    return null
+  }
+
+  const attachments = parseAttachmentArray(value.attachments)
+  if (!attachments) {
+    return null
+  }
+
+  return {
+    title: toStringField(value, "title"),
+    competition: toStringField(value, "competition"),
+    category: toStringField(value, "category") || "Web",
+    difficulty: toStringField(value, "difficulty") || "Medium",
+    date: toStringField(value, "date") || format(new Date(), "yyyy-MM-dd"),
+    summary: toStringField(value, "summary"),
+    content: toStringField(value, "content"),
+    flag: toStringField(value, "flag"),
+    tags: toStringField(value, "tags"),
+    attachments,
+  }
+}
+
+function parseProjectDraftData(value: unknown): ProjectFormState | null {
+  if (!isRecord(value)) {
+    return null
+  }
+
+  const attachments = parseAttachmentArray(value.attachments)
+  if (!attachments) {
+    return null
+  }
+
+  return {
+    title: toStringField(value, "title"),
+    description: toStringField(value, "description"),
+    imageUrl: toStringField(value, "imageUrl"),
+    projectUrl: toStringField(value, "projectUrl"),
+    category: toStringField(value, "category") || "Security Tooling",
+    tags: toStringField(value, "tags"),
+    attachments,
+  }
+}
+
+function parseAchievementDraftData(value: unknown): AchievementFormState | null {
+  if (!isRecord(value)) {
+    return null
+  }
+
+  const attachments = parseAttachmentArray(value.attachments)
+  if (!attachments) {
+    return null
+  }
+
+  return {
+    title: toStringField(value, "title"),
+    issuer: toStringField(value, "issuer"),
+    platform: toStringField(value, "platform"),
+    description: toStringField(value, "description"),
+    imageUrl: toStringField(value, "imageUrl"),
+    date: toStringField(value, "date") || format(new Date(), "yyyy-MM-dd"),
+    attachments,
+  }
+}
+
+function parseDraftCollectionImport<T>(
+  kind: DraftKind,
+  value: unknown,
+  parseData: (input: unknown) => T | null
+): { ok: true; drafts: LocalDraft<T>[] } | { ok: false; message: string } {
+  let rawDrafts: unknown
+
+  if (Array.isArray(value)) {
+    rawDrafts = value
+  } else if (isRecord(value)) {
+    const sourceKind = value.kind
+    if (typeof sourceKind === "string" && sourceKind !== kind) {
+      return {
+        ok: false,
+        message: `Draft file kind is '${sourceKind}', expected '${kind}'.`,
+      }
+    }
+
+    rawDrafts = value.drafts
+  } else {
+    return {
+      ok: false,
+      message: "Draft JSON must be an array or an object containing a drafts array.",
+    }
+  }
+
+  if (!Array.isArray(rawDrafts)) {
+    return {
+      ok: false,
+      message: "Draft JSON does not contain a valid drafts array.",
+    }
+  }
+
+  const normalizedDrafts: LocalDraft<T>[] = []
+
+  for (let index = 0; index < rawDrafts.length; index += 1) {
+    const entry = rawDrafts[index]
+    if (!isRecord(entry)) {
+      return { ok: false, message: `Draft item #${index + 1} is not an object.` }
+    }
+
+    const id = toStringField(entry, "id").trim()
+    if (!id) {
+      return { ok: false, message: `Draft item #${index + 1} has an invalid id.` }
+    }
+
+    const updatedAt = toStringField(entry, "updatedAt").trim()
+    if (!updatedAt || Number.isNaN(new Date(updatedAt).getTime())) {
+      return { ok: false, message: `Draft item #${index + 1} has an invalid updatedAt timestamp.` }
+    }
+
+    const data = parseData(entry.data)
+    if (!data) {
+      return { ok: false, message: `Draft item #${index + 1} has an invalid data payload.` }
+    }
+
+    normalizedDrafts.push({ id, updatedAt, data })
+  }
+
+  return { ok: true, drafts: normalizedDrafts }
+}
+
 function draftCollectionStorageKey(kind: DraftKind): string {
   return `admin:drafts:${kind}`
 }
@@ -406,6 +583,10 @@ export default function AdminPage() {
   const [writeupDrafts, setWriteupDrafts] = React.useState<Array<LocalDraft<WriteupFormState>>>([])
   const [projectDrafts, setProjectDrafts] = React.useState<Array<LocalDraft<ProjectFormState>>>([])
   const [achievementDrafts, setAchievementDrafts] = React.useState<Array<LocalDraft<AchievementFormState>>>([])
+
+  const writeupImportInputRef = React.useRef<HTMLInputElement | null>(null)
+  const projectImportInputRef = React.useRef<HTMLInputElement | null>(null)
+  const achievementImportInputRef = React.useRef<HTMLInputElement | null>(null)
 
   const draftAutosaveTimerRef = React.useRef<number | null>(null)
   const draftSnapshotRef = React.useRef("")
@@ -1068,6 +1249,138 @@ export default function AdminPage() {
     }
   }
 
+  const exportDrafts = (kind: DraftKind) => {
+    const drafts =
+      kind === "writeup"
+        ? writeupDrafts
+        : kind === "project"
+          ? projectDrafts
+          : achievementDrafts
+
+    const payload: DraftExportPayload<WriteupFormState | ProjectFormState | AchievementFormState> = {
+      version: 1,
+      kind,
+      exportedAt: new Date().toISOString(),
+      drafts,
+    }
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" })
+    const objectUrl = window.URL.createObjectURL(blob)
+    const anchor = document.createElement("a")
+    anchor.href = objectUrl
+    anchor.download = `${kind}-drafts-${format(new Date(), "yyyyMMdd-HHmmss")}.json`
+    anchor.click()
+    window.URL.revokeObjectURL(objectUrl)
+
+    toast({
+      title: "Draft export complete",
+      description: `${drafts.length} ${kind} draft(s) exported as JSON.`,
+    })
+  }
+
+  const mergeImportedDrafts = <T,>(kind: DraftKind, importedDrafts: LocalDraft<T>[]) => {
+    const currentDrafts = readDraftCollectionFromStorage<T>(kind)
+    const draftById = new Map<string, LocalDraft<T>>()
+
+    for (const draft of currentDrafts) {
+      draftById.set(draft.id, draft)
+    }
+
+    for (const importedDraft of importedDrafts) {
+      const existing = draftById.get(importedDraft.id)
+      if (!existing) {
+        draftById.set(importedDraft.id, importedDraft)
+        continue
+      }
+
+      const existingTime = new Date(existing.updatedAt).getTime()
+      const importedTime = new Date(importedDraft.updatedAt).getTime()
+      if (importedTime >= existingTime) {
+        draftById.set(importedDraft.id, importedDraft)
+      }
+    }
+
+    const mergedDrafts = Array.from(draftById.values()).sort((left, right) => {
+      return new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime()
+    })
+
+    writeDraftCollectionToStorage(kind, mergedDrafts)
+    return mergedDrafts
+  }
+
+  const handleImportDrafts = async (
+    kind: DraftKind,
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0]
+    event.target.value = ""
+    if (!file) {
+      return
+    }
+
+    let parsedPayload: unknown
+
+    try {
+      parsedPayload = JSON.parse(await file.text())
+    } catch {
+      toast({
+        variant: "destructive",
+        title: "Invalid JSON",
+        description: "The selected file is not valid JSON.",
+      })
+      return
+    }
+
+    const parsedResult =
+      kind === "writeup"
+        ? parseDraftCollectionImport(kind, parsedPayload, parseWriteupDraftData)
+        : kind === "project"
+          ? parseDraftCollectionImport(kind, parsedPayload, parseProjectDraftData)
+          : parseDraftCollectionImport(kind, parsedPayload, parseAchievementDraftData)
+
+    if (!parsedResult.ok) {
+      toast({
+        variant: "destructive",
+        title: "Draft JSON verification failed",
+        description: parsedResult.message,
+      })
+      return
+    }
+
+    if (kind === "writeup") {
+      const mergedDrafts = mergeImportedDrafts("writeup", parsedResult.drafts as LocalDraft<WriteupFormState>[])
+      setWriteupDrafts(mergedDrafts)
+    } else if (kind === "project") {
+      const mergedDrafts = mergeImportedDrafts("project", parsedResult.drafts as LocalDraft<ProjectFormState>[])
+      setProjectDrafts(mergedDrafts)
+    } else {
+      const mergedDrafts = mergeImportedDrafts(
+        "achievement",
+        parsedResult.drafts as LocalDraft<AchievementFormState>[]
+      )
+      setAchievementDrafts(mergedDrafts)
+    }
+
+    toast({
+      title: "Draft JSON verified",
+      description: `${parsedResult.drafts.length} ${kind} draft(s) imported safely.`,
+    })
+  }
+
+  const openImportPicker = (kind: DraftKind) => {
+    if (kind === "writeup") {
+      writeupImportInputRef.current?.click()
+      return
+    }
+
+    if (kind === "project") {
+      projectImportInputRef.current?.click()
+      return
+    }
+
+    achievementImportInputRef.current?.click()
+  }
+
   const saveIndicatorText = activeDraftId ? `Save: ${saveIndicator}` : "Save: manual"
 
   const addTechnicalArsenalItem = () => {
@@ -1369,6 +1682,21 @@ export default function AdminPage() {
                   </ScrollArea>
                 </TabsContent>
                 <TabsContent value="drafts">
+                  <div className="flex items-center gap-2 pb-2">
+                    <Button type="button" variant="outline" size="sm" onClick={() => exportDrafts("writeup")}>
+                      <Download className="h-4 w-4 mr-2" /> Export JSON
+                    </Button>
+                    <Button type="button" variant="outline" size="sm" onClick={() => openImportPicker("writeup")}>
+                      <Upload className="h-4 w-4 mr-2" /> Import JSON
+                    </Button>
+                    <Input
+                      ref={writeupImportInputRef}
+                      type="file"
+                      accept="application/json,.json"
+                      className="hidden"
+                      onChange={(event) => void handleImportDrafts("writeup", event)}
+                    />
+                  </div>
                   <ScrollArea className="h-[560px] border rounded-lg bg-card/30">
                     <div className="p-4 space-y-2">
                       {writeupDrafts.length ? (
@@ -1521,6 +1849,21 @@ export default function AdminPage() {
                   </ScrollArea>
                 </TabsContent>
                 <TabsContent value="drafts">
+                  <div className="flex items-center gap-2 pb-2">
+                    <Button type="button" variant="outline" size="sm" onClick={() => exportDrafts("project")}>
+                      <Download className="h-4 w-4 mr-2" /> Export JSON
+                    </Button>
+                    <Button type="button" variant="outline" size="sm" onClick={() => openImportPicker("project")}>
+                      <Upload className="h-4 w-4 mr-2" /> Import JSON
+                    </Button>
+                    <Input
+                      ref={projectImportInputRef}
+                      type="file"
+                      accept="application/json,.json"
+                      className="hidden"
+                      onChange={(event) => void handleImportDrafts("project", event)}
+                    />
+                  </div>
                   <ScrollArea className="h-[560px] border rounded-lg bg-card/30">
                     <div className="p-4 space-y-2">
                       {projectDrafts.length ? (
@@ -1678,6 +2021,21 @@ export default function AdminPage() {
                   </ScrollArea>
                 </TabsContent>
                 <TabsContent value="drafts">
+                  <div className="flex items-center gap-2 pb-2">
+                    <Button type="button" variant="outline" size="sm" onClick={() => exportDrafts("achievement")}>
+                      <Download className="h-4 w-4 mr-2" /> Export JSON
+                    </Button>
+                    <Button type="button" variant="outline" size="sm" onClick={() => openImportPicker("achievement")}>
+                      <Upload className="h-4 w-4 mr-2" /> Import JSON
+                    </Button>
+                    <Input
+                      ref={achievementImportInputRef}
+                      type="file"
+                      accept="application/json,.json"
+                      className="hidden"
+                      onChange={(event) => void handleImportDrafts("achievement", event)}
+                    />
+                  </div>
                   <ScrollArea className="h-[560px] border rounded-lg bg-card/30">
                     <div className="p-4 space-y-2">
                       {achievementDrafts.length ? (
