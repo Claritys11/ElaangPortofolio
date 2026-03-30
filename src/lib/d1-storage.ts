@@ -852,6 +852,12 @@ export async function listSecureMessages(): Promise<SecureMessageRecord[]> {
   return rows.map(mapSecureMessageRow);
 }
 
+export async function deleteSecureMessage(id: string): Promise<boolean> {
+  const db = await getDb();
+  const result = await run(db, 'DELETE FROM secure_messages WHERE id = ?', [id]);
+  return result.changes > 0;
+}
+
 export async function createContactMessage(input: {
   name: string;
   email: string;
