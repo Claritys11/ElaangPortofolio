@@ -17,10 +17,10 @@ export function ShellIntro({ onComplete }: { onComplete: () => void }) {
 
   const bootLines = [
     "INITIALIZING SECURE UPLINK...",
-    "NODE ESTABLISHED AT 127.0.0.1",
+    "NODE ESTABLISHED AT claritys.my.id",
     "ENCRYPTION: AES-256-GCM ACTIVE",
     "----------------------------------------",
-    "WELCOME TO DFBRO_PORTFOLIO V2.0.4",
+    "WELCOME TO CLARITYS_PORTFOLIO V2.0.4",
     "SYSTEM STATUS: RESTRICTED ACCESS",
     "----------------------------------------",
     "COMMAND REQUIRED: './letmein'",
@@ -44,7 +44,7 @@ export function ShellIntro({ onComplete }: { onComplete: () => void }) {
       } else {
         clearInterval(interval)
         // Start countdown after boot sequence
-        setTimeLeft(6)
+        setTimeLeft(5.5)
       }
     }, 200)
 
