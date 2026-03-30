@@ -1910,7 +1910,7 @@ export default function AdminPage() {
                       <div className="space-y-2">
                         <Input type="file" accept="image/*" onChange={(event) => handleImageUpload(event, (url) => setProjectForm({ ...projectForm, imageUrl: url }))} className="cursor-pointer" />
                         <p className="text-[10px] text-muted-foreground">
-                          Note: Images are uploaded to GitHub Releases storage and served from /api/public/uploads/*.
+                          Note: Images are uploaded to the local uploads folder and served from /api/public/uploads/*.
                         </p>
                       </div>
                     )}
@@ -2299,7 +2299,7 @@ export default function AdminPage() {
                               }
                             />
                             <p className="text-[10px] leading-relaxed text-muted-foreground">
-                              Images are uploaded to GitHub Releases storage and served from /api/public/uploads/*.
+                              Images are uploaded to the local uploads folder and served from /api/public/uploads/*.
                             </p>
                           </div>
                         )}

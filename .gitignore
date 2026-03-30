@@ -16,7 +16,6 @@
 # next.js
 /.next/
 /out/
-/.open-next/
 
 # production
 /build
@@ -39,6 +38,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+data/portfolio.sqlite3
 
 .genkit/*
 .env.local

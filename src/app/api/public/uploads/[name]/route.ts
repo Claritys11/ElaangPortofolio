@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { downloadFileFromGithubRelease } from '@/lib/github-release-storage';
+import { downloadFileFromUploadsFolder } from '@/lib/upload-storage';
 
 function normalizeAssetName(rawName: string): string | null {
   const candidate = rawName.trim();
@@ -28,7 +28,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ name: s
     return NextResponse.json({ error: 'Invalid asset name.' }, { status: 400 });
   }
 
-  const result = await downloadFileFromGithubRelease(assetName);
+  const result = await downloadFileFromUploadsFolder(assetName);
 
   if (!result.ok) {
     const statusCode = result.status && result.status >= 400 && result.status <= 599 ? result.status : 500;

@@ -11,8 +11,8 @@ Cyberpunk-themed personal portfolio to showcase CTF write-ups, projects, achieve
 
 - ⚡ Next.js 15 App Router + React 19 + Tailwind CSS
 - 🧠 AI flow support via Genkit (`src/ai`)
-- 🗂️ Storage runs on Cloudflare D1 only (`PORTFOLIO_DB` binding)
-- 🗄️ Media uploads stored in GitHub Releases and served via `/api/public/uploads/:name`
+- 🗂️ Storage runs on local SQLite (`data/portfolio.sqlite3`)
+- 🗄️ Media uploads stored in the local `public/uploads` folder and served via `/api/public/uploads/:name`
 - 🔐 Server-side cookie session for admin dashboard
 - 🧾 Profile + SEO settings editable from admin and persisted in storage database
 
@@ -20,18 +20,18 @@ Cyberpunk-themed personal portfolio to showcase CTF write-ups, projects, achieve
 
 - **Frontend:** Next.js, React, Tailwind CSS, Radix UI
 - **Backend/API:** Next.js Route Handlers (`src/app/api/**`)
-- **Data:** Cloudflare D1
-- **Asset Storage:** GitHub Releases assets
+- **Data:** Local SQLite (`data/portfolio.sqlite3`)
+- **Asset Storage:** Local uploads folder (`public/uploads`)
 - **Utilities:** date-fns, zod, Genkit
 
 ## 🧭 Storage Architecture
 
-The app runs in Cloudflare-first mode:
+The app runs in local server mode:
 
-- `/api/**` endpoints are active on Next.js/Worker runtime
-- main data is stored in Cloudflare D1 (`PORTFOLIO_DB` binding)
+- `/api/**` endpoints are active on the local Next.js server
+- main data is stored in local SQLite (`data/portfolio.sqlite3`)
 - uploads are served through `/api/public/uploads/:name`
-- each upload uses a dedicated GitHub release where `tag === filename`
+- uploaded files are stored in `public/uploads` and served directly from the app
 
 ## 🚀 Quick Start
 
@@ -66,23 +66,19 @@ Then fill the required values in `.env.local`.
 
 ## ⚙️ Environment Configuration
 
-### Cloudflare D1 + GitHub Releases (required)
+### Local SQLite + local uploads
 
-Use this template when deploying to Cloudflare Workers:
+Use this template for local server development:
 
 ```env
 ADMIN_USERNAME="admin"
 ADMIN_PASSWORD="replace-with-a-strong-password"
 ADMIN_SESSION_SECRET="use-a-random-string-with-at-least-32-characters"
-
-GH_OWNER="your-github-owner"
-GH_REPO="your-repo-name"
-GH_TOKEN="github-token-with-repo-scope"
 ```
 
 Important:
-- Cloudflare Worker must bind D1 as `PORTFOLIO_DB`.
-- Uploads auto-create release tags from file names (`tag === filename`).
+- Main data is persisted to `data/portfolio.sqlite3`.
+- Uploads are stored in `public/uploads` and served from `/api/public/uploads/:name`.
 
 Generate a secure secret (example):
 
@@ -90,33 +86,15 @@ Generate a secure secret (example):
 openssl rand -base64 48
 ```
 
-### Deploy checklist (Cloudflare Worker)
+### Local development notes
 
-Use environment files by runtime:
-
-- `.env.local` is used by `pnpm dev` (Next.js local dev).
-- `.dev.vars` is used by `pnpm run preview` / `wrangler dev` (Worker local preview).
-
-Set production secrets in Cloudflare (required):
+Use `.env.local` only for local admin credentials and run the app with:
 
 ```bash
-pnpm wrangler login
-pnpm wrangler secret put ADMIN_USERNAME
-pnpm wrangler secret put ADMIN_PASSWORD
-pnpm wrangler secret put ADMIN_SESSION_SECRET
-pnpm wrangler secret put GH_OWNER
-pnpm wrangler secret put GH_REPO
-pnpm wrangler secret put GH_TOKEN
+pnpm dev
 ```
 
-First-time remote deployment order:
-
-```bash
-pnpm d1:create
-# copy database_id + preview_database_id into wrangler.jsonc
-pnpm d1:setup:remote
-pnpm run deploy
-```
+The local SQLite database file is created at `data/portfolio.sqlite3`, and uploads are stored in `public/uploads`.
 
 ---
 
@@ -146,33 +124,20 @@ pnpm typecheck
 pnpm lint
 ```
 
-### D1 migration and seed
+### Local SQLite Database
 
-Initialize Cloudflare D1 (first time only):
+This project uses a local SQLite file for development. The database file is stored at:
 
-```bash
-pnpm d1:create
-```
+- `data/portfolio.sqlite3`
 
-Then copy `database_id` and `preview_database_id` from CLI output into `wrangler.jsonc`.
+The SQLite wrapper automatically initializes and migrates the schema when the app starts.
 
-```bash
-pnpm d1:migrate:local
-pnpm d1:seed:local
-```
+### Local development
 
-For remote Cloudflare D1:
+This branch is intended for local server deployment using Next.js.
 
 ```bash
-pnpm d1:migrate:remote
-pnpm d1:seed:remote
-```
-
-### Worker preview and deploy
-
-```bash
-pnpm run preview
-pnpm run deploy
+pnpm dev
 ```
 
 ## 🛠️ Admin Setup & Content Management
@@ -192,7 +157,7 @@ After starting the app:
 
 - Public profile reads from `/api/public/profile` (storage-backed)
 - Changes from the Profile tab are persisted to storage (`profile_settings`)
-- Uploaded images are persisted as GitHub Release assets and proxied by `/api/public/uploads/:name`
+- Uploaded images are stored in the local uploads folder and proxied by `/api/public/uploads/:name`
 
 ## 📂 Key Project Structure
 
@@ -200,17 +165,17 @@ After starting the app:
 src/app/                 # App Router pages + API routes
 src/app/api/             # Auth/admin/public/contact endpoints
 src/lib/                 # Storage, types, helpers, session
-src/lib/github-release-storage.ts # GitHub release asset helpers
-database/migrations/     # D1 schema migrations
-database/seeds/          # D1 seed SQL files
+src/lib/upload-storage.ts   # Local upload folder helpers
+database/migrations/     # SQLite-compatible schema migrations
+database/seeds/          # Seed SQL files
 ```
 
 ## 🧯 Troubleshooting
 
-### 1) `Cloudflare D1 binding "PORTFOLIO_DB" is not configured.`
+### 1) Local SQLite initialization issue
 
-- Ensure `PORTFOLIO_DB` is defined in `wrangler.jsonc`.
-- Run `pnpm d1:migrate:local` before first local preview/dev using Worker context.
+- Ensure `data/portfolio.sqlite3` is writable by the app.
+- The SQLite wrapper should initialize the schema automatically on startup.
 
 ### 2) `ADMIN_SESSION_SECRET must be set and at least 32 characters`
 

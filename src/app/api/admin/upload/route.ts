@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 import { getSessionFromRequest } from '@/lib/session';
-import { uploadFileToGithubRelease } from '@/lib/github-release-storage';
+import { uploadFileToUploadsFolder } from '@/lib/upload-storage';
 
 const MAX_SIZE = 100 * 1024 * 1024;
 
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
   }
 
   const storedName = `${randomUUID()}-${sanitizeFileName(file.name)}`;
-  const result = await uploadFileToGithubRelease(
+  const result = await uploadFileToUploadsFolder(
     storedName,
     file.stream(),
     file.type || 'application/octet-stream',

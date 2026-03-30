@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { deleteFileFromGithubRelease } from '@/lib/github-release-storage';
+import { deleteFileFromUploadsFolder } from '@/lib/upload-storage';
 import { getSessionFromRequest } from '@/lib/session';
 
 function normalizeAssetName(rawName: string): string | null {
@@ -28,7 +28,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ n
     return NextResponse.json({ error: 'Invalid asset name.' }, { status: 400 });
   }
 
-  const result = await deleteFileFromGithubRelease(assetName);
+  const result = await deleteFileFromUploadsFolder(assetName);
 
   if (!result.ok) {
     const statusCode = result.status && result.status >= 400 && result.status <= 599 ? result.status : 500;

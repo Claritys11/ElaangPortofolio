@@ -8,8 +8,8 @@ Portfolio pribadi bertema cyberpunk untuk menampilkan proyek, write-up CTF, achi
 
 - ⚡ Next.js 15 App Router + React 19 + Tailwind CSS
 - 🧠 AI flow support via Genkit (`src/ai`)
-- 🗂️ Storage berjalan Cloudflare D1 saja (`PORTFOLIO_DB` binding)
-- 🗄️ Upload media disimpan di GitHub Releases dan disajikan lewat `/api/public/uploads/:name`
+- 🗂️ Storage berjalan menggunakan SQLite lokal (`data/portfolio.sqlite3`)
+- 🗄️ Upload media disimpan di folder `public/uploads` dan disajikan lewat `/api/public/uploads/:name`
 - 🔐 Admin dashboard dengan cookie session server-side
 - 🧾 Profile + SEO bisa diedit dari admin dan disimpan ke storage database
 
@@ -17,18 +17,18 @@ Portfolio pribadi bertema cyberpunk untuk menampilkan proyek, write-up CTF, achi
 
 - **Frontend:** Next.js, React, Tailwind CSS, Radix UI
 - **Backend/API:** Next Route Handlers (`src/app/api/**`)
-- **Data:** Cloudflare D1
-- **Asset Storage:** GitHub Releases assets
+- **Data:** SQLite lokal (`data/portfolio.sqlite3`)
+- **Asset Storage:** Folder upload lokal (`public/uploads`)
 - **Utilities:** date-fns, zod, Genkit
 
 ## 🧭 Arsitektur Storage
 
-Aplikasi sekarang berjalan dalam mode Cloudflare-first:
+Aplikasi sekarang berjalan dalam mode server lokal:
 
-- endpoint `/api/**` aktif di runtime Next.js/Worker
-- data utama disimpan di Cloudflare D1 (`PORTFOLIO_DB` binding)
+- endpoint `/api/**` aktif di runtime Next.js lokal
+- data utama disimpan di SQLite lokal (`data/portfolio.sqlite3`)
 - upload media disajikan lewat `/api/public/uploads/:name`
-- setiap upload memakai release GitHub khusus dengan aturan `tag === filename`
+- setiap upload disimpan di folder `public/uploads` dan disajikan langsung oleh aplikasi
 
 ## 🚀 Quick Start
 
@@ -63,23 +63,19 @@ Lalu isi `.env.local` dengan nilai yang dibutuhkan.
 
 ## ⚙️ Setting Environment
 
-### Cloudflare D1 + GitHub Releases (wajib)
+### SQLite lokal + upload folder lokal
 
-Gunakan template ini untuk deployment di Cloudflare Workers:
+Gunakan template ini untuk pengembangan server lokal:
 
 ```env
 ADMIN_USERNAME="admin"
 ADMIN_PASSWORD="ganti-dengan-password-kuat"
 ADMIN_SESSION_SECRET="isi-random-string-minimal-32-karakter"
-
-GH_OWNER="github-owner-kamu"
-GH_REPO="nama-repo"
-GH_TOKEN="github-token-dengan-scope-repo"
 ```
 
 Catatan penting:
-- Worker Cloudflare harus punya binding D1 bernama `PORTFOLIO_DB`.
-- Upload otomatis membuat release tag dari nama file (`tag === filename`).
+- Data utama disimpan di `data/portfolio.sqlite3`.
+- Upload disimpan di `public/uploads` dan disajikan lewat `/api/public/uploads/:name`
 
 Generate secret aman (contoh):
 
@@ -87,33 +83,15 @@ Generate secret aman (contoh):
 openssl rand -base64 48
 ```
 
-### Checklist deploy (Cloudflare Worker)
+### Local development
 
-Gunakan file environment sesuai runtime:
-
-- `.env.local` dipakai oleh `pnpm dev` (Next.js local dev).
-- `.dev.vars` dipakai oleh `pnpm run preview` / `wrangler dev` (preview Worker lokal).
-
-Set secret production di Cloudflare (wajib):
+Jalankan aplikasi secara lokal dengan konfigurasi ini:
 
 ```bash
-pnpm wrangler login
-pnpm wrangler secret put ADMIN_USERNAME
-pnpm wrangler secret put ADMIN_PASSWORD
-pnpm wrangler secret put ADMIN_SESSION_SECRET
-pnpm wrangler secret put GH_OWNER
-pnpm wrangler secret put GH_REPO
-pnpm wrangler secret put GH_TOKEN
+pnpm dev
 ```
 
-Urutan deploy remote pertama kali:
-
-```bash
-pnpm d1:create
-# salin database_id + preview_database_id ke wrangler.jsonc
-pnpm d1:setup:remote
-pnpm run deploy
-```
+Aplikasi menggunakan SQLite lokal di `data/portfolio.sqlite3` dan upload lokal di `public/uploads`.
 
 ---
 
@@ -143,33 +121,20 @@ pnpm typecheck
 pnpm lint
 ```
 
-### Migrasi dan seed D1
+### Local SQLite Database
 
-Inisialisasi Cloudflare D1 (sekali saja):
+Aplikasi ini menggunakan file SQLite lokal untuk pengembangan. File databasenya berada di:
 
-```bash
-pnpm d1:create
-```
+- `data/portfolio.sqlite3`
 
-Lalu salin `database_id` dan `preview_database_id` dari output CLI ke `wrangler.jsonc`.
+Wrapper SQLite akan menginisialisasi dan memigrasi skema secara otomatis saat aplikasi berjalan.
 
-```bash
-pnpm d1:migrate:local
-pnpm d1:seed:local
-```
+### Local development
 
-Untuk Cloudflare D1 remote:
+Jalankan aplikasi secara lokal:
 
 ```bash
-pnpm d1:migrate:remote
-pnpm d1:seed:remote
-```
-
-### Preview dan deploy Worker
-
-```bash
-pnpm run preview
-pnpm run deploy
+pnpm dev
 ```
 
 ## 🛠️ Admin Setup & Content Setting
@@ -189,7 +154,7 @@ Setelah app jalan:
 
 - Profile publik dibaca dari `/api/public/profile` (berbasis storage)
 - Perubahan dari tab Profile di admin disimpan ke storage (`profile_settings`)
-- Gambar yang di-upload disimpan sebagai GitHub Release asset dan diproxy oleh `/api/public/uploads/:name`
+- Gambar yang di-upload disimpan di folder upload lokal dan diproxy oleh `/api/public/uploads/:name`
 
 ## 📂 Struktur Folder Penting
 
@@ -197,17 +162,17 @@ Setelah app jalan:
 src/app/                 # App Router pages + API routes
 src/app/api/             # Endpoint auth/admin/public/contact
 src/lib/                 # Storage, types, helper, session
-src/lib/github-release-storage.ts # Helper storage asset GitHub Releases
-database/migrations/     # File migrasi skema D1
-database/seeds/          # File seed SQL D1
+src/lib/upload-storage.ts # Local upload folder helpers
+database/migrations/     # SQLite-compatible schema migrations
+database/seeds/          # File seed SQL
 ```
 
 ## 🧯 Troubleshooting
 
-### 1) `Cloudflare D1 binding "PORTFOLIO_DB" is not configured.`
+### 1) Local SQLite initialization issue
 
-- Pastikan binding `PORTFOLIO_DB` ada di `wrangler.jsonc`.
-- Jalankan `pnpm d1:migrate:local` sebelum preview/dev pertama dengan konteks Worker.
+- Pastikan `data/portfolio.sqlite3` dapat ditulis oleh aplikasi.
+- Wrapper SQLite akan menginisialisasi skema secara otomatis saat aplikasi berjalan.
 
 ### 2) `ADMIN_SESSION_SECRET must be set and at least 32 characters`
 
