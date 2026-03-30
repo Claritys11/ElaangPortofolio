@@ -17,6 +17,8 @@ import {
   Unlock,
   FileText,
   Code,
+  Download,
+  Paperclip,
   Loader2,
   Eye,
   EyeOff
@@ -171,6 +173,36 @@ export default function WriteupDetailPage() {
               dangerouslySetInnerHTML={{ __html: data.content || "" }}
             />
           </section>
+
+          {(data.attachments || []).length > 0 && (
+            <section className="space-y-4">
+              <h2 className="text-2xl font-headline font-bold flex items-center">
+                <Paperclip className="h-5 w-5 mr-3 text-secondary" />
+                Challenge Attachments
+              </h2>
+              <div className="space-y-2">
+                {(data.attachments || []).map((attachment, index) => (
+                  <a
+                    key={`${attachment.url}-${index}`}
+                    href={attachment.url || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-border bg-muted/20 px-4 py-3 hover:border-primary/40 transition-colors"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-primary break-all">
+                        {attachment.name || `Attachment ${index + 1}`}
+                      </p>
+                      {attachment.contentType ? (
+                        <p className="text-[10px] text-muted-foreground">{attachment.contentType}</p>
+                      ) : null}
+                    </div>
+                    <Download className="h-4 w-4 text-primary shrink-0 ml-3" />
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
 
           <section className="p-8 bg-primary/5 border border-primary/20 rounded-xl space-y-6">
             <div className="flex items-center justify-between">

@@ -84,7 +84,7 @@
   "auth": {
     "providers": ["password", "anonymous"]
   },
-  "firestore": {
+  "collections": {
     "/users/{ownerId}/secureMessages/{messageId}": {
       "schema": { "$ref": "#/backend/entities/SecureMessage" },
       "description": "Secure messages for the owner."

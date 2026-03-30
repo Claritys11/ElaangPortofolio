@@ -1,22 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { mkdir, writeFile } from 'fs/promises';
-import { join } from 'path';
 import { randomUUID } from 'crypto';
 import { getSessionFromRequest } from '@/lib/session';
+import { uploadFileToGithubRelease } from '@/lib/github-release-storage';
 
-const MAX_SIZE = 4 * 1024 * 1024; // 4 MB
+const MAX_SIZE = 100 * 1024 * 1024;
 
-const ALLOWED_TYPES: Record<string, string> = {
-  'image/jpeg': 'jpg',
-  'image/png': 'png',
-  'image/gif': 'gif',
-  'image/webp': 'webp',
-  'image/avif': 'avif',
-};
+function sanitizeFileName(fileName: string): string {
+  const normalized = (fileName || 'file.bin')
+    .trim()
+    .replace(/[^a-zA-Z0-9._-]/g, '-')
+    .replace(/-{2,}/g, '-');
+
+  return normalized || 'file.bin';
+}
 
 export async function POST(req: NextRequest) {
   if (!getSessionFromRequest(req)) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+  }
+
+  const contentLengthHeader = req.headers.get('content-length');
+  const contentLength = contentLengthHeader ? Number(contentLengthHeader) : null;
+  if (contentLength && Number.isFinite(contentLength) && contentLength > MAX_SIZE) {
+    return NextResponse.json({ error: 'File too large. Maximum size is 100 MB.' }, { status: 413 });
   }
 
   let formData: FormData;
@@ -31,24 +37,33 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'No file provided.' }, { status: 400 });
   }
 
-  const ext = ALLOWED_TYPES[file.type];
-  if (!ext) {
-    return NextResponse.json(
-      { error: `Unsupported file type "${file.type}". Allowed: jpeg, png, gif, webp, avif.` },
-      { status: 415 }
-    );
+  if (file.size <= 0) {
+    return NextResponse.json({ error: 'File is empty.' }, { status: 400 });
   }
 
-  const bytes = await file.arrayBuffer();
-  if (bytes.byteLength > MAX_SIZE) {
-    return NextResponse.json({ error: 'File too large. Maximum size is 4 MB.' }, { status: 413 });
+  if (file.size > MAX_SIZE) {
+    return NextResponse.json({ error: 'File too large. Maximum size is 100 MB.' }, { status: 413 });
   }
 
-  const uploadsDir = join(process.cwd(), 'public', 'uploads');
-  await mkdir(uploadsDir, { recursive: true });
+  const storedName = `${randomUUID()}-${sanitizeFileName(file.name)}`;
+  const result = await uploadFileToGithubRelease(
+    storedName,
+    file.stream(),
+    file.type || 'application/octet-stream',
+    file.size
+  );
 
-  const filename = `${randomUUID()}.${ext}`;
-  await writeFile(join(uploadsDir, filename), Buffer.from(bytes));
+  if (!result.ok) {
+    const statusCode = result.status && result.status >= 400 && result.status <= 599 ? result.status : 500;
+    return NextResponse.json({ error: result.error }, { status: statusCode });
+  }
 
-  return NextResponse.json({ url: `/uploads/${filename}` });
+  return NextResponse.json(
+    {
+      url: result.publicUrl,
+      assetName: result.name,
+      contentType: result.contentType,
+    },
+    { status: 201 }
+  );
 }

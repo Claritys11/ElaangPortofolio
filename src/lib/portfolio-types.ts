@@ -1,3 +1,9 @@
+export interface AttachmentRecord {
+  name?: string;
+  url?: string;
+  contentType?: string;
+}
+
 export interface WriteupRecord {
   id: string;
   title?: string;
@@ -9,6 +15,7 @@ export interface WriteupRecord {
   content?: string;
   flag?: string;
   tags?: string[];
+  attachments?: AttachmentRecord[];
   createdAt?: string;
   updatedAt?: string;
 }
@@ -21,6 +28,7 @@ export interface ProjectRecord {
   projectUrl?: string;
   category?: string;
   tags?: string[];
+  attachments?: AttachmentRecord[];
   createdAt?: string;
   updatedAt?: string;
 }
@@ -33,6 +41,7 @@ export interface AchievementRecord {
   description?: string;
   imageUrl?: string;
   date?: string;
+  attachments?: AttachmentRecord[];
   createdAt?: string;
   updatedAt?: string;
 }
@@ -78,8 +87,30 @@ export interface ProfessionalJourneyItem {
   desc?: string;
 }
 
+export interface EducationHistoryItem {
+  level?: string;
+  school?: string;
+  period?: string;
+}
+
+export interface SeoSettingsRecord {
+  titleTemplate?: string;
+  defaultTitle?: string;
+  description?: string;
+  canonicalUrl?: string;
+  previewImageUrl?: string;
+  siteName?: string;
+  locale?: string;
+  keywords?: string[];
+  jobTitle?: string;
+  sameAs?: string[];
+}
+
 export interface ProfileSettingsRecord {
   displayName?: string;
+  alias?: string;
+  navbarBrandMode?: 'default' | 'custom';
+  navbarBrandName?: string;
   email?: string;
   websiteUrl?: string;
   githubUrl?: string;
@@ -89,5 +120,7 @@ export interface ProfileSettingsRecord {
   philosophyText?: string;
   technicalArsenal?: TechnicalArsenalItem[];
   professionalJourney?: ProfessionalJourneyItem[];
+  educationHistory?: EducationHistoryItem[];
+  seo?: SeoSettingsRecord;
   updatedAt?: string;
 }

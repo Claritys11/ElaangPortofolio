@@ -6,7 +6,7 @@ const COOKIE_NAME = 'admin_session';
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000; // 8 hours
 
 function getSecret(): string {
-  const secret = process.env.ADMIN_SESSION_SECRET;
+  const secret = process.env.ADMIN_SESSION_SECRET ?? process.env.admin_session_secret;
   if (!secret || secret.length < 32) {
     throw new Error('ADMIN_SESSION_SECRET must be set and at least 32 characters long.');
   }
@@ -19,7 +19,7 @@ interface SessionPayload {
 }
 
 function isAdminUsername(username: string): boolean {
-  const adminUsername = process.env.ADMIN_USERNAME;
+  const adminUsername = process.env.ADMIN_USERNAME ?? process.env.admin_username;
   return Boolean(adminUsername && username === adminUsername);
 }
 

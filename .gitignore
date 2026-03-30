@@ -16,6 +16,7 @@
 # next.js
 /.next/
 /out/
+/.open-next/
 
 # production
 /build
@@ -23,6 +24,8 @@
 # misc
 .DS_Store
 *.pem
+.wrangler/
+.mf/
 
 # debug
 npm-debug.log*
@@ -39,12 +42,6 @@ next-env.d.ts
 
 .genkit/*
 .env.local
-
-# firebase
-firebase-debug.log
-firestore-debug.log
-
-# sqlite
-data/*.sqlite
-data/*.sqlite3
-data/*.db
+.dev.vars
+.dev.vars.*
+!.dev.vars.example

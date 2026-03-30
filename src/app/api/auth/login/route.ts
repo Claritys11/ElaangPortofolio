@@ -7,8 +7,9 @@ export async function POST(req: NextRequest) {
   try {
     const { username, password } = await req.json();
 
-    const adminUsername = process.env.ADMIN_USERNAME;
-    const adminPassword = process.env.ADMIN_PASSWORD;
+    const adminUsername = process.env.ADMIN_USERNAME ?? process.env.admin_username;
+    const adminPassword = process.env.ADMIN_PASSWORD ?? process.env.admin_password;
+
 
     if (!adminUsername || !adminPassword) {
       return NextResponse.json({ error: 'Server misconfiguration.' }, { status: 500 });
@@ -43,7 +44,11 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ ok: true, username });
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('ADMIN_SESSION_SECRET')) {
+      return NextResponse.json({ error: 'Server misconfiguration.' }, { status: 500 });
+    }
+
     return NextResponse.json({ error: 'Bad request.' }, { status: 400 });
   }
 }

@@ -25,7 +25,8 @@ import {
   Image as ImageIcon,
   Link as LinkIcon,
   LogOut,
-  Terminal,
+  Download,
+  Upload,
 } from "lucide-react"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -34,7 +35,6 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { fetchJson } from "@/lib/api-client"
 import { getDefaultProfileSettings, mergeProfileSettings } from "@/lib/about-default"
-import { getStorageType } from "@/lib/storage-type"
 import type {
   AccessLogRecord,
   AchievementRecord,
@@ -59,6 +59,7 @@ type EditMode = "writeup" | "project" | "achievement" | null
 type ImageSourceMode = "url" | "upload"
 
 const adminCollectionRoutes = {
+  messages: "/api/admin/messages",
   ctfWriteups: "/api/admin/writeups",
   projects: "/api/admin/projects",
   achievements: "/api/admin/achievements",
@@ -71,6 +72,12 @@ interface DeleteTarget {
   collection: DeleteCollection
 }
 
+interface AttachmentFormState {
+  name: string
+  url: string
+  contentType: string
+}
+
 interface WriteupFormState {
   title: string
   competition: string
@@ -81,6 +88,7 @@ interface WriteupFormState {
   content: string
   flag: string
   tags: string
+  attachments: AttachmentFormState[]
 }
 
 interface ProjectFormState {
@@ -90,6 +98,7 @@ interface ProjectFormState {
   projectUrl: string
   category: string
   tags: string
+  attachments: AttachmentFormState[]
 }
 
 interface AchievementFormState {
@@ -99,6 +108,7 @@ interface AchievementFormState {
   description: string
   imageUrl: string
   date: string
+  attachments: AttachmentFormState[]
 }
 
 interface TechnicalArsenalFormState {
@@ -113,8 +123,30 @@ interface ProfessionalJourneyFormState {
   desc: string
 }
 
+interface EducationHistoryFormState {
+  level: string
+  school: string
+  period: string
+}
+
+interface SeoFormState {
+  titleTemplate: string
+  defaultTitle: string
+  description: string
+  canonicalUrl: string
+  previewImageUrl: string
+  siteName: string
+  locale: string
+  jobTitle: string
+  keywordsText: string
+  sameAsText: string
+}
+
 interface ProfileFormState {
   displayName: string
+  alias: string
+  navbarBrandMode: "default" | "custom"
+  navbarBrandName: string
   email: string
   websiteUrl: string
   githubUrl: string
@@ -124,6 +156,14 @@ interface ProfileFormState {
   philosophyText: string
   technicalArsenal: TechnicalArsenalFormState[]
   professionalJourney: ProfessionalJourneyFormState[]
+  educationHistory: EducationHistoryFormState[]
+  seo: SeoFormState
+}
+
+interface UploadAssetResponse {
+  url: string
+  assetName: string
+  contentType: string
 }
 
 function createEmptyWriteupForm(): WriteupFormState {
@@ -137,6 +177,7 @@ function createEmptyWriteupForm(): WriteupFormState {
     content: "",
     flag: "",
     tags: "",
+    attachments: [],
   }
 }
 
@@ -148,6 +189,7 @@ function createEmptyProjectForm(): ProjectFormState {
     projectUrl: "",
     category: "Security Tooling",
     tags: "",
+    attachments: [],
   }
 }
 
@@ -159,14 +201,311 @@ function createEmptyAchievementForm(): AchievementFormState {
     description: "",
     imageUrl: "",
     date: format(new Date(), "yyyy-MM-dd"),
+    attachments: [],
   }
+}
+
+function toAttachmentFormState(
+  attachments?: Array<{ name?: string; url?: string; contentType?: string }>
+): AttachmentFormState[] {
+  if (!Array.isArray(attachments)) {
+    return []
+  }
+
+  return attachments
+    .map((attachment) => {
+      const url = typeof attachment?.url === "string" ? attachment.url.trim() : ""
+      if (!url) {
+        return null
+      }
+
+      return {
+        name: typeof attachment?.name === "string" ? attachment.name.trim() : "",
+        url,
+        contentType: typeof attachment?.contentType === "string" ? attachment.contentType.trim() : "",
+      }
+    })
+    .filter((attachment): attachment is AttachmentFormState => Boolean(attachment))
+}
+
+function normalizeAttachmentPayload(attachments: AttachmentFormState[]) {
+  return attachments
+    .map((attachment) => {
+      const url = attachment.url.trim()
+      if (!url) {
+        return null
+      }
+
+      const name = attachment.name.trim()
+      const contentType = attachment.contentType.trim()
+
+      return {
+        name: name || url,
+        url,
+        ...(contentType ? { contentType } : {}),
+      }
+    })
+    .filter((attachment): attachment is { name: string; url: string; contentType?: string } =>
+      Boolean(attachment)
+    )
+}
+
+function parseCommaSeparatedValues(value: string): string[] {
+  return value
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+}
+
+type DraftKind = "writeup" | "project" | "achievement"
+
+interface LocalDraft<T> {
+  id: string
+  updatedAt: string
+  data: T
+}
+
+interface DraftExportPayload<T> {
+  version: 1
+  kind: DraftKind
+  exportedAt: string
+  drafts: LocalDraft<T>[]
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+}
+
+function toStringField(source: Record<string, unknown>, key: string): string {
+  const value = source[key]
+  return typeof value === "string" ? value : ""
+}
+
+function parseAttachmentArray(value: unknown): AttachmentFormState[] | null {
+  if (value == null) {
+    return []
+  }
+
+  if (!Array.isArray(value)) {
+    return null
+  }
+
+  const result: AttachmentFormState[] = []
+
+  for (const item of value) {
+    if (!isRecord(item)) {
+      return null
+    }
+
+    const url = toStringField(item, "url").trim()
+    if (!url) {
+      return null
+    }
+
+    result.push({
+      name: toStringField(item, "name").trim(),
+      url,
+      contentType: toStringField(item, "contentType").trim(),
+    })
+  }
+
+  return result
+}
+
+function parseWriteupDraftData(value: unknown): WriteupFormState | null {
+  if (!isRecord(value)) {
+    return null
+  }
+
+  const attachments = parseAttachmentArray(value.attachments)
+  if (!attachments) {
+    return null
+  }
+
+  return {
+    title: toStringField(value, "title"),
+    competition: toStringField(value, "competition"),
+    category: toStringField(value, "category") || "Web",
+    difficulty: toStringField(value, "difficulty") || "Medium",
+    date: toStringField(value, "date") || format(new Date(), "yyyy-MM-dd"),
+    summary: toStringField(value, "summary"),
+    content: toStringField(value, "content"),
+    flag: toStringField(value, "flag"),
+    tags: toStringField(value, "tags"),
+    attachments,
+  }
+}
+
+function parseProjectDraftData(value: unknown): ProjectFormState | null {
+  if (!isRecord(value)) {
+    return null
+  }
+
+  const attachments = parseAttachmentArray(value.attachments)
+  if (!attachments) {
+    return null
+  }
+
+  return {
+    title: toStringField(value, "title"),
+    description: toStringField(value, "description"),
+    imageUrl: toStringField(value, "imageUrl"),
+    projectUrl: toStringField(value, "projectUrl"),
+    category: toStringField(value, "category") || "Security Tooling",
+    tags: toStringField(value, "tags"),
+    attachments,
+  }
+}
+
+function parseAchievementDraftData(value: unknown): AchievementFormState | null {
+  if (!isRecord(value)) {
+    return null
+  }
+
+  const attachments = parseAttachmentArray(value.attachments)
+  if (!attachments) {
+    return null
+  }
+
+  return {
+    title: toStringField(value, "title"),
+    issuer: toStringField(value, "issuer"),
+    platform: toStringField(value, "platform"),
+    description: toStringField(value, "description"),
+    imageUrl: toStringField(value, "imageUrl"),
+    date: toStringField(value, "date") || format(new Date(), "yyyy-MM-dd"),
+    attachments,
+  }
+}
+
+function parseDraftCollectionImport<T>(
+  kind: DraftKind,
+  value: unknown,
+  parseData: (input: unknown) => T | null
+): { ok: true; drafts: LocalDraft<T>[] } | { ok: false; message: string } {
+  let rawDrafts: unknown
+
+  if (Array.isArray(value)) {
+    rawDrafts = value
+  } else if (isRecord(value)) {
+    const sourceKind = value.kind
+    if (typeof sourceKind === "string" && sourceKind !== kind) {
+      return {
+        ok: false,
+        message: `Draft file kind is '${sourceKind}', expected '${kind}'.`,
+      }
+    }
+
+    rawDrafts = value.drafts
+  } else {
+    return {
+      ok: false,
+      message: "Draft JSON must be an array or an object containing a drafts array.",
+    }
+  }
+
+  if (!Array.isArray(rawDrafts)) {
+    return {
+      ok: false,
+      message: "Draft JSON does not contain a valid drafts array.",
+    }
+  }
+
+  const normalizedDrafts: LocalDraft<T>[] = []
+
+  for (let index = 0; index < rawDrafts.length; index += 1) {
+    const entry = rawDrafts[index]
+    if (!isRecord(entry)) {
+      return { ok: false, message: `Draft item #${index + 1} is not an object.` }
+    }
+
+    const id = toStringField(entry, "id").trim()
+    if (!id) {
+      return { ok: false, message: `Draft item #${index + 1} has an invalid id.` }
+    }
+
+    const updatedAt = toStringField(entry, "updatedAt").trim()
+    if (!updatedAt || Number.isNaN(new Date(updatedAt).getTime())) {
+      return { ok: false, message: `Draft item #${index + 1} has an invalid updatedAt timestamp.` }
+    }
+
+    const data = parseData(entry.data)
+    if (!data) {
+      return { ok: false, message: `Draft item #${index + 1} has an invalid data payload.` }
+    }
+
+    normalizedDrafts.push({ id, updatedAt, data })
+  }
+
+  return { ok: true, drafts: normalizedDrafts }
+}
+
+function draftCollectionStorageKey(kind: DraftKind): string {
+  return `admin:drafts:${kind}`
+}
+
+function readDraftCollectionFromStorage<T>(kind: DraftKind): LocalDraft<T>[] {
+  if (typeof window === "undefined") {
+    return []
+  }
+
+  try {
+    const rawCollection = window.localStorage.getItem(draftCollectionStorageKey(kind))
+    if (!rawCollection) {
+      return []
+    }
+
+    const parsedCollection = JSON.parse(rawCollection) as Array<LocalDraft<T>>
+    if (!Array.isArray(parsedCollection)) {
+      return []
+    }
+
+    return parsedCollection.filter((entry) => typeof entry?.id === "string" && Boolean(entry.id))
+  } catch {
+    return []
+  }
+}
+
+function writeDraftCollectionToStorage<T>(kind: DraftKind, collection: LocalDraft<T>[]): void {
+  if (typeof window === "undefined") {
+    return
+  }
+
+  window.localStorage.setItem(draftCollectionStorageKey(kind), JSON.stringify(collection))
+}
+
+function upsertDraftInStorage<T>(kind: DraftKind, draft: LocalDraft<T>): LocalDraft<T>[] {
+  const currentCollection = readDraftCollectionFromStorage<T>(kind)
+  const filteredCollection = currentCollection.filter((entry) => entry.id !== draft.id)
+  const nextCollection = [draft, ...filteredCollection].sort((left, right) => {
+    const leftTime = new Date(left.updatedAt).getTime()
+    const rightTime = new Date(right.updatedAt).getTime()
+    return rightTime - leftTime
+  })
+
+  writeDraftCollectionToStorage(kind, nextCollection)
+  return nextCollection
+}
+
+function removeDraftFromStorage(kind: DraftKind, id: string): void {
+  if (typeof window === "undefined") {
+    return
+  }
+
+  const currentCollection = readDraftCollectionFromStorage(kind)
+  const nextCollection = currentCollection.filter((entry) => entry.id !== id)
+  writeDraftCollectionToStorage(kind, nextCollection)
 }
 
 function toProfileFormState(profile?: ProfileSettingsRecord | null): ProfileFormState {
   const normalized = mergeProfileSettings(getDefaultProfileSettings(), profile ?? {})
+  const seo = normalized.seo ?? {}
 
   return {
     displayName: normalized.displayName || "",
+    alias: normalized.alias || "",
+    navbarBrandMode: normalized.navbarBrandMode === "custom" ? "custom" : "default",
+    navbarBrandName: normalized.navbarBrandName || "",
     email: normalized.email || "",
     websiteUrl: normalized.websiteUrl || "",
     githubUrl: normalized.githubUrl || "",
@@ -184,6 +523,23 @@ function toProfileFormState(profile?: ProfileSettingsRecord | null): ProfileForm
       period: item.period || "",
       desc: item.desc || "",
     })),
+    educationHistory: (normalized.educationHistory ?? []).map((item) => ({
+      level: item.level || "",
+      school: item.school || "",
+      period: item.period || "",
+    })),
+    seo: {
+      titleTemplate: seo.titleTemplate || "",
+      defaultTitle: seo.defaultTitle || "",
+      description: seo.description || "",
+      canonicalUrl: seo.canonicalUrl || "",
+      previewImageUrl: seo.previewImageUrl || "",
+      siteName: seo.siteName || "",
+      locale: seo.locale || "",
+      jobTitle: seo.jobTitle || "",
+      keywordsText: (seo.keywords ?? []).join(", "),
+      sameAsText: (seo.sameAs ?? []).join(", "),
+    },
   }
 }
 
@@ -193,7 +549,6 @@ function createEmptyProfileForm(): ProfileFormState {
 
 export default function AdminPage() {
   const { toast } = useToast()
-  const isFirebaseStorage = getStorageType() === "firebase"
   const [isAuthenticated, setIsAuthenticated] = React.useState(false)
   const [isAuthLoading, setIsAuthLoading] = React.useState(true)
   const [isLoginLoading, setIsLoginLoading] = React.useState(false)
@@ -213,13 +568,28 @@ export default function AdminPage() {
 
   const [editMode, setEditMode] = React.useState<EditMode>(null)
   const [editingId, setEditingId] = React.useState<string | null>(null)
+  const [activeDraftId, setActiveDraftId] = React.useState<string | null>(null)
+  const [saveIndicator, setSaveIndicator] = React.useState<"saved" | "unsaved" | "saving">("saved")
   const [imageSource, setImageSource] = React.useState<ImageSourceMode>("url")
   const [profileImageSource, setProfileImageSource] = React.useState<ImageSourceMode>("url")
+  const [writeupListTab, setWriteupListTab] = React.useState<"published" | "drafts">("published")
+  const [projectListTab, setProjectListTab] = React.useState<"published" | "drafts">("published")
+  const [achievementListTab, setAchievementListTab] = React.useState<"published" | "drafts">("published")
 
   const [writeupForm, setWriteupForm] = React.useState<WriteupFormState>(createEmptyWriteupForm)
   const [projectForm, setProjectForm] = React.useState<ProjectFormState>(createEmptyProjectForm)
   const [achievementForm, setAchievementForm] = React.useState<AchievementFormState>(createEmptyAchievementForm)
   const [profileForm, setProfileForm] = React.useState<ProfileFormState>(createEmptyProfileForm)
+  const [writeupDrafts, setWriteupDrafts] = React.useState<Array<LocalDraft<WriteupFormState>>>([])
+  const [projectDrafts, setProjectDrafts] = React.useState<Array<LocalDraft<ProjectFormState>>>([])
+  const [achievementDrafts, setAchievementDrafts] = React.useState<Array<LocalDraft<AchievementFormState>>>([])
+
+  const writeupImportInputRef = React.useRef<HTMLInputElement | null>(null)
+  const projectImportInputRef = React.useRef<HTMLInputElement | null>(null)
+  const achievementImportInputRef = React.useRef<HTMLInputElement | null>(null)
+
+  const draftAutosaveTimerRef = React.useRef<number | null>(null)
+  const draftSnapshotRef = React.useRef("")
 
   const resetDashboard = React.useCallback(() => {
     setMessages([])
@@ -229,6 +599,8 @@ export default function AdminPage() {
     setAchievements([])
     setEditMode(null)
     setEditingId(null)
+    setActiveDraftId(null)
+    setSaveIndicator("saved")
     setItemToDelete(null)
     setDeleteDialogOpen(false)
     setWriteupForm(createEmptyWriteupForm())
@@ -237,6 +609,9 @@ export default function AdminPage() {
     setProfileForm(createEmptyProfileForm())
     setImageSource("url")
     setProfileImageSource("url")
+    setWriteupListTab("published")
+    setProjectListTab("published")
+    setAchievementListTab("published")
   }, [])
 
   const handleUnauthorized = React.useCallback(() => {
@@ -329,38 +704,233 @@ export default function AdminPage() {
     }
   }, [handleUnauthorized, loadDashboardData])
 
+  React.useEffect(() => {
+    setWriteupDrafts(readDraftCollectionFromStorage<WriteupFormState>("writeup"))
+    setProjectDrafts(readDraftCollectionFromStorage<ProjectFormState>("project"))
+    setAchievementDrafts(readDraftCollectionFromStorage<AchievementFormState>("achievement"))
+  }, [])
+
+  const getDraftDisplayName = React.useCallback(
+    (
+      kind: DraftKind,
+      draft:
+        | LocalDraft<WriteupFormState>
+        | LocalDraft<ProjectFormState>
+        | LocalDraft<AchievementFormState>
+    ) => {
+      const rawName =
+        kind === "writeup"
+          ? (draft as LocalDraft<WriteupFormState>).data.title
+          : kind === "project"
+            ? (draft as LocalDraft<ProjectFormState>).data.title
+            : (draft as LocalDraft<AchievementFormState>).data.title
+
+      const safeName = (rawName || "").trim() || "unknown"
+      const safeDate = format(new Date(draft.updatedAt), "yyyyMMdd-HHmm")
+      return `Draft-${safeName}-${safeDate}`
+    },
+    []
+  )
+
+  React.useEffect(() => {
+    if (!editMode || !activeDraftId) {
+      return
+    }
+
+    const draftData =
+      editMode === "writeup"
+        ? writeupForm
+        : editMode === "project"
+          ? projectForm
+          : achievementForm
+
+    const snapshot = JSON.stringify(draftData)
+    if (draftSnapshotRef.current === snapshot) {
+      return
+    }
+
+    setSaveIndicator("unsaved")
+
+    if (draftAutosaveTimerRef.current) {
+      window.clearTimeout(draftAutosaveTimerRef.current)
+    }
+
+    draftAutosaveTimerRef.current = window.setTimeout(() => {
+      setSaveIndicator("saving")
+
+      const draftEntry = {
+        id: activeDraftId,
+        updatedAt: new Date().toISOString(),
+        data: draftData,
+      }
+
+      if (editMode === "writeup") {
+        setWriteupDrafts(upsertDraftInStorage("writeup", draftEntry as LocalDraft<WriteupFormState>))
+      } else if (editMode === "project") {
+        setProjectDrafts(upsertDraftInStorage("project", draftEntry as LocalDraft<ProjectFormState>))
+      } else {
+        setAchievementDrafts(
+          upsertDraftInStorage("achievement", draftEntry as LocalDraft<AchievementFormState>)
+        )
+      }
+
+      draftSnapshotRef.current = snapshot
+      setSaveIndicator("saved")
+    }, 1000)
+
+    return () => {
+      if (draftAutosaveTimerRef.current) {
+        window.clearTimeout(draftAutosaveTimerRef.current)
+      }
+    }
+  }, [activeDraftId, editMode, writeupForm, projectForm, achievementForm])
+
+  const uploadAsset = React.useCallback(
+    async (
+      file: File,
+      options?: { showSuccessToast?: boolean; requireImage?: boolean; successTitle?: string }
+    ) => {
+      if (options?.requireImage && !file.type.startsWith("image/")) {
+        const message = "Only image files are allowed."
+        toast({
+          variant: "destructive",
+          title: "Invalid file type",
+          description: message,
+        })
+        throw new Error(message)
+      }
+
+      const formData = new FormData()
+      formData.append("file", file)
+
+      try {
+        const payload = await fetchJson<UploadAssetResponse>("/api/admin/upload", {
+          method: "POST",
+          body: formData,
+        })
+
+        if (options?.showSuccessToast ?? true) {
+          toast({
+            title: options?.successTitle ?? "File uploaded",
+            description: `Stored as ${payload.assetName}.`,
+          })
+        }
+
+        return payload
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Could not upload file."
+
+        if (message === "Unauthorized.") {
+          handleUnauthorized()
+          toast({
+            variant: "destructive",
+            title: "Session expired",
+            description: "Authenticate again to continue.",
+          })
+          throw new Error(message)
+        }
+
+        toast({
+          variant: "destructive",
+          title: "Upload failed",
+          description: message,
+        })
+        throw error instanceof Error ? error : new Error(message)
+      }
+    },
+    [handleUnauthorized, toast]
+  )
+
+  const uploadImageAsset = React.useCallback(
+    async (file: File, options?: { showSuccessToast?: boolean }) => {
+      const payload = await uploadAsset(file, {
+        showSuccessToast: options?.showSuccessToast,
+        requireImage: true,
+        successTitle: "Image uploaded",
+      })
+      return payload.url
+    },
+    [uploadAsset]
+  )
+
+  const uploadAttachmentAsset = React.useCallback(
+    async (file: File, options?: { showSuccessToast?: boolean }) => {
+      const payload = await uploadAsset(file, {
+        showSuccessToast: options?.showSuccessToast,
+        successTitle: "Attachment uploaded",
+      })
+
+      return {
+        name: payload.assetName || file.name,
+        url: payload.url,
+        contentType: payload.contentType || file.type || "",
+      } as AttachmentFormState
+    },
+    [uploadAsset]
+  )
+
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
     const file = event.target.files?.[0]
     event.target.value = ""
     if (!file) return
 
     try {
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onloadend = () => {
-          const result = reader.result
-          if (typeof result === "string") {
-            resolve(result)
-          } else {
-            reject(new Error("Unable to encode image."))
-          }
-        }
-        reader.onerror = () => reject(new Error("Unable to encode image."))
-        reader.readAsDataURL(file)
-      })
-
-      setter(dataUrl)
-      toast({
-        title: "Image Processed",
-        description: "Image converted to Base64 for permanent storage.",
-      })
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Processing failed",
-        description: error instanceof Error ? error.message : "Could not process image.",
-      })
+      const imageUrl = await uploadImageAsset(file, { showSuccessToast: true })
+      setter(imageUrl)
+    } catch {
     }
+  }
+
+  const handleAttachmentUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    target: "writeup" | "project" | "achievement"
+  ) => {
+    const file = event.target.files?.[0]
+    event.target.value = ""
+    if (!file) return
+
+    try {
+      const attachment = await uploadAttachmentAsset(file, { showSuccessToast: true })
+
+      if (target === "writeup") {
+        setWriteupForm((prev) => ({ ...prev, attachments: [...prev.attachments, attachment] }))
+        return
+      }
+
+      if (target === "project") {
+        setProjectForm((prev) => ({ ...prev, attachments: [...prev.attachments, attachment] }))
+        return
+      }
+
+      setAchievementForm((prev) => ({ ...prev, attachments: [...prev.attachments, attachment] }))
+    } catch {
+    }
+  }
+
+  const removeAttachment = (
+    target: "writeup" | "project" | "achievement",
+    attachmentIndex: number
+  ) => {
+    if (target === "writeup") {
+      setWriteupForm((prev) => ({
+        ...prev,
+        attachments: prev.attachments.filter((_, index) => index !== attachmentIndex),
+      }))
+      return
+    }
+
+    if (target === "project") {
+      setProjectForm((prev) => ({
+        ...prev,
+        attachments: prev.attachments.filter((_, index) => index !== attachmentIndex),
+      }))
+      return
+    }
+
+    setAchievementForm((prev) => ({
+      ...prev,
+      attachments: prev.attachments.filter((_, index) => index !== attachmentIndex),
+    }))
   }
 
   const handleLogin = async (event: React.FormEvent) => {
@@ -406,12 +976,21 @@ export default function AdminPage() {
   const beginCreateWriteup = () => {
     setEditMode("writeup")
     setEditingId(null)
-    setWriteupForm(createEmptyWriteupForm())
+    setActiveDraftId(crypto.randomUUID())
+    const emptyForm = createEmptyWriteupForm()
+    setWriteupForm(emptyForm)
+    setWriteupListTab("drafts")
+    setSaveIndicator("saved")
+    draftSnapshotRef.current = JSON.stringify(emptyForm)
   }
 
   const beginEditWriteup = (writeup: WriteupRecord) => {
     setEditMode("writeup")
     setEditingId(writeup.id)
+    setActiveDraftId(null)
+    setSaveIndicator("saved")
+    setWriteupListTab("published")
+
     setWriteupForm({
       title: writeup.title || "",
       competition: writeup.competition || "",
@@ -422,19 +1001,40 @@ export default function AdminPage() {
       content: writeup.content || "",
       flag: writeup.flag || "",
       tags: (writeup.tags || []).join(", "),
+      attachments: toAttachmentFormState(writeup.attachments),
     })
+
+    draftSnapshotRef.current = ""
+  }
+
+  const beginEditWriteupDraft = (draft: LocalDraft<WriteupFormState>) => {
+    setEditMode("writeup")
+    setEditingId(null)
+    setActiveDraftId(draft.id)
+    setWriteupListTab("drafts")
+    setWriteupForm(draft.data)
+    setSaveIndicator("saved")
+    draftSnapshotRef.current = JSON.stringify(draft.data)
   }
 
   const beginCreateProject = () => {
     setEditMode("project")
     setEditingId(null)
+    setActiveDraftId(crypto.randomUUID())
     setImageSource("url")
-    setProjectForm(createEmptyProjectForm())
+    const emptyForm = createEmptyProjectForm()
+    setProjectForm(emptyForm)
+    setProjectListTab("drafts")
+    setSaveIndicator("saved")
+    draftSnapshotRef.current = JSON.stringify(emptyForm)
   }
 
   const beginEditProject = (project: ProjectRecord) => {
     setEditMode("project")
     setEditingId(project.id)
+    setActiveDraftId(null)
+    setSaveIndicator("saved")
+    setProjectListTab("published")
     setImageSource("url")
     setProjectForm({
       title: project.title || "",
@@ -443,20 +1043,42 @@ export default function AdminPage() {
       projectUrl: project.projectUrl || "",
       category: project.category || "Security Tooling",
       tags: (project.tags || []).join(", "),
+      attachments: toAttachmentFormState(project.attachments),
     })
+    draftSnapshotRef.current = ""
+  }
+
+  const beginEditProjectDraft = (draft: LocalDraft<ProjectFormState>) => {
+    setEditMode("project")
+    setEditingId(null)
+    setActiveDraftId(draft.id)
+    setProjectListTab("drafts")
+    setImageSource("url")
+    setProjectForm(draft.data)
+    setSaveIndicator("saved")
+    draftSnapshotRef.current = JSON.stringify(draft.data)
   }
 
   const beginCreateAchievement = () => {
     setEditMode("achievement")
     setEditingId(null)
+    setActiveDraftId(crypto.randomUUID())
     setImageSource("url")
-    setAchievementForm(createEmptyAchievementForm())
+    const emptyForm = createEmptyAchievementForm()
+    setAchievementForm(emptyForm)
+    setAchievementListTab("drafts")
+    setSaveIndicator("saved")
+    draftSnapshotRef.current = JSON.stringify(emptyForm)
   }
 
   const beginEditAchievement = (achievement: AchievementRecord) => {
     setEditMode("achievement")
     setEditingId(achievement.id)
+    setActiveDraftId(null)
+    setSaveIndicator("saved")
+    setAchievementListTab("published")
     setImageSource("url")
+
     setAchievementForm({
       title: achievement.title || "",
       issuer: achievement.issuer || "",
@@ -464,14 +1086,30 @@ export default function AdminPage() {
       description: achievement.description || "",
       imageUrl: achievement.imageUrl || "",
       date: achievement.date || format(new Date(), "yyyy-MM-dd"),
+      attachments: toAttachmentFormState(achievement.attachments),
     })
+
+    draftSnapshotRef.current = ""
+  }
+
+  const beginEditAchievementDraft = (draft: LocalDraft<AchievementFormState>) => {
+    setEditMode("achievement")
+    setEditingId(null)
+    setActiveDraftId(draft.id)
+    setAchievementListTab("drafts")
+    setImageSource("url")
+    setAchievementForm(draft.data)
+    setSaveIndicator("saved")
+    draftSnapshotRef.current = JSON.stringify(draft.data)
   }
 
   const saveWriteup = async () => {
     const payload = {
       ...writeupForm,
       tags: writeupForm.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
+      attachments: normalizeAttachmentPayload(writeupForm.attachments),
     }
+    const currentDraftId = activeDraftId
 
     try {
       if (editingId) {
@@ -486,10 +1124,15 @@ export default function AdminPage() {
         })
       }
 
-      toast({ title: "Write-up saved" })
-      setEditMode(null)
-      setEditingId(null)
+      if (currentDraftId) {
+        removeDraftFromStorage("writeup", currentDraftId)
+        setWriteupDrafts(readDraftCollectionFromStorage<WriteupFormState>("writeup"))
+      }
+
+      toast({ title: editingId ? "Write-up saved" : "Write-up published" })
+      closeEditor()
       setWriteupForm(createEmptyWriteupForm())
+      setWriteupListTab("published")
       await loadDashboardData()
     } catch (error) {
       toast({
@@ -504,7 +1147,10 @@ export default function AdminPage() {
     const payload = {
       ...projectForm,
       tags: projectForm.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
+      attachments: normalizeAttachmentPayload(projectForm.attachments),
     }
+
+    const currentDraftId = activeDraftId
 
     try {
       if (editingId) {
@@ -519,11 +1165,16 @@ export default function AdminPage() {
         })
       }
 
-      toast({ title: "Project saved" })
-      setEditMode(null)
-      setEditingId(null)
+      if (currentDraftId) {
+        removeDraftFromStorage("project", currentDraftId)
+        setProjectDrafts(readDraftCollectionFromStorage<ProjectFormState>("project"))
+      }
+
+      toast({ title: editingId ? "Project saved" : "Project published" })
+      closeEditor()
       setProjectForm(createEmptyProjectForm())
       setImageSource("url")
+      setProjectListTab("published")
       await loadDashboardData()
     } catch (error) {
       toast({
@@ -535,7 +1186,11 @@ export default function AdminPage() {
   }
 
   const saveAchievement = async () => {
-    const payload = { ...achievementForm }
+    const payload = {
+      ...achievementForm,
+      attachments: normalizeAttachmentPayload(achievementForm.attachments),
+    }
+    const currentDraftId = activeDraftId
 
     try {
       if (editingId) {
@@ -550,11 +1205,16 @@ export default function AdminPage() {
         })
       }
 
-      toast({ title: "Achievement saved" })
-      setEditMode(null)
-      setEditingId(null)
+      if (currentDraftId) {
+        removeDraftFromStorage("achievement", currentDraftId)
+        setAchievementDrafts(readDraftCollectionFromStorage<AchievementFormState>("achievement"))
+      }
+
+      toast({ title: editingId ? "Achievement saved" : "Achievement published" })
+      closeEditor()
       setAchievementForm(createEmptyAchievementForm())
       setImageSource("url")
+      setAchievementListTab("published")
       await loadDashboardData()
     } catch (error) {
       toast({
@@ -564,6 +1224,164 @@ export default function AdminPage() {
       })
     }
   }
+
+  const closeEditor = () => {
+    setEditMode(null)
+    setEditingId(null)
+    setActiveDraftId(null)
+    setSaveIndicator("saved")
+    draftSnapshotRef.current = ""
+  }
+
+  const deleteLocalDraft = (kind: DraftKind, draftId: string) => {
+    removeDraftFromStorage(kind, draftId)
+
+    if (kind === "writeup") {
+      setWriteupDrafts(readDraftCollectionFromStorage<WriteupFormState>("writeup"))
+    } else if (kind === "project") {
+      setProjectDrafts(readDraftCollectionFromStorage<ProjectFormState>("project"))
+    } else {
+      setAchievementDrafts(readDraftCollectionFromStorage<AchievementFormState>("achievement"))
+    }
+
+    if (activeDraftId === draftId) {
+      closeEditor()
+    }
+  }
+
+  const exportDrafts = (kind: DraftKind) => {
+    const drafts =
+      kind === "writeup"
+        ? writeupDrafts
+        : kind === "project"
+          ? projectDrafts
+          : achievementDrafts
+
+    const payload: DraftExportPayload<WriteupFormState | ProjectFormState | AchievementFormState> = {
+      version: 1,
+      kind,
+      exportedAt: new Date().toISOString(),
+      drafts,
+    }
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" })
+    const objectUrl = window.URL.createObjectURL(blob)
+    const anchor = document.createElement("a")
+    anchor.href = objectUrl
+    anchor.download = `${kind}-drafts-${format(new Date(), "yyyyMMdd-HHmmss")}.json`
+    anchor.click()
+    window.URL.revokeObjectURL(objectUrl)
+
+    toast({
+      title: "Draft export complete",
+      description: `${drafts.length} ${kind} draft(s) exported as JSON.`,
+    })
+  }
+
+  const mergeImportedDrafts = <T,>(kind: DraftKind, importedDrafts: LocalDraft<T>[]) => {
+    const currentDrafts = readDraftCollectionFromStorage<T>(kind)
+    const draftById = new Map<string, LocalDraft<T>>()
+
+    for (const draft of currentDrafts) {
+      draftById.set(draft.id, draft)
+    }
+
+    for (const importedDraft of importedDrafts) {
+      const existing = draftById.get(importedDraft.id)
+      if (!existing) {
+        draftById.set(importedDraft.id, importedDraft)
+        continue
+      }
+
+      const existingTime = new Date(existing.updatedAt).getTime()
+      const importedTime = new Date(importedDraft.updatedAt).getTime()
+      if (importedTime >= existingTime) {
+        draftById.set(importedDraft.id, importedDraft)
+      }
+    }
+
+    const mergedDrafts = Array.from(draftById.values()).sort((left, right) => {
+      return new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime()
+    })
+
+    writeDraftCollectionToStorage(kind, mergedDrafts)
+    return mergedDrafts
+  }
+
+  const handleImportDrafts = async (
+    kind: DraftKind,
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0]
+    event.target.value = ""
+    if (!file) {
+      return
+    }
+
+    let parsedPayload: unknown
+
+    try {
+      parsedPayload = JSON.parse(await file.text())
+    } catch {
+      toast({
+        variant: "destructive",
+        title: "Invalid JSON",
+        description: "The selected file is not valid JSON.",
+      })
+      return
+    }
+
+    const parsedResult =
+      kind === "writeup"
+        ? parseDraftCollectionImport(kind, parsedPayload, parseWriteupDraftData)
+        : kind === "project"
+          ? parseDraftCollectionImport(kind, parsedPayload, parseProjectDraftData)
+          : parseDraftCollectionImport(kind, parsedPayload, parseAchievementDraftData)
+
+    if (!parsedResult.ok) {
+      toast({
+        variant: "destructive",
+        title: "Draft JSON verification failed",
+        description: parsedResult.message,
+      })
+      return
+    }
+
+    if (kind === "writeup") {
+      const mergedDrafts = mergeImportedDrafts("writeup", parsedResult.drafts as LocalDraft<WriteupFormState>[])
+      setWriteupDrafts(mergedDrafts)
+    } else if (kind === "project") {
+      const mergedDrafts = mergeImportedDrafts("project", parsedResult.drafts as LocalDraft<ProjectFormState>[])
+      setProjectDrafts(mergedDrafts)
+    } else {
+      const mergedDrafts = mergeImportedDrafts(
+        "achievement",
+        parsedResult.drafts as LocalDraft<AchievementFormState>[]
+      )
+      setAchievementDrafts(mergedDrafts)
+    }
+
+    toast({
+      title: "Draft JSON verified",
+      description: `${parsedResult.drafts.length} ${kind} draft(s) imported safely.`,
+    })
+  }
+
+  const openImportPicker = (kind: DraftKind) => {
+    if (kind === "writeup") {
+      writeupImportInputRef.current?.click()
+      return
+    }
+
+    if (kind === "project") {
+      projectImportInputRef.current?.click()
+      return
+    }
+
+    achievementImportInputRef.current?.click()
+  }
+
+  const saveIndicatorText = activeDraftId ? `Save: ${saveIndicator}` : "Save: manual"
 
   const addTechnicalArsenalItem = () => {
     setProfileForm((prev) => ({
@@ -620,6 +1438,32 @@ export default function AdminPage() {
     }))
   }
 
+  const addEducationHistoryItem = () => {
+    setProfileForm((prev) => ({
+      ...prev,
+      educationHistory: [...prev.educationHistory, { level: "", school: "", period: "" }],
+    }))
+  }
+
+  const updateEducationHistoryItem = (
+    index: number,
+    patch: Partial<EducationHistoryFormState>
+  ) => {
+    setProfileForm((prev) => ({
+      ...prev,
+      educationHistory: prev.educationHistory.map((item, itemIndex) =>
+        itemIndex === index ? { ...item, ...patch } : item
+      ),
+    }))
+  }
+
+  const removeEducationHistoryItem = (index: number) => {
+    setProfileForm((prev) => ({
+      ...prev,
+      educationHistory: prev.educationHistory.filter((_, itemIndex) => itemIndex !== index),
+    }))
+  }
+
   const saveProfile = async () => {
     const payloadToPersist = mergeProfileSettings(getDefaultProfileSettings(), {
       ...profileForm,
@@ -633,6 +1477,23 @@ export default function AdminPage() {
         period: item.period,
         desc: item.desc,
       })),
+      educationHistory: profileForm.educationHistory.map((item) => ({
+        level: item.level,
+        school: item.school,
+        period: item.period,
+      })),
+      seo: {
+        titleTemplate: profileForm.seo.titleTemplate,
+        defaultTitle: profileForm.seo.defaultTitle,
+        description: profileForm.seo.description,
+        canonicalUrl: profileForm.seo.canonicalUrl,
+        previewImageUrl: profileForm.seo.previewImageUrl,
+        siteName: profileForm.seo.siteName,
+        locale: profileForm.seo.locale,
+        jobTitle: profileForm.seo.jobTitle,
+        keywords: parseCommaSeparatedValues(profileForm.seo.keywordsText),
+        sameAs: parseCommaSeparatedValues(profileForm.seo.sameAsText),
+      },
     })
 
     try {
@@ -672,8 +1533,7 @@ export default function AdminPage() {
       setItemToDelete(null)
 
       if (editingId === itemToDelete.id) {
-        setEditMode(null)
-        setEditingId(null)
+        closeEditor()
       }
 
       await loadDashboardData()
@@ -760,11 +1620,23 @@ export default function AdminPage() {
             ) : messages.length ? (
               messages.map((message) => (
                 <Card key={message.id} className="bg-background/50 border-border">
-                  <CardHeader className="py-4">
-                    <CardTitle className="text-lg text-primary">{message.title || "No Title"}</CardTitle>
-                    <CardDescription className="text-[10px] font-code">
-                      {message.username || "Anonymous"} • {message.createdAt ? format(new Date(message.createdAt), "yy-MM-dd HH:mm") : "Unknown timestamp"}
-                    </CardDescription>
+                  <CardHeader className="py-4 space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="space-y-1 min-w-0">
+                        <CardTitle className="text-lg text-primary break-words">{message.title || "No Title"}</CardTitle>
+                        <CardDescription className="text-[10px] font-code">
+                          {message.username || "Anonymous"} • {message.createdAt ? format(new Date(message.createdAt), "yy-MM-dd HH:mm") : "Unknown timestamp"}
+                        </CardDescription>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => triggerDelete(message.id, "messages")}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
                   </CardHeader>
                   <CardContent className="py-4 pt-0 text-sm text-muted-foreground whitespace-pre-wrap">{message.content || "No Content"}</CardContent>
                 </Card>
@@ -781,27 +1653,73 @@ export default function AdminPage() {
               <Button type="button" onClick={beginCreateWriteup} className="w-full bg-primary/20 text-primary border border-primary/30">
                 <Plus className="h-4 w-4 mr-2" /> New Write-up
               </Button>
-              <ScrollArea className="h-[600px] border rounded-lg bg-card/30">
-                <div className="p-4 space-y-2">
-                  {isDataLoading ? (
-                    <Loader2 className="animate-spin mx-auto mt-10" />
-                  ) : (
-                    writeups.map((writeup) => (
-                      <div
-                        key={writeup.id}
-                        className={cn("p-3 rounded-lg border flex justify-between group items-center cursor-pointer", editingId === writeup.id ? "bg-primary/10 border-primary/50" : "bg-card border-border/50")}
-                        onClick={() => beginEditWriteup(writeup)}
-                      >
-                        <div className="truncate">
-                          <p className="text-sm font-bold truncate">{writeup.title || "Untitled"}</p>
-                          <p className="text-[10px] text-muted-foreground">{writeup.competition || "No Competition"}</p>
-                        </div>
-                        <Button type="button" variant="ghost" size="icon" onClick={(event) => { event.stopPropagation(); triggerDelete(writeup.id, "ctfWriteups") }} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </ScrollArea>
+              <Tabs value={writeupListTab} onValueChange={(value) => setWriteupListTab(value as "published" | "drafts")}>
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="published">Published</TabsTrigger>
+                  <TabsTrigger value="drafts">Drafts</TabsTrigger>
+                </TabsList>
+                <TabsContent value="published">
+                  <ScrollArea className="h-[560px] border rounded-lg bg-card/30">
+                    <div className="p-4 space-y-2">
+                      {isDataLoading ? (
+                        <Loader2 className="animate-spin mx-auto mt-10" />
+                      ) : (
+                        writeups.map((writeup) => (
+                          <div
+                            key={writeup.id}
+                            className={cn("p-3 rounded-lg border flex justify-between group items-center cursor-pointer", editingId === writeup.id ? "bg-primary/10 border-primary/50" : "bg-card border-border/50")}
+                            onClick={() => beginEditWriteup(writeup)}
+                          >
+                            <div className="truncate">
+                              <p className="text-sm font-bold truncate">{writeup.title || "Untitled"}</p>
+                              <p className="text-[10px] text-muted-foreground">{writeup.competition || "No Competition"}</p>
+                            </div>
+                            <Button type="button" variant="ghost" size="icon" onClick={(event) => { event.stopPropagation(); triggerDelete(writeup.id, "ctfWriteups") }} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </ScrollArea>
+                </TabsContent>
+                <TabsContent value="drafts">
+                  <div className="flex items-center gap-2 pb-2">
+                    <Button type="button" variant="outline" size="sm" onClick={() => exportDrafts("writeup")}>
+                      <Download className="h-4 w-4 mr-2" /> Export JSON
+                    </Button>
+                    <Button type="button" variant="outline" size="sm" onClick={() => openImportPicker("writeup")}>
+                      <Upload className="h-4 w-4 mr-2" /> Import JSON
+                    </Button>
+                    <Input
+                      ref={writeupImportInputRef}
+                      type="file"
+                      accept="application/json,.json"
+                      className="hidden"
+                      onChange={(event) => void handleImportDrafts("writeup", event)}
+                    />
+                  </div>
+                  <ScrollArea className="h-[560px] border rounded-lg bg-card/30">
+                    <div className="p-4 space-y-2">
+                      {writeupDrafts.length ? (
+                        writeupDrafts.map((draft) => (
+                          <div
+                            key={draft.id}
+                            className={cn("p-3 rounded-lg border flex justify-between group items-center cursor-pointer", activeDraftId === draft.id && editMode === "writeup" ? "bg-primary/10 border-primary/50" : "bg-card border-border/50")}
+                            onClick={() => beginEditWriteupDraft(draft)}
+                          >
+                            <div className="truncate">
+                              <p className="text-sm font-bold truncate">{getDraftDisplayName("writeup", draft)}</p>
+                              <p className="text-[10px] text-muted-foreground">Local draft</p>
+                            </div>
+                            <Button type="button" variant="ghost" size="icon" onClick={(event) => { event.stopPropagation(); deleteLocalDraft("writeup", draft.id) }} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-xs text-muted-foreground">No drafts yet.</p>
+                      )}
+                    </div>
+                  </ScrollArea>
+                </TabsContent>
+              </Tabs>
             </div>
             <div className="lg:col-span-8">
               {editMode === "writeup" ? (
@@ -829,7 +1747,52 @@ export default function AdminPage() {
                     <RichEditor 
                       content={writeupForm.content} 
                       onChange={(html) => setWriteupForm({ ...writeupForm, content: html })} 
+                      onImageUpload={(file) => uploadImageAsset(file, { showSuccessToast: true })}
                     />
+                  </div>
+                  <div className="space-y-3 rounded-lg border border-border/60 bg-muted/20 p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <Label>Challenge Attachments</Label>
+                      <Input
+                        type="file"
+                        onChange={(event) => handleAttachmentUpload(event, "writeup")}
+                        className="max-w-xs"
+                      />
+                    </div>
+                    {writeupForm.attachments.length ? (
+                      <div className="space-y-2">
+                        {writeupForm.attachments.map((attachment, index) => (
+                          <div
+                            key={`${attachment.url}-${index}`}
+                            className="flex items-center justify-between gap-3 rounded-md border border-border bg-background/70 px-3 py-2"
+                          >
+                            <div className="min-w-0">
+                              <a
+                                href={attachment.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm font-medium text-primary hover:underline break-all"
+                              >
+                                {attachment.name || `Attachment ${index + 1}`}
+                              </a>
+                              {attachment.contentType ? (
+                                <p className="text-[10px] text-muted-foreground">{attachment.contentType}</p>
+                              ) : null}
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeAttachment("writeup", index)}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">No challenge attachments uploaded.</p>
+                    )}
                   </div>
                   <div className="flex justify-between gap-2">
                     {editingId && (
@@ -838,8 +1801,9 @@ export default function AdminPage() {
                       </Button>
                     )}
                     <div className="flex gap-2 ml-auto">
-                      <Button type="button" variant="outline" onClick={() => setEditMode(null)}>Cancel</Button>
-                      <Button type="button" onClick={saveWriteup}><Save className="h-4 w-4 mr-2" /> Save</Button>
+                      <div className="flex items-center px-3 text-xs text-muted-foreground">{saveIndicatorText}</div>
+                      <Button type="button" variant="outline" onClick={closeEditor}>Cancel</Button>
+                      <Button type="button" onClick={saveWriteup}><Save className="h-4 w-4 mr-2" /> {editingId ? "Save" : "Publish"}</Button>
                     </div>
                   </div>
                 </Card>
@@ -856,27 +1820,73 @@ export default function AdminPage() {
               <Button type="button" onClick={beginCreateProject} className="w-full bg-primary/20 text-primary border border-primary/30">
                 <Plus className="h-4 w-4 mr-2" /> New Project
               </Button>
-              <ScrollArea className="h-[600px] border rounded-lg bg-card/30">
-                <div className="p-4 space-y-2">
-                  {isDataLoading ? (
-                    <Loader2 className="animate-spin mx-auto mt-10" />
-                  ) : (
-                    projects.map((project) => (
-                      <div
-                        key={project.id}
-                        className={cn("p-3 rounded-lg border flex justify-between group items-center cursor-pointer", editingId === project.id ? "bg-primary/10 border-primary/50" : "bg-card border-border/50")}
-                        onClick={() => beginEditProject(project)}
-                      >
-                        <div className="truncate">
-                          <p className="text-sm font-bold truncate">{project.title || "Untitled"}</p>
-                          <p className="text-[10px] text-muted-foreground">{project.category || "General"}</p>
-                        </div>
-                        <Button type="button" variant="ghost" size="icon" onClick={(event) => { event.stopPropagation(); triggerDelete(project.id, "projects") }} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </ScrollArea>
+              <Tabs value={projectListTab} onValueChange={(value) => setProjectListTab(value as "published" | "drafts")}>
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="published">Published</TabsTrigger>
+                  <TabsTrigger value="drafts">Drafts</TabsTrigger>
+                </TabsList>
+                <TabsContent value="published">
+                  <ScrollArea className="h-[560px] border rounded-lg bg-card/30">
+                    <div className="p-4 space-y-2">
+                      {isDataLoading ? (
+                        <Loader2 className="animate-spin mx-auto mt-10" />
+                      ) : (
+                        projects.map((project) => (
+                          <div
+                            key={project.id}
+                            className={cn("p-3 rounded-lg border flex justify-between group items-center cursor-pointer", editingId === project.id ? "bg-primary/10 border-primary/50" : "bg-card border-border/50")}
+                            onClick={() => beginEditProject(project)}
+                          >
+                            <div className="truncate">
+                              <p className="text-sm font-bold truncate">{project.title || "Untitled"}</p>
+                              <p className="text-[10px] text-muted-foreground">{project.category || "General"}</p>
+                            </div>
+                            <Button type="button" variant="ghost" size="icon" onClick={(event) => { event.stopPropagation(); triggerDelete(project.id, "projects") }} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </ScrollArea>
+                </TabsContent>
+                <TabsContent value="drafts">
+                  <div className="flex items-center gap-2 pb-2">
+                    <Button type="button" variant="outline" size="sm" onClick={() => exportDrafts("project")}>
+                      <Download className="h-4 w-4 mr-2" /> Export JSON
+                    </Button>
+                    <Button type="button" variant="outline" size="sm" onClick={() => openImportPicker("project")}>
+                      <Upload className="h-4 w-4 mr-2" /> Import JSON
+                    </Button>
+                    <Input
+                      ref={projectImportInputRef}
+                      type="file"
+                      accept="application/json,.json"
+                      className="hidden"
+                      onChange={(event) => void handleImportDrafts("project", event)}
+                    />
+                  </div>
+                  <ScrollArea className="h-[560px] border rounded-lg bg-card/30">
+                    <div className="p-4 space-y-2">
+                      {projectDrafts.length ? (
+                        projectDrafts.map((draft) => (
+                          <div
+                            key={draft.id}
+                            className={cn("p-3 rounded-lg border flex justify-between group items-center cursor-pointer", activeDraftId === draft.id && editMode === "project" ? "bg-primary/10 border-primary/50" : "bg-card border-border/50")}
+                            onClick={() => beginEditProjectDraft(draft)}
+                          >
+                            <div className="truncate">
+                              <p className="text-sm font-bold truncate">{getDraftDisplayName("project", draft)}</p>
+                              <p className="text-[10px] text-muted-foreground">Local draft</p>
+                            </div>
+                            <Button type="button" variant="ghost" size="icon" onClick={(event) => { event.stopPropagation(); deleteLocalDraft("project", draft.id) }} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-xs text-muted-foreground">No drafts yet.</p>
+                      )}
+                    </div>
+                  </ScrollArea>
+                </TabsContent>
+              </Tabs>
             </div>
             <div className="lg:col-span-8">
               {editMode === "project" ? (
@@ -900,7 +1910,7 @@ export default function AdminPage() {
                       <div className="space-y-2">
                         <Input type="file" accept="image/*" onChange={(event) => handleImageUpload(event, (url) => setProjectForm({ ...projectForm, imageUrl: url }))} className="cursor-pointer" />
                         <p className="text-[10px] text-muted-foreground">
-                          Note: Images uploaded here are saved directly in the database as Base64 for permanent availability after deployment.
+                          Note: Images are uploaded to GitHub Releases storage and served from /api/public/uploads/*.
                         </p>
                       </div>
                     )}
@@ -912,6 +1922,50 @@ export default function AdminPage() {
                   </div>
                   <div className="space-y-2"><Label>Technical Description</Label><Textarea value={projectForm.description || ""} onChange={(event) => setProjectForm({ ...projectForm, description: event.target.value })} className="min-h-[120px]" /></div>
                   <div className="space-y-2"><Label>Stack Tags (comma separated)</Label><Input value={projectForm.tags || ""} onChange={(event) => setProjectForm({ ...projectForm, tags: event.target.value })} placeholder="React, Rust, Cryptography" /></div>
+                  <div className="space-y-3 rounded-lg border border-border/60 bg-muted/20 p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <Label>Project Attachments</Label>
+                      <Input
+                        type="file"
+                        onChange={(event) => handleAttachmentUpload(event, "project")}
+                        className="max-w-xs"
+                      />
+                    </div>
+                    {projectForm.attachments.length ? (
+                      <div className="space-y-2">
+                        {projectForm.attachments.map((attachment, index) => (
+                          <div
+                            key={`${attachment.url}-${index}`}
+                            className="flex items-center justify-between gap-3 rounded-md border border-border bg-background/70 px-3 py-2"
+                          >
+                            <div className="min-w-0">
+                              <a
+                                href={attachment.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm font-medium text-primary hover:underline break-all"
+                              >
+                                {attachment.name || `Attachment ${index + 1}`}
+                              </a>
+                              {attachment.contentType ? (
+                                <p className="text-[10px] text-muted-foreground">{attachment.contentType}</p>
+                              ) : null}
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeAttachment("project", index)}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">No project attachments uploaded.</p>
+                    )}
+                  </div>
                   <div className="flex justify-between gap-2">
                     {editingId && (
                       <Button type="button" variant="destructive" onClick={() => triggerDelete(editingId, "projects")}>
@@ -919,8 +1973,9 @@ export default function AdminPage() {
                       </Button>
                     )}
                     <div className="flex gap-2 ml-auto">
-                      <Button type="button" variant="outline" onClick={() => setEditMode(null)}>Cancel</Button>
-                      <Button type="button" onClick={saveProject}><Save className="h-4 w-4 mr-2" /> Save Project</Button>
+                      <div className="flex items-center px-3 text-xs text-muted-foreground">{saveIndicatorText}</div>
+                      <Button type="button" variant="outline" onClick={closeEditor}>Cancel</Button>
+                      <Button type="button" onClick={saveProject}><Save className="h-4 w-4 mr-2" /> {editingId ? "Save Project" : "Publish Project"}</Button>
                     </div>
                   </div>
                 </Card>
@@ -937,27 +1992,73 @@ export default function AdminPage() {
               <Button type="button" onClick={beginCreateAchievement} className="w-full bg-primary/20 text-primary border border-primary/30">
                 <Plus className="h-4 w-4 mr-2" /> New Achievement
               </Button>
-              <ScrollArea className="h-[600px] border rounded-lg bg-card/30">
-                <div className="p-4 space-y-2">
-                  {isDataLoading ? (
-                    <Loader2 className="animate-spin mx-auto mt-10" />
-                  ) : (
-                    achievements.map((achievement) => (
-                      <div
-                        key={achievement.id}
-                        className={cn("p-3 rounded-lg border flex justify-between group items-center cursor-pointer", editingId === achievement.id ? "bg-primary/10 border-primary/50" : "bg-card border-border/50")}
-                        onClick={() => beginEditAchievement(achievement)}
-                      >
-                        <div className="truncate">
-                          <p className="text-sm font-bold truncate">{achievement.title || "Untitled"}</p>
-                          <p className="text-[10px] text-muted-foreground">{achievement.issuer || "No Issuer"}</p>
-                        </div>
-                        <Button type="button" variant="ghost" size="icon" onClick={(event) => { event.stopPropagation(); triggerDelete(achievement.id, "achievements") }} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </ScrollArea>
+              <Tabs value={achievementListTab} onValueChange={(value) => setAchievementListTab(value as "published" | "drafts")}>
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="published">Published</TabsTrigger>
+                  <TabsTrigger value="drafts">Drafts</TabsTrigger>
+                </TabsList>
+                <TabsContent value="published">
+                  <ScrollArea className="h-[560px] border rounded-lg bg-card/30">
+                    <div className="p-4 space-y-2">
+                      {isDataLoading ? (
+                        <Loader2 className="animate-spin mx-auto mt-10" />
+                      ) : (
+                        achievements.map((achievement) => (
+                          <div
+                            key={achievement.id}
+                            className={cn("p-3 rounded-lg border flex justify-between group items-center cursor-pointer", editingId === achievement.id ? "bg-primary/10 border-primary/50" : "bg-card border-border/50")}
+                            onClick={() => beginEditAchievement(achievement)}
+                          >
+                            <div className="truncate">
+                              <p className="text-sm font-bold truncate">{achievement.title || "Untitled"}</p>
+                              <p className="text-[10px] text-muted-foreground">{achievement.issuer || "No Issuer"}</p>
+                            </div>
+                            <Button type="button" variant="ghost" size="icon" onClick={(event) => { event.stopPropagation(); triggerDelete(achievement.id, "achievements") }} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </ScrollArea>
+                </TabsContent>
+                <TabsContent value="drafts">
+                  <div className="flex items-center gap-2 pb-2">
+                    <Button type="button" variant="outline" size="sm" onClick={() => exportDrafts("achievement")}>
+                      <Download className="h-4 w-4 mr-2" /> Export JSON
+                    </Button>
+                    <Button type="button" variant="outline" size="sm" onClick={() => openImportPicker("achievement")}>
+                      <Upload className="h-4 w-4 mr-2" /> Import JSON
+                    </Button>
+                    <Input
+                      ref={achievementImportInputRef}
+                      type="file"
+                      accept="application/json,.json"
+                      className="hidden"
+                      onChange={(event) => void handleImportDrafts("achievement", event)}
+                    />
+                  </div>
+                  <ScrollArea className="h-[560px] border rounded-lg bg-card/30">
+                    <div className="p-4 space-y-2">
+                      {achievementDrafts.length ? (
+                        achievementDrafts.map((draft) => (
+                          <div
+                            key={draft.id}
+                            className={cn("p-3 rounded-lg border flex justify-between group items-center cursor-pointer", activeDraftId === draft.id && editMode === "achievement" ? "bg-primary/10 border-primary/50" : "bg-card border-border/50")}
+                            onClick={() => beginEditAchievementDraft(draft)}
+                          >
+                            <div className="truncate">
+                              <p className="text-sm font-bold truncate">{getDraftDisplayName("achievement", draft)}</p>
+                              <p className="text-[10px] text-muted-foreground">Local draft</p>
+                            </div>
+                            <Button type="button" variant="ghost" size="icon" onClick={(event) => { event.stopPropagation(); deleteLocalDraft("achievement", draft.id) }} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-xs text-muted-foreground">No drafts yet.</p>
+                      )}
+                    </div>
+                  </ScrollArea>
+                </TabsContent>
+              </Tabs>
             </div>
             <div className="lg:col-span-8">
               {editMode === "achievement" ? (
@@ -990,6 +2091,50 @@ export default function AdminPage() {
                     )}
                   </div>
                   <div className="space-y-2"><Label>Description / Context</Label><Textarea value={achievementForm.description || ""} onChange={(event) => setAchievementForm({ ...achievementForm, description: event.target.value })} /></div>
+                  <div className="space-y-3 rounded-lg border border-border/60 bg-muted/20 p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <Label>Certificate Attachments</Label>
+                      <Input
+                        type="file"
+                        onChange={(event) => handleAttachmentUpload(event, "achievement")}
+                        className="max-w-xs"
+                      />
+                    </div>
+                    {achievementForm.attachments.length ? (
+                      <div className="space-y-2">
+                        {achievementForm.attachments.map((attachment, index) => (
+                          <div
+                            key={`${attachment.url}-${index}`}
+                            className="flex items-center justify-between gap-3 rounded-md border border-border bg-background/70 px-3 py-2"
+                          >
+                            <div className="min-w-0">
+                              <a
+                                href={attachment.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm font-medium text-primary hover:underline break-all"
+                              >
+                                {attachment.name || `Attachment ${index + 1}`}
+                              </a>
+                              {attachment.contentType ? (
+                                <p className="text-[10px] text-muted-foreground">{attachment.contentType}</p>
+                              ) : null}
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeAttachment("achievement", index)}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">No certificate attachments uploaded.</p>
+                    )}
+                  </div>
                   <div className="flex justify-between gap-2">
                     {editingId && (
                       <Button type="button" variant="destructive" onClick={() => triggerDelete(editingId, "achievements")}>
@@ -997,8 +2142,9 @@ export default function AdminPage() {
                       </Button>
                     )}
                     <div className="flex gap-2 ml-auto">
-                      <Button type="button" variant="outline" onClick={() => setEditMode(null)}>Cancel</Button>
-                      <Button type="button" onClick={saveAchievement}><Save className="h-4 w-4 mr-2" /> Save Record</Button>
+                      <div className="flex items-center px-3 text-xs text-muted-foreground">{saveIndicatorText}</div>
+                      <Button type="button" variant="outline" onClick={closeEditor}>Cancel</Button>
+                      <Button type="button" onClick={saveAchievement}><Save className="h-4 w-4 mr-2" /> {editingId ? "Save Record" : "Publish"}</Button>
                     </div>
                   </div>
                 </Card>
@@ -1013,7 +2159,7 @@ export default function AdminPage() {
           <Card className="bg-card/50">
             <CardHeader className="bg-muted/30 border-b">
               <CardTitle className="text-sm font-code flex items-center"><User className="h-4 w-4 mr-2" /> About Profile Settings</CardTitle>
-              <CardDescription>Edit public identity, About details, philosophy, technical arsenal, and professional journey.</CardDescription>
+              <CardDescription>Edit public identity, About details, philosophy, technical arsenal, professional journey, education history, and SEO metadata.</CardDescription>
             </CardHeader>
             <CardContent className="p-6">
                 <div className="space-y-6">
@@ -1026,6 +2172,46 @@ export default function AdminPage() {
                             value={profileForm.displayName || ""}
                             onChange={(event) =>
                               setProfileForm((prev) => ({ ...prev, displayName: event.target.value }))
+                            }
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Alias</Label>
+                          <Input
+                            value={profileForm.alias || ""}
+                            onChange={(event) =>
+                              setProfileForm((prev) => ({ ...prev, alias: event.target.value }))
+                            }
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Navbar Brand Mode</Label>
+                          <Select
+                            value={profileForm.navbarBrandMode}
+                            onValueChange={(value) =>
+                              setProfileForm((prev) => ({
+                                ...prev,
+                                navbarBrandMode: value === "custom" ? "custom" : "default",
+                              }))
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="default">Default (First Name + &apos;s)</SelectItem>
+                              <SelectItem value="custom">Custom</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Navbar Brand Name (Custom)</Label>
+                          <Input
+                            placeholder="e.g. Claritys"
+                            disabled={profileForm.navbarBrandMode !== "custom"}
+                            value={profileForm.navbarBrandName || ""}
+                            onChange={(event) =>
+                              setProfileForm((prev) => ({ ...prev, navbarBrandName: event.target.value }))
                             }
                           />
                         </div>
@@ -1113,7 +2299,7 @@ export default function AdminPage() {
                               }
                             />
                             <p className="text-[10px] leading-relaxed text-muted-foreground">
-                              Images are saved as Base64 for permanent availability after deployment.
+                              Images are uploaded to GitHub Releases storage and served from /api/public/uploads/*.
                             </p>
                           </div>
                         )}
@@ -1275,6 +2461,214 @@ export default function AdminPage() {
                     ) : (
                       <p className="text-xs text-muted-foreground">No journey entries yet.</p>
                     )}
+                  </section>
+
+                  <section className="space-y-3 rounded-lg border border-border bg-muted/10 p-4 md:p-5">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm">Education History</Label>
+                      <Button type="button" size="sm" variant="outline" onClick={addEducationHistoryItem}>
+                        <Plus className="h-4 w-4 mr-1" /> Add Education
+                      </Button>
+                    </div>
+
+                    {profileForm.educationHistory.length ? (
+                      profileForm.educationHistory.map((item, index) => (
+                        <div key={`education-${index}`} className="space-y-3 rounded-lg border border-border bg-background/50 p-3">
+                          <div className="grid md:grid-cols-2 gap-3">
+                            <div className="space-y-2">
+                              <Label className="text-xs">Level</Label>
+                              <Input
+                                value={item.level || ""}
+                                onChange={(event) =>
+                                  updateEducationHistoryItem(index, {
+                                    level: event.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-xs">School</Label>
+                              <Input
+                                value={item.school || ""}
+                                onChange={(event) =>
+                                  updateEducationHistoryItem(index, {
+                                    school: event.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+
+                          <div className="flex gap-3 items-end">
+                            <div className="flex-1 space-y-2">
+                              <Label className="text-xs">Period</Label>
+                              <Input
+                                value={item.period || ""}
+                                onChange={(event) =>
+                                  updateEducationHistoryItem(index, {
+                                    period: event.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                            <Button
+                              type="button"
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => removeEducationHistoryItem(index)}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-xs text-muted-foreground">No education entries yet.</p>
+                    )}
+                  </section>
+
+                  <section className="space-y-3 rounded-lg border border-border bg-muted/10 p-4 md:p-5">
+                    <Label className="text-sm">SEO Settings (used by Root Layout)</Label>
+
+                    <div className="grid md:grid-cols-2 gap-3">
+                      <div className="space-y-2">
+                        <Label className="text-xs">Default Title</Label>
+                        <Input
+                          value={profileForm.seo.defaultTitle}
+                          onChange={(event) =>
+                            setProfileForm((prev) => ({
+                              ...prev,
+                              seo: { ...prev.seo, defaultTitle: event.target.value },
+                            }))
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-xs">Title Template (use %s)</Label>
+                        <Input
+                          placeholder="%s | My Portfolio"
+                          value={profileForm.seo.titleTemplate}
+                          onChange={(event) =>
+                            setProfileForm((prev) => ({
+                              ...prev,
+                              seo: { ...prev.seo, titleTemplate: event.target.value },
+                            }))
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-xs">Description</Label>
+                      <Textarea
+                        className="min-h-[90px]"
+                        value={profileForm.seo.description}
+                        onChange={(event) =>
+                          setProfileForm((prev) => ({
+                            ...prev,
+                            seo: { ...prev.seo, description: event.target.value },
+                          }))
+                        }
+                      />
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-3">
+                      <div className="space-y-2">
+                        <Label className="text-xs">Canonical URL</Label>
+                        <Input
+                          placeholder="https://domain.tld"
+                          value={profileForm.seo.canonicalUrl}
+                          onChange={(event) =>
+                            setProfileForm((prev) => ({
+                              ...prev,
+                              seo: { ...prev.seo, canonicalUrl: event.target.value },
+                            }))
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-xs">Preview Image URL</Label>
+                        <Input
+                          placeholder="https://domain.tld/preview.png"
+                          value={profileForm.seo.previewImageUrl}
+                          onChange={(event) =>
+                            setProfileForm((prev) => ({
+                              ...prev,
+                              seo: { ...prev.seo, previewImageUrl: event.target.value },
+                            }))
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-3">
+                      <div className="space-y-2">
+                        <Label className="text-xs">Site Name</Label>
+                        <Input
+                          value={profileForm.seo.siteName}
+                          onChange={(event) =>
+                            setProfileForm((prev) => ({
+                              ...prev,
+                              seo: { ...prev.seo, siteName: event.target.value },
+                            }))
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-xs">Locale</Label>
+                        <Input
+                          placeholder="id_ID"
+                          value={profileForm.seo.locale}
+                          onChange={(event) =>
+                            setProfileForm((prev) => ({
+                              ...prev,
+                              seo: { ...prev.seo, locale: event.target.value },
+                            }))
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-xs">Job Title</Label>
+                      <Input
+                        value={profileForm.seo.jobTitle}
+                        onChange={(event) =>
+                          setProfileForm((prev) => ({
+                            ...prev,
+                            seo: { ...prev.seo, jobTitle: event.target.value },
+                          }))
+                        }
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-xs">Keywords (comma separated)</Label>
+                      <Textarea
+                        className="min-h-[80px]"
+                        value={profileForm.seo.keywordsText}
+                        onChange={(event) =>
+                          setProfileForm((prev) => ({
+                            ...prev,
+                            seo: { ...prev.seo, keywordsText: event.target.value },
+                          }))
+                        }
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-xs">SameAs URLs (comma separated)</Label>
+                      <Textarea
+                        className="min-h-[80px]"
+                        value={profileForm.seo.sameAsText}
+                        onChange={(event) =>
+                          setProfileForm((prev) => ({
+                            ...prev,
+                            seo: { ...prev.seo, sameAsText: event.target.value },
+                          }))
+                        }
+                      />
+                    </div>
                   </section>
 
                   <div className="flex justify-end pt-1">

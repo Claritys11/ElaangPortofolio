@@ -16,27 +16,42 @@ export function TerminalText({ text, className, delay = 0, speed = 80, onComplet
   const [isComplete, setIsComplete] = React.useState(false)
 
   React.useEffect(() => {
-    let timeout: NodeJS.Timeout
+    let timeoutId: ReturnType<typeof setTimeout> | null = null
+    let intervalId: ReturnType<typeof setInterval> | null = null
+
     setDisplayText("")
     setIsComplete(false)
+
+    if (!text) {
+      setIsComplete(true)
+      return
+    }
     
-    const startTyping = () => {
+    timeoutId = setTimeout(() => {
       let i = 0
-      const interval = setInterval(() => {
-        setDisplayText(text.slice(0, i))
+      intervalId = setInterval(() => {
         i++
-        if (i > text.length) {
-          clearInterval(interval)
+        setDisplayText(text.slice(0, i))
+
+        if (i >= text.length) {
+          if (intervalId) {
+            clearInterval(intervalId)
+            intervalId = null
+          }
           setIsComplete(true)
           onComplete?.()
         }
       }, speed)
-      return () => clearInterval(interval)
-    }
+    }, delay)
 
-    timeout = setTimeout(startTyping, delay)
     return () => {
-      clearTimeout(timeout)
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+
+      if (intervalId) {
+        clearInterval(intervalId)
+      }
     }
   }, [text, delay, speed, onComplete])
 

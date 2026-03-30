@@ -1,6 +1,4 @@
-import { getStorageType } from '@/lib/storage-type';
-import * as firebaseStorage from '@/lib/firebase-rest-storage';
-import * as sqliteStorage from '@/lib/sqlite-storage';
+import * as d1Storage from '@/lib/d1-storage';
 import type {
   AchievementRecord,
   ProfileSettingsRecord,
@@ -9,10 +7,7 @@ import type {
 } from '@/lib/portfolio-types';
 
 function getServerStorage() {
-  // Admin/auth routes always use SQLite regardless of STORAGE_TYPE.
-  // Firebase mode only affects public client routes (handled by firebase-client-api.ts).
-  void getStorageType(); // retain import reference
-  return sqliteStorage;
+  return d1Storage;
 }
 
 export function listWriteups() {
@@ -69,6 +64,10 @@ export function deleteAchievement(id: string) {
 
 export function listSecureMessages() {
   return getServerStorage().listSecureMessages();
+}
+
+export function deleteSecureMessage(id: string) {
+  return getServerStorage().deleteSecureMessage(id);
 }
 
 export function createContactMessage(input: {

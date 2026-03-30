@@ -3,11 +3,71 @@
 
 import * as React from "react"
 import { Badge } from "@/components/ui/badge"
-import { Cpu, ShieldCheck, Box, Loader2, ExternalLink } from "lucide-react"
+import { Cpu, ShieldCheck, Box, Loader2, ExternalLink, Paperclip, ChevronDown } from "lucide-react"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { cn } from "@/lib/utils"
 import { fetchJson } from "@/lib/api-client"
 import type { ProjectRecord } from "@/lib/portfolio-types"
+
+function ProjectAttachmentList({ attachments }: { attachments?: ProjectRecord["attachments"] }) {
+  const normalized = React.useMemo(() => {
+    return (attachments || [])
+      .map((attachment) => ({
+        name: typeof attachment?.name === "string" ? attachment.name.trim() : "",
+        url: typeof attachment?.url === "string" ? attachment.url.trim() : "",
+      }))
+      .filter((attachment) => Boolean(attachment.url))
+  }, [attachments])
+
+  if (!normalized.length) {
+    return null
+  }
+
+  return (
+    <Collapsible className="mt-4 rounded-lg border border-border/60 bg-muted/20 p-2">
+      <CollapsibleTrigger asChild>
+        <button
+          type="button"
+          data-interactive="true"
+          onClick={(event) => {
+            event.stopPropagation()
+          }}
+          onPointerDown={(event) => {
+            event.stopPropagation()
+          }}
+          className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-[10px] uppercase tracking-wider text-muted-foreground hover:bg-background/40"
+        >
+          <span className="flex items-center gap-1.5">
+            <Paperclip className="h-3 w-3" /> Attachments ({normalized.length})
+          </span>
+          <ChevronDown className="h-3.5 w-3.5" />
+        </button>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="mt-2 space-y-1.5">
+        {normalized.map((attachment, attachmentIndex) => (
+          <a
+            key={`${attachment.url}-${attachmentIndex}`}
+            href={attachment.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-interactive="true"
+            onClick={(event) => {
+              event.stopPropagation()
+            }}
+            onPointerDown={(event) => {
+              event.stopPropagation()
+            }}
+            className="flex w-full items-center justify-between gap-2 rounded-md border border-border/60 bg-background/70 px-2 py-1.5 text-left text-xs text-primary hover:border-primary/40"
+          >
+            <span className="truncate">{attachment.name || `Attachment ${attachmentIndex + 1}`}</span>
+            <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+          </a>
+        ))}
+      </CollapsibleContent>
+    </Collapsible>
+  )
+}
 
 export default function ProjectsPage() {
   const [displayProjects, setDisplayProjects] = React.useState<ProjectRecord[]>([])
@@ -59,7 +119,7 @@ export default function ProjectsPage() {
           <p className="font-code text-muted-foreground">Retrieving project artifacts...</p>
         </div>
       ) : displayProjects.length > 0 ? (
-        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
           {displayProjects.map((project, idx) => (
             <li key={project.id || idx} className="list-none group">
               <div className="relative h-full rounded-[1.25rem] border-[0.75px] border-border p-1.5 md:p-2">
@@ -71,14 +131,41 @@ export default function ProjectsPage() {
                   inactiveZone={0.01}
                   borderWidth={3}
                 />
-                <a 
-                  href={project.projectUrl || "#"} 
-                  target={project.projectUrl ? "_blank" : "_self"} 
-                  rel="noopener noreferrer"
+                <div
                   className={cn(
                     "relative flex h-full flex-col overflow-hidden rounded-xl border-[0.75px] bg-background p-5 md:p-6 shadow-sm transition-all",
                     project.projectUrl ? "cursor-pointer hover:border-primary/50" : "cursor-default"
                   )}
+                  onClick={(event) => {
+                    if (!project.projectUrl) {
+                      return
+                    }
+
+                    const target = event.target as HTMLElement | null
+                    if (target?.closest('[data-interactive="true"]')) {
+                      return
+                    }
+
+                    window.open(project.projectUrl, "_blank", "noopener,noreferrer")
+                  }}
+                  onKeyDown={(event) => {
+                    if (!project.projectUrl) {
+                      return
+                    }
+
+                    if (event.target !== event.currentTarget) {
+                      return
+                    }
+
+                    if (event.key !== "Enter" && event.key !== " ") {
+                      return
+                    }
+
+                    event.preventDefault()
+                    window.open(project.projectUrl, "_blank", "noopener,noreferrer")
+                  }}
+                  role={project.projectUrl ? "button" : undefined}
+                  tabIndex={project.projectUrl ? 0 : undefined}
                 >
                   <div className="relative h-48 mb-6 rounded-lg overflow-hidden border border-border/50 bg-muted/20">
                     {project.imageUrl ? (
@@ -114,7 +201,8 @@ export default function ProjectsPage() {
                       </span>
                     ))}
                   </div>
-                </a>
+                  <ProjectAttachmentList attachments={project.attachments} />
+                </div>
               </div>
             </li>
           ))}

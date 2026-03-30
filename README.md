@@ -1,5 +1,5 @@
 
-# SigmaBangetPortfolioGweh
+# Elaang's Portfolio
 
 Cyberpunk-themed personal portfolio to showcase CTF write-ups, projects, achievements, and admin inbox management in one modern dashboard powered by Next.js 15.
 
@@ -11,25 +11,27 @@ Cyberpunk-themed personal portfolio to showcase CTF write-ups, projects, achieve
 
 - ⚡ Next.js 15 App Router + React 19 + Tailwind CSS
 - 🧠 AI flow support via Genkit (`src/ai`)
-- 🗂️ Dual storage mode: `sqlite` or `firebase`
+- 🗂️ Storage runs on Cloudflare D1 only (`PORTFOLIO_DB` binding)
+- 🗄️ Media uploads stored in GitHub Releases and served via `/api/public/uploads/:name`
 - 🔐 Server-side cookie session for admin dashboard
-- 🧾 Public profile data stored in `public/profile.json` (editable from admin)
+- 🧾 Profile + SEO settings editable from admin and persisted in storage database
 
 ## 🧱 Tech Stack
 
 - **Frontend:** Next.js, React, Tailwind CSS, Radix UI
 - **Backend/API:** Next.js Route Handlers (`src/app/api/**`)
-- **Data:** SQLite (`sqlite3`) or Firebase/Firestore
+- **Data:** Cloudflare D1
+- **Asset Storage:** GitHub Releases assets
 - **Utilities:** date-fns, zod, Genkit
 
 ## 🧭 Storage Architecture
 
-| Mode | Best for | Behavior |
-|---|---|---|
-| `sqlite` | Fast local development | `/api/**` endpoints are active, main data is stored in SQLite, profile remains in `public/profile.json` |
-| `firebase` | Firebase/Firestore integration | Browser requests to `/api/**` (non-auth, non-profile) are handled by Firebase client routing; direct calls can return `502` from middleware |
+The app runs in Cloudflare-first mode:
 
-> Recommended path: start with `sqlite` for local setup, then switch to `firebase` once your env is ready.
+- `/api/**` endpoints are active on Next.js/Worker runtime
+- main data is stored in Cloudflare D1 (`PORTFOLIO_DB` binding)
+- uploads are served through `/api/public/uploads/:name`
+- each upload uses a dedicated GitHub release where `tag === filename`
 
 ## 🚀 Quick Start
 
@@ -58,25 +60,29 @@ npm install
 cp .env.example .env.local
 ```
 
-Then fill `.env.local` based on your storage mode.
+Then fill the required values in `.env.local`.
 
 ---
 
 ## ⚙️ Environment Configuration
 
-### Option A — SQLite mode (fastest for development)
+### Cloudflare D1 + GitHub Releases (required)
 
-Use this minimal template:
+Use this template when deploying to Cloudflare Workers:
 
 ```env
-STORAGE_TYPE="sqlite"
-NEXT_PUBLIC_STORAGE_TYPE="sqlite"
-SQLITE_DB_PATH="./data/portfolio.sqlite3"
-
 ADMIN_USERNAME="admin"
 ADMIN_PASSWORD="replace-with-a-strong-password"
 ADMIN_SESSION_SECRET="use-a-random-string-with-at-least-32-characters"
+
+GH_OWNER="your-github-owner"
+GH_REPO="your-repo-name"
+GH_TOKEN="github-token-with-repo-scope"
 ```
+
+Important:
+- Cloudflare Worker must bind D1 as `PORTFOLIO_DB`.
+- Uploads auto-create release tags from file names (`tag === filename`).
 
 Generate a secure secret (example):
 
@@ -84,35 +90,33 @@ Generate a secure secret (example):
 openssl rand -base64 48
 ```
 
-### Option B — Firebase mode
+### Deploy checklist (Cloudflare Worker)
 
-```env
-STORAGE_TYPE="firebase"
-NEXT_PUBLIC_STORAGE_TYPE="firebase"
+Use environment files by runtime:
 
-ADMIN_USERNAME="admin"
-ADMIN_PASSWORD="must-match-admin-login-and-firebase-fallback"
-ADMIN_SESSION_SECRET="use-a-random-string-with-at-least-32-characters"
+- `.env.local` is used by `pnpm dev` (Next.js local dev).
+- `.dev.vars` is used by `pnpm run preview` / `wrangler dev` (Worker local preview).
 
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=""
-NEXT_PUBLIC_FIREBASE_APP_ID=""
-NEXT_PUBLIC_FIREBASE_API_KEY=""
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=""
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=""
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=""
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=""
+Set production secrets in Cloudflare (required):
 
-NEXT_PUBLIC_FIREBASE_ADMIN_EMAIL=""
-FIREBASE_ADMIN_PROJECT_ID=""
-FIREBASE_ADMIN_CLIENT_EMAIL=""
-FIREBASE_ADMIN_PRIVATE_KEY=""
+```bash
+pnpm wrangler login
+pnpm wrangler secret put ADMIN_USERNAME
+pnpm wrangler secret put ADMIN_PASSWORD
+pnpm wrangler secret put ADMIN_SESSION_SECRET
+pnpm wrangler secret put GH_OWNER
+pnpm wrangler secret put GH_REPO
+pnpm wrangler secret put GH_TOKEN
 ```
 
-#### Important Firebase notes
+First-time remote deployment order:
 
-- Most secure server-side admin access: provide `FIREBASE_ADMIN_CLIENT_EMAIL` + `FIREBASE_ADMIN_PRIVATE_KEY` (service account).
-- If service account variables are empty, the app falls back to Firebase email/password auth using `NEXT_PUBLIC_FIREBASE_ADMIN_EMAIL` + `ADMIN_PASSWORD`.
-- In `firebase` mode, non-auth/non-profile API endpoints can return `502` when called directly over network.
+```bash
+pnpm d1:create
+# copy database_id + preview_database_id into wrangler.jsonc
+pnpm d1:setup:remote
+pnpm run deploy
+```
 
 ---
 
@@ -142,6 +146,35 @@ pnpm typecheck
 pnpm lint
 ```
 
+### D1 migration and seed
+
+Initialize Cloudflare D1 (first time only):
+
+```bash
+pnpm d1:create
+```
+
+Then copy `database_id` and `preview_database_id` from CLI output into `wrangler.jsonc`.
+
+```bash
+pnpm d1:migrate:local
+pnpm d1:seed:local
+```
+
+For remote Cloudflare D1:
+
+```bash
+pnpm d1:migrate:remote
+pnpm d1:seed:remote
+```
+
+### Worker preview and deploy
+
+```bash
+pnpm run preview
+pnpm run deploy
+```
+
 ## 🛠️ Admin Setup & Content Management
 
 After starting the app:
@@ -157,8 +190,9 @@ After starting the app:
 
 ### Profile data source
 
-- Public profile reads from `public/profile.json`
-- Changes from the Profile tab are persisted to that file
+- Public profile reads from `/api/public/profile` (storage-backed)
+- Changes from the Profile tab are persisted to storage (`profile_settings`)
+- Uploaded images are persisted as GitHub Release assets and proxied by `/api/public/uploads/:name`
 
 ## 📂 Key Project Structure
 
@@ -166,32 +200,23 @@ After starting the app:
 src/app/                 # App Router pages + API routes
 src/app/api/             # Auth/admin/public/contact endpoints
 src/lib/                 # Storage, types, helpers, session
-src/firebase/            # Firebase client config/provider
-public/profile.json      # Public profile data source
-data/portfolio.sqlite3   # SQLite database (in sqlite mode)
+src/lib/github-release-storage.ts # GitHub release asset helpers
+database/migrations/     # D1 schema migrations
+database/seeds/          # D1 seed SQL files
 ```
 
 ## 🧯 Troubleshooting
 
-### 1) SQLite native binding issue on install/build
+### 1) `Cloudflare D1 binding "PORTFOLIO_DB" is not configured.`
 
-If using `pnpm` and native modules are blocked:
-
-```bash
-pnpm approve-builds --all
-pnpm install
-```
+- Ensure `PORTFOLIO_DB` is defined in `wrangler.jsonc`.
+- Run `pnpm d1:migrate:local` before first local preview/dev using Worker context.
 
 ### 2) `ADMIN_SESSION_SECRET must be set and at least 32 characters`
 
 - Ensure `ADMIN_SESSION_SECRET` exists and is at least 32 characters long.
 
-### 3) API returns `502` in Firebase mode
-
-- This is expected for non-auth/non-profile endpoints when called directly.
-- From the app UI, those operations are handled via Firebase client routing.
-
 ## 📌 Notes
 
 - `NEXT_PUBLIC_NAME`, `NEXT_PUBLIC_EMAIL`, and similar vars are no longer the primary profile source.
-- The main profile source is now `public/profile.json`.
+- The main profile source is storage-backed (`profile_settings` table/record).

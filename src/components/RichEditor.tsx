@@ -30,9 +30,15 @@ interface RichEditorProps {
   content: string
   onChange: (html: string) => void
   placeholder?: string
+  onImageUpload?: (file: File) => Promise<string>
 }
 
-export function RichEditor({ content, onChange, placeholder = "Start typing your documentation..." }: RichEditorProps) {
+export function RichEditor({
+  content,
+  onChange,
+  placeholder = "Start typing your documentation...",
+  onImageUpload,
+}: RichEditorProps) {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -73,6 +79,17 @@ export function RichEditor({ content, onChange, placeholder = "Start typing your
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0]
       if (file) {
+        if (onImageUpload) {
+          try {
+            const imageUrl = await onImageUpload(file)
+            if (imageUrl) {
+              editor?.chain().focus().setImage({ src: imageUrl }).run()
+            }
+          } catch {
+          }
+          return
+        }
+
         const reader = new FileReader()
         reader.onload = (readerEvent) => {
           const result = readerEvent.target?.result as string

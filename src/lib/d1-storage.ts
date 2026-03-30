@@ -1,15 +1,14 @@
-import { randomUUID } from 'crypto';
-import { mkdir } from 'fs/promises';
-import path from 'path';
-import sqlite3 from 'sqlite3';
+import { getCloudflareContext } from '@opennextjs/cloudflare';
 import {
   DEFAULT_ABOUT_TEXT,
+  DEFAULT_PHILOSOPHY_TEXT,
   getDefaultProfileSettings,
   mergeProfileSettings,
   normalizeProfileSettings,
 } from '@/lib/about-default';
 import type {
   AccessLogRecord,
+  AttachmentRecord,
   AchievementRecord,
   HomeSummaryResponse,
   LatestActivityRecord,
@@ -26,6 +25,34 @@ interface RunResult {
   changes: number;
 }
 
+interface D1Meta {
+  changes?: number;
+  last_row_id?: number;
+}
+
+interface D1RunResult {
+  meta?: D1Meta;
+}
+
+interface D1AllResult<T> {
+  results?: T[];
+}
+
+interface D1PreparedStatement {
+  bind(...values: SqlParam[]): D1PreparedStatement;
+  run(): Promise<D1RunResult>;
+  all<T>(): Promise<D1AllResult<T>>;
+  first<T>(): Promise<T | null>;
+}
+
+interface D1DatabaseBinding {
+  prepare(statement: string): D1PreparedStatement;
+}
+
+interface CloudflareEnv {
+  PORTFOLIO_DB?: D1DatabaseBinding;
+}
+
 interface WriteupRow {
   id: string;
   title: string | null;
@@ -37,6 +64,7 @@ interface WriteupRow {
   content: string | null;
   flag: string | null;
   tags_json: string | null;
+  attachments_json: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -49,6 +77,7 @@ interface ProjectRow {
   project_url: string | null;
   category: string | null;
   tags_json: string | null;
+  attachments_json: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -61,6 +90,7 @@ interface AchievementRow {
   description: string | null;
   image_url: string | null;
   date: string | null;
+  attachments_json: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -87,14 +117,20 @@ interface AccessLogRow {
 interface ProfileSettingsRow {
   id: string;
   display_name: string | null;
+  alias_name: string | null;
+  navbar_brand_mode: string | null;
+  navbar_brand_name: string | null;
   email: string | null;
   website_url: string | null;
   github_url: string | null;
   instagram_url: string | null;
   profile_image_url: string | null;
   about_text: string | null;
+  philosophy_text: string | null;
   technical_arsenal_json: string | null;
   professional_journey_json: string | null;
+  education_history_json: string | null;
+  seo_settings_json: string | null;
   updated_at: string;
 }
 
@@ -111,56 +147,44 @@ interface LatestRow {
   createdAt: string | null;
 }
 
-let dbPromise: Promise<sqlite3.Database> | null = null;
+let migrationPromise: Promise<void> | null = null;
+let dbPromise: Promise<D1DatabaseBinding> | null = null;
 
-function getDbPath(): string {
-  const configured = process.env.SQLITE_DB_PATH?.trim();
-  const resolved = configured ? configured : path.join('data', 'portfolio.sqlite3');
-  return path.isAbsolute(resolved) ? resolved : path.resolve(process.cwd(), resolved);
+async function openD1DatabaseBinding(): Promise<D1DatabaseBinding> {
+  const { env } = await getCloudflareContext({ async: true });
+  const runtimeEnv = env as unknown as CloudflareEnv;
+  const db = runtimeEnv.PORTFOLIO_DB;
+
+  if (!db) {
+    throw new Error('Cloudflare D1 binding "PORTFOLIO_DB" is not configured.');
+  }
+
+  return db;
 }
 
-function run(db: sqlite3.Database, statement: string, params: SqlParam[] = []): Promise<RunResult> {
-  return new Promise((resolve, reject) => {
-    db.run(statement, params, function onRun(error: Error | null) {
-      if (error) {
-        reject(error);
-        return;
-      }
-
-      resolve({
-        lastID: this.lastID,
-        changes: this.changes,
-      });
-    });
-  });
+async function run(db: D1DatabaseBinding, statement: string, params: SqlParam[] = []): Promise<RunResult> {
+  const prepared = db.prepare(statement).bind(...params);
+  const result = await prepared.run();
+  return {
+    lastID: Number(result.meta?.last_row_id ?? 0),
+    changes: Number(result.meta?.changes ?? 0),
+  };
 }
 
-function all<T>(db: sqlite3.Database, statement: string, params: SqlParam[] = []): Promise<T[]> {
-  return new Promise((resolve, reject) => {
-    db.all(statement, params, (error, rows: T[]) => {
-      if (error) {
-        reject(error);
-        return;
-      }
-      resolve(rows);
-    });
-  });
+async function all<T>(db: D1DatabaseBinding, statement: string, params: SqlParam[] = []): Promise<T[]> {
+  const prepared = db.prepare(statement).bind(...params);
+  const result = await prepared.all<T>();
+  return result.results ?? [];
 }
 
-function get<T>(db: sqlite3.Database, statement: string, params: SqlParam[] = []): Promise<T | undefined> {
-  return new Promise((resolve, reject) => {
-    db.get(statement, params, (error, row: T | undefined) => {
-      if (error) {
-        reject(error);
-        return;
-      }
-      resolve(row);
-    });
-  });
+async function get<T>(db: D1DatabaseBinding, statement: string, params: SqlParam[] = []): Promise<T | undefined> {
+  const prepared = db.prepare(statement).bind(...params);
+  const row = await prepared.first<T>();
+  return row ?? undefined;
 }
 
 async function ensureTableColumn(
-  db: sqlite3.Database,
+  db: D1DatabaseBinding,
   tableName: string,
   columnName: string,
   columnDefinition: string
@@ -173,18 +197,51 @@ async function ensureTableColumn(
   }
 }
 
-async function ensureProfileSettingsColumns(db: sqlite3.Database): Promise<void> {
+async function ensureWriteupColumns(db: D1DatabaseBinding): Promise<void> {
+  await ensureTableColumn(
+    db,
+    'writeups',
+    'attachments_json',
+    "attachments_json TEXT NOT NULL DEFAULT '[]'"
+  );
+}
+
+async function ensureProjectColumns(db: D1DatabaseBinding): Promise<void> {
+  await ensureTableColumn(
+    db,
+    'projects',
+    'attachments_json',
+    "attachments_json TEXT NOT NULL DEFAULT '[]'"
+  );
+}
+
+async function ensureAchievementColumns(db: D1DatabaseBinding): Promise<void> {
+  await ensureTableColumn(
+    db,
+    'achievements',
+    'attachments_json',
+    "attachments_json TEXT NOT NULL DEFAULT '[]'"
+  );
+}
+
+async function ensureProfileSettingsColumns(db: D1DatabaseBinding): Promise<void> {
   await ensureTableColumn(db, 'profile_settings', 'display_name', 'display_name TEXT');
+  await ensureTableColumn(db, 'profile_settings', 'alias_name', 'alias_name TEXT');
+  await ensureTableColumn(db, 'profile_settings', 'navbar_brand_mode', 'navbar_brand_mode TEXT');
+  await ensureTableColumn(db, 'profile_settings', 'navbar_brand_name', 'navbar_brand_name TEXT');
   await ensureTableColumn(db, 'profile_settings', 'email', 'email TEXT');
   await ensureTableColumn(db, 'profile_settings', 'website_url', 'website_url TEXT');
   await ensureTableColumn(db, 'profile_settings', 'github_url', 'github_url TEXT');
   await ensureTableColumn(db, 'profile_settings', 'instagram_url', 'instagram_url TEXT');
   await ensureTableColumn(db, 'profile_settings', 'profile_image_url', 'profile_image_url TEXT');
+  await ensureTableColumn(db, 'profile_settings', 'philosophy_text', 'philosophy_text TEXT');
   await ensureTableColumn(db, 'profile_settings', 'technical_arsenal_json', "technical_arsenal_json TEXT NOT NULL DEFAULT '[]'");
   await ensureTableColumn(db, 'profile_settings', 'professional_journey_json', "professional_journey_json TEXT NOT NULL DEFAULT '[]'");
+  await ensureTableColumn(db, 'profile_settings', 'education_history_json', "education_history_json TEXT NOT NULL DEFAULT '[]'");
+  await ensureTableColumn(db, 'profile_settings', 'seo_settings_json', "seo_settings_json TEXT NOT NULL DEFAULT '{}'");
 }
 
-async function migrate(db: sqlite3.Database): Promise<void> {
+async function migrate(db: D1DatabaseBinding): Promise<void> {
   await run(
     db,
     `CREATE TABLE IF NOT EXISTS writeups (
@@ -198,6 +255,7 @@ async function migrate(db: sqlite3.Database): Promise<void> {
       content TEXT,
       flag TEXT,
       tags_json TEXT NOT NULL DEFAULT '[]',
+      attachments_json TEXT NOT NULL DEFAULT '[]',
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     )`
@@ -213,6 +271,7 @@ async function migrate(db: sqlite3.Database): Promise<void> {
       project_url TEXT,
       category TEXT,
       tags_json TEXT NOT NULL DEFAULT '[]',
+      attachments_json TEXT NOT NULL DEFAULT '[]',
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     )`
@@ -228,6 +287,7 @@ async function migrate(db: sqlite3.Database): Promise<void> {
       description TEXT,
       image_url TEXT,
       date TEXT,
+      attachments_json TEXT NOT NULL DEFAULT '[]',
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     )`
@@ -263,18 +323,27 @@ async function migrate(db: sqlite3.Database): Promise<void> {
     `CREATE TABLE IF NOT EXISTS profile_settings (
       id TEXT PRIMARY KEY,
       display_name TEXT,
+      alias_name TEXT,
+      navbar_brand_mode TEXT,
+      navbar_brand_name TEXT,
       email TEXT,
       website_url TEXT,
       github_url TEXT,
       instagram_url TEXT,
       profile_image_url TEXT,
       about_text TEXT,
+      philosophy_text TEXT,
       technical_arsenal_json TEXT NOT NULL DEFAULT '[]',
       professional_journey_json TEXT NOT NULL DEFAULT '[]',
+      education_history_json TEXT NOT NULL DEFAULT '[]',
+      seo_settings_json TEXT NOT NULL DEFAULT '{}',
       updated_at TEXT NOT NULL
     )`
   );
 
+  await ensureWriteupColumns(db);
+  await ensureProjectColumns(db);
+  await ensureAchievementColumns(db);
   await ensureProfileSettingsColumns(db);
 
   const defaultProfileSettings = getDefaultProfileSettings();
@@ -284,27 +353,39 @@ async function migrate(db: sqlite3.Database): Promise<void> {
     `INSERT OR IGNORE INTO profile_settings (
       id,
       display_name,
+      alias_name,
+      navbar_brand_mode,
+      navbar_brand_name,
       email,
       website_url,
       github_url,
       instagram_url,
       profile_image_url,
       about_text,
+      philosophy_text,
       technical_arsenal_json,
       professional_journey_json,
+      education_history_json,
+      seo_settings_json,
       updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       'main',
       defaultProfileSettings.displayName ?? 'My Name',
+      defaultProfileSettings.alias ?? 'Claritys',
+      defaultProfileSettings.navbarBrandMode ?? 'default',
+      defaultProfileSettings.navbarBrandName ?? '',
       defaultProfileSettings.email ?? 'email@domain.tld',
       defaultProfileSettings.websiteUrl ?? 'https://domain.tld',
       defaultProfileSettings.githubUrl ?? 'http://github.com/github',
       defaultProfileSettings.instagramUrl ?? 'https://www.instagram.com',
       defaultProfileSettings.profileImageUrl ?? '/profile.jpg',
       defaultProfileSettings.aboutText ?? DEFAULT_ABOUT_TEXT,
+      defaultProfileSettings.philosophyText ?? DEFAULT_PHILOSOPHY_TEXT,
       JSON.stringify(defaultProfileSettings.technicalArsenal ?? []),
       JSON.stringify(defaultProfileSettings.professionalJourney ?? []),
+      JSON.stringify(defaultProfileSettings.educationHistory ?? []),
+      JSON.stringify(defaultProfileSettings.seo ?? {}),
       new Date().toISOString(),
     ]
   );
@@ -316,28 +397,22 @@ async function migrate(db: sqlite3.Database): Promise<void> {
   await run(db, 'CREATE INDEX IF NOT EXISTS idx_access_logs_accessed_at ON access_logs(accessed_at DESC)');
 }
 
-async function getDb(): Promise<sqlite3.Database> {
+async function getDb(): Promise<D1DatabaseBinding> {
   if (!dbPromise) {
-    dbPromise = (async () => {
-      const dbPath = getDbPath();
-      await mkdir(path.dirname(dbPath), { recursive: true });
-
-      const db = await new Promise<sqlite3.Database>((resolve, reject) => {
-        const connection = new sqlite3.Database(dbPath, (error) => {
-          if (error) {
-            reject(error);
-            return;
-          }
-          resolve(connection);
-        });
-      });
-
-      await migrate(db);
-      return db;
-    })();
+    dbPromise = openD1DatabaseBinding();
   }
 
-  return dbPromise;
+  const db = await dbPromise;
+
+  if (!migrationPromise) {
+    migrationPromise = migrate(db).catch((error) => {
+      migrationPromise = null;
+      throw error;
+    });
+  }
+
+  await migrationPromise;
+  return db;
 }
 
 function asOptionalString(value: unknown): string | undefined {
@@ -352,6 +427,38 @@ function asOptionalStringArray(value: unknown): string[] | undefined {
   return value
     .map((entry) => (typeof entry === 'string' ? entry.trim() : String(entry).trim()))
     .filter(Boolean);
+}
+
+function asOptionalAttachmentArray(value: unknown): AttachmentRecord[] | undefined {
+  if (!Array.isArray(value)) {
+    return undefined;
+  }
+
+  const normalized: AttachmentRecord[] = [];
+
+  for (const entry of value) {
+    if (!entry || typeof entry !== 'object') {
+      continue;
+    }
+
+    const source = entry as AttachmentRecord;
+    const name = typeof source.name === 'string' ? source.name.trim() : '';
+    const url = typeof source.url === 'string' ? source.url.trim() : '';
+    const contentType =
+      typeof source.contentType === 'string' ? source.contentType.trim() : undefined;
+
+    if (!url) {
+      continue;
+    }
+
+    normalized.push({
+      name: name || url,
+      url,
+      ...(contentType ? { contentType } : {}),
+    });
+  }
+
+  return normalized;
 }
 
 function parseTags(raw: string | null): string[] {
@@ -373,6 +480,12 @@ function parseTags(raw: string | null): string[] {
   }
 }
 
+function parseAttachments(raw: string | null): AttachmentRecord[] {
+  const value = parseJsonArray<AttachmentRecord>(raw);
+  const normalized = asOptionalAttachmentArray(value);
+  return normalized ?? [];
+}
+
 function parseJsonArray<T>(raw: string | null): T[] | undefined {
   if (!raw) {
     return undefined;
@@ -381,6 +494,23 @@ function parseJsonArray<T>(raw: string | null): T[] | undefined {
   try {
     const value: unknown = JSON.parse(raw);
     return Array.isArray(value) ? (value as T[]) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function parseJsonObject<T>(raw: string | null): T | undefined {
+  if (!raw) {
+    return undefined;
+  }
+
+  try {
+    const value: unknown = JSON.parse(raw);
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+      return undefined;
+    }
+
+    return value as T;
   } catch {
     return undefined;
   }
@@ -398,6 +528,7 @@ function mapWriteupRow(row: WriteupRow): WriteupRecord {
     content: row.content ?? undefined,
     flag: row.flag ?? undefined,
     tags: parseTags(row.tags_json),
+    attachments: parseAttachments(row.attachments_json),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -412,6 +543,7 @@ function mapProjectRow(row: ProjectRow): ProjectRecord {
     projectUrl: row.project_url ?? undefined,
     category: row.category ?? undefined,
     tags: parseTags(row.tags_json),
+    attachments: parseAttachments(row.attachments_json),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -426,6 +558,7 @@ function mapAchievementRow(row: AchievementRow): AchievementRecord {
     description: row.description ?? undefined,
     imageUrl: row.image_url ?? undefined,
     date: row.date ?? undefined,
+    attachments: parseAttachments(row.attachments_json),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -454,14 +587,23 @@ function mapAccessLogRow(row: AccessLogRow): AccessLogRecord {
 function mapProfileSettingsRow(row: ProfileSettingsRow): ProfileSettingsRecord {
   const normalized = normalizeProfileSettings({
     displayName: row.display_name ?? undefined,
+    alias: row.alias_name ?? undefined,
+    navbarBrandMode:
+      row.navbar_brand_mode === 'custom' || row.navbar_brand_mode === 'default'
+        ? row.navbar_brand_mode
+        : undefined,
+    navbarBrandName: row.navbar_brand_name ?? undefined,
     email: row.email ?? undefined,
     websiteUrl: row.website_url ?? undefined,
     githubUrl: row.github_url ?? undefined,
     instagramUrl: row.instagram_url ?? undefined,
     profileImageUrl: row.profile_image_url ?? undefined,
     aboutText: row.about_text ?? undefined,
+    philosophyText: row.philosophy_text ?? undefined,
     technicalArsenal: parseJsonArray(row.technical_arsenal_json),
     professionalJourney: parseJsonArray(row.professional_journey_json),
+    educationHistory: parseJsonArray(row.education_history_json),
+    seo: parseJsonObject<NonNullable<ProfileSettingsRecord['seo']>>(row.seo_settings_json),
     updatedAt: row.updated_at,
   });
 
@@ -485,14 +627,14 @@ export async function getWriteupById(id: string): Promise<WriteupRecord | null> 
 
 export async function createWriteup(data: Partial<WriteupRecord>): Promise<string> {
   const db = await getDb();
-  const id = randomUUID();
+  const id = crypto.randomUUID();
   const now = new Date().toISOString();
 
   await run(
     db,
     `INSERT INTO writeups (
-      id, title, competition, category, difficulty, date, summary, content, flag, tags_json, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      id, title, competition, category, difficulty, date, summary, content, flag, tags_json, attachments_json, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       id,
       asOptionalString(data.title) ?? null,
@@ -504,6 +646,7 @@ export async function createWriteup(data: Partial<WriteupRecord>): Promise<strin
       asOptionalString(data.content) ?? null,
       asOptionalString(data.flag) ?? null,
       JSON.stringify(asOptionalStringArray(data.tags) ?? []),
+      JSON.stringify(asOptionalAttachmentArray(data.attachments) ?? []),
       asOptionalString(data.createdAt) ?? now,
       now,
     ]
@@ -521,6 +664,7 @@ export async function updateWriteup(id: string, data: Partial<WriteupRecord>): P
 
   const now = new Date().toISOString();
   const incomingTags = asOptionalStringArray(data.tags);
+  const incomingAttachments = asOptionalAttachmentArray(data.attachments);
 
   const result = await run(
     db,
@@ -534,6 +678,7 @@ export async function updateWriteup(id: string, data: Partial<WriteupRecord>): P
       content = ?,
       flag = ?,
       tags_json = ?,
+      attachments_json = ?,
       updated_at = ?
     WHERE id = ?`,
     [
@@ -546,6 +691,7 @@ export async function updateWriteup(id: string, data: Partial<WriteupRecord>): P
       asOptionalString(data.content) ?? existing.content,
       asOptionalString(data.flag) ?? existing.flag,
       incomingTags ? JSON.stringify(incomingTags) : existing.tags_json,
+      incomingAttachments ? JSON.stringify(incomingAttachments) : existing.attachments_json,
       now,
       id,
     ]
@@ -568,14 +714,14 @@ export async function listProjects(): Promise<ProjectRecord[]> {
 
 export async function createProject(data: Partial<ProjectRecord>): Promise<string> {
   const db = await getDb();
-  const id = randomUUID();
+  const id = crypto.randomUUID();
   const now = new Date().toISOString();
 
   await run(
     db,
     `INSERT INTO projects (
-      id, title, description, image_url, project_url, category, tags_json, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      id, title, description, image_url, project_url, category, tags_json, attachments_json, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       id,
       asOptionalString(data.title) ?? null,
@@ -584,6 +730,7 @@ export async function createProject(data: Partial<ProjectRecord>): Promise<strin
       asOptionalString(data.projectUrl) ?? null,
       asOptionalString(data.category) ?? null,
       JSON.stringify(asOptionalStringArray(data.tags) ?? []),
+      JSON.stringify(asOptionalAttachmentArray(data.attachments) ?? []),
       asOptionalString(data.createdAt) ?? now,
       now,
     ]
@@ -601,6 +748,7 @@ export async function updateProject(id: string, data: Partial<ProjectRecord>): P
 
   const now = new Date().toISOString();
   const incomingTags = asOptionalStringArray(data.tags);
+  const incomingAttachments = asOptionalAttachmentArray(data.attachments);
 
   const result = await run(
     db,
@@ -611,6 +759,7 @@ export async function updateProject(id: string, data: Partial<ProjectRecord>): P
       project_url = ?,
       category = ?,
       tags_json = ?,
+      attachments_json = ?,
       updated_at = ?
     WHERE id = ?`,
     [
@@ -620,6 +769,7 @@ export async function updateProject(id: string, data: Partial<ProjectRecord>): P
       asOptionalString(data.projectUrl) ?? existing.project_url,
       asOptionalString(data.category) ?? existing.category,
       incomingTags ? JSON.stringify(incomingTags) : existing.tags_json,
+      incomingAttachments ? JSON.stringify(incomingAttachments) : existing.attachments_json,
       now,
       id,
     ]
@@ -642,14 +792,14 @@ export async function listAchievements(): Promise<AchievementRecord[]> {
 
 export async function createAchievement(data: Partial<AchievementRecord>): Promise<string> {
   const db = await getDb();
-  const id = randomUUID();
+  const id = crypto.randomUUID();
   const now = new Date().toISOString();
 
   await run(
     db,
     `INSERT INTO achievements (
-      id, title, issuer, platform, description, image_url, date, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      id, title, issuer, platform, description, image_url, date, attachments_json, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       id,
       asOptionalString(data.title) ?? null,
@@ -658,6 +808,7 @@ export async function createAchievement(data: Partial<AchievementRecord>): Promi
       asOptionalString(data.description) ?? null,
       asOptionalString(data.imageUrl) ?? null,
       asOptionalString(data.date) ?? null,
+      JSON.stringify(asOptionalAttachmentArray(data.attachments) ?? []),
       asOptionalString(data.createdAt) ?? now,
       now,
     ]
@@ -674,6 +825,7 @@ export async function updateAchievement(id: string, data: Partial<AchievementRec
   }
 
   const now = new Date().toISOString();
+  const incomingAttachments = asOptionalAttachmentArray(data.attachments);
 
   const result = await run(
     db,
@@ -684,6 +836,7 @@ export async function updateAchievement(id: string, data: Partial<AchievementRec
       description = ?,
       image_url = ?,
       date = ?,
+      attachments_json = ?,
       updated_at = ?
     WHERE id = ?`,
     [
@@ -693,6 +846,7 @@ export async function updateAchievement(id: string, data: Partial<AchievementRec
       asOptionalString(data.description) ?? existing.description,
       asOptionalString(data.imageUrl) ?? existing.image_url,
       asOptionalString(data.date) ?? existing.date,
+      incomingAttachments ? JSON.stringify(incomingAttachments) : existing.attachments_json,
       now,
       id,
     ]
@@ -713,6 +867,12 @@ export async function listSecureMessages(): Promise<SecureMessageRecord[]> {
   return rows.map(mapSecureMessageRow);
 }
 
+export async function deleteSecureMessage(id: string): Promise<boolean> {
+  const db = await getDb();
+  const result = await run(db, 'DELETE FROM secure_messages WHERE id = ?', [id]);
+  return result.changes > 0;
+}
+
 export async function createContactMessage(input: {
   name: string;
   email: string;
@@ -720,7 +880,7 @@ export async function createContactMessage(input: {
   message: string;
 }): Promise<string> {
   const db = await getDb();
-  const id = randomUUID();
+  const id = crypto.randomUUID();
   const now = new Date().toISOString();
 
   await run(
@@ -761,7 +921,7 @@ export async function createAccessLog(input: {
   ip: string;
 }): Promise<string> {
   const db = await getDb();
-  const id = randomUUID();
+  const id = crypto.randomUUID();
   const now = new Date().toISOString();
 
   await run(
@@ -801,38 +961,56 @@ export async function updateProfileSettings(
     `INSERT INTO profile_settings (
       id,
       display_name,
+      alias_name,
+      navbar_brand_mode,
+      navbar_brand_name,
       email,
       website_url,
       github_url,
       instagram_url,
       profile_image_url,
       about_text,
+      philosophy_text,
       technical_arsenal_json,
       professional_journey_json,
+      education_history_json,
+      seo_settings_json,
       updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT(id) DO UPDATE SET
        display_name = excluded.display_name,
+       alias_name = excluded.alias_name,
+       navbar_brand_mode = excluded.navbar_brand_mode,
+       navbar_brand_name = excluded.navbar_brand_name,
        email = excluded.email,
        website_url = excluded.website_url,
        github_url = excluded.github_url,
        instagram_url = excluded.instagram_url,
        profile_image_url = excluded.profile_image_url,
        about_text = excluded.about_text,
+       philosophy_text = excluded.philosophy_text,
        technical_arsenal_json = excluded.technical_arsenal_json,
        professional_journey_json = excluded.professional_journey_json,
+       education_history_json = excluded.education_history_json,
+       seo_settings_json = excluded.seo_settings_json,
        updated_at = excluded.updated_at`,
     [
       'main',
       nextProfile.displayName ?? null,
+      nextProfile.alias ?? null,
+      nextProfile.navbarBrandMode ?? 'default',
+      nextProfile.navbarBrandName ?? '',
       nextProfile.email ?? null,
       nextProfile.websiteUrl ?? null,
       nextProfile.githubUrl ?? null,
       nextProfile.instagramUrl ?? null,
       nextProfile.profileImageUrl ?? null,
       nextProfile.aboutText ?? DEFAULT_ABOUT_TEXT,
+      nextProfile.philosophyText ?? DEFAULT_PHILOSOPHY_TEXT,
       JSON.stringify(nextProfile.technicalArsenal ?? []),
       JSON.stringify(nextProfile.professionalJourney ?? []),
+      JSON.stringify(nextProfile.educationHistory ?? []),
+      JSON.stringify(nextProfile.seo ?? {}),
       now,
     ]
   );

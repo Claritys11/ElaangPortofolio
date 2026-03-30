@@ -1,2 +1,2 @@
-allowBuilds:
-  sqlite3: true
+packages:
+  - .
