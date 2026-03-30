@@ -2,6 +2,7 @@
 "use client"
 
 import * as React from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -548,6 +549,7 @@ function createEmptyProfileForm(): ProfileFormState {
 }
 
 export default function AdminPage() {
+  const router = useRouter()
   const { toast } = useToast()
   const [isAuthenticated, setIsAuthenticated] = React.useState(false)
   const [isAuthLoading, setIsAuthLoading] = React.useState(true)
@@ -1503,6 +1505,8 @@ export default function AdminPage() {
       })
 
       setProfileForm(toProfileFormState(payload))
+      window.dispatchEvent(new Event("claritys:profile-updated"))
+      void router.refresh()
       toast({ title: "Profile updated" })
     } catch (error) {
       toast({

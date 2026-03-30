@@ -23,32 +23,40 @@ export function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false)
   const [profileSettings, setProfileSettings] = React.useState<ProfileSettingsRecord>(getDefaultProfileSettings)
 
-  React.useEffect(() => {
-    let active = true
-
-    const loadProfile = async () => {
-      try {
-        const payload = await fetchJson<ProfileSettingsRecord>("/api/public/profile")
-        if (!active) {
-          return
-        }
-
-        setProfileSettings(normalizeProfileSettings(payload))
-      } catch {
-        if (!active) {
-          return
-        }
-
-        setProfileSettings(getDefaultProfileSettings())
+  const loadProfile = React.useCallback(async (isActive: { current: boolean }) => {
+    try {
+      const payload = await fetchJson<ProfileSettingsRecord>("/api/public/profile", {
+        cache: "no-store",
+      })
+      if (!isActive.current) {
+        return
       }
-    }
 
-    void loadProfile()
+      setProfileSettings(normalizeProfileSettings(payload))
+    } catch {
+      if (!isActive.current) {
+        return
+      }
 
-    return () => {
-      active = false
+      setProfileSettings(getDefaultProfileSettings())
     }
   }, [])
+
+  React.useEffect(() => {
+    const active = { current: true }
+
+    const handleProfileUpdated = () => {
+      void loadProfile(active)
+    }
+
+    void loadProfile(active)
+    window.addEventListener("claritys:profile-updated", handleProfileUpdated)
+
+    return () => {
+      active.current = false
+      window.removeEventListener("claritys:profile-updated", handleProfileUpdated)
+    }
+  }, [loadProfile])
 
   const baseDefaultBrandName = (profileSettings.displayName ?? "My Name").split(" ")[0] || "My"
   const defaultBrandName = `${baseDefaultBrandName}'s Portfolio`

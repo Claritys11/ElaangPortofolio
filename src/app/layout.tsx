@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { cache } from 'react';
 import './globals.css';
 import { Navbar } from '@/components/Navbar';
 import { Toaster } from '@/components/ui/toaster';
@@ -7,6 +6,8 @@ import { TVEffect } from '@/components/TVEffect';
 import { ShellGate } from '@/components/ShellGate';
 import { normalizeProfileSettings } from '@/lib/about-default';
 import { getProfileSettings } from '@/lib/server-storage';
+
+export const dynamic = 'force-dynamic';
 
 const FALLBACK_BASE_URL = 'https://claritys.my.id';
 const FALLBACK_DESCRIPTION =
@@ -48,10 +49,10 @@ function getFallbackKeywords(name: string, igUsername: string): string[] {
   ].filter(Boolean);
 }
 
-const getSeoProfileSettings = cache(async () => {
+async function getSeoProfileSettings() {
   const profile = await getProfileSettings().catch(() => null);
   return normalizeProfileSettings(profile);
-});
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   const profile = await getSeoProfileSettings();
@@ -73,8 +74,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const rawTitleTemplate = seo.titleTemplate?.trim() ?? '';
   const titleTemplate = rawTitleTemplate.includes('%s')
     ? rawTitleTemplate
-    : `%s | ${name}`;
+    : rawTitleTemplate || `%s | ${name}`;
   const defaultTitle = seo.defaultTitle?.trim() || `${name} | Cybersecurity Portfolio`;
+  const computedTitle = rawTitleTemplate.includes('%s')
+    ? titleTemplate.replace('%s', defaultTitle)
+    : defaultTitle;
   const siteName = seo.siteName?.trim() || `${name} Portfolio`;
   const locale = seo.locale?.trim() || 'id_ID';
 
@@ -87,7 +91,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
     title: {
       template: titleTemplate,
-      default: defaultTitle,
+      default: computedTitle,
     },
 
     description,
@@ -105,7 +109,7 @@ export async function generateMetadata(): Promise<Metadata> {
       type: 'website',
       locale,
       url: baseUrl,
-      title: defaultTitle,
+      title: computedTitle,
       description,
       siteName,
       images: [
@@ -120,7 +124,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
     twitter: {
       card: 'summary_large_image',
-      title: defaultTitle,
+      title: computedTitle,
       description,
       images: [previewImage],
     },

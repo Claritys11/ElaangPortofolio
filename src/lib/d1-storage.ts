@@ -111,6 +111,9 @@ interface AccessLogRow {
 interface ProfileSettingsRow {
   id: string;
   display_name: string | null;
+  alias: string | null;
+  navbar_brand_mode: string | null;
+  navbar_brand_name: string | null;
   email: string | null;
   website_url: string | null;
   github_url: string | null;
@@ -270,6 +273,9 @@ async function ensureTableColumn(
 
 async function ensureProfileSettingsColumns(db: D1DatabaseBinding): Promise<void> {
   await ensureTableColumn(db, 'profile_settings', 'display_name', 'display_name TEXT');
+  await ensureTableColumn(db, 'profile_settings', 'alias', 'alias TEXT');
+  await ensureTableColumn(db, 'profile_settings', 'navbar_brand_mode', "navbar_brand_mode TEXT NOT NULL DEFAULT 'default'");
+  await ensureTableColumn(db, 'profile_settings', 'navbar_brand_name', 'navbar_brand_name TEXT');
   await ensureTableColumn(db, 'profile_settings', 'email', 'email TEXT');
   await ensureTableColumn(db, 'profile_settings', 'website_url', 'website_url TEXT');
   await ensureTableColumn(db, 'profile_settings', 'github_url', 'github_url TEXT');
@@ -361,6 +367,9 @@ async function migrate(db: D1DatabaseBinding): Promise<void> {
     `CREATE TABLE IF NOT EXISTS profile_settings (
       id TEXT PRIMARY KEY,
       display_name TEXT,
+      alias TEXT,
+      navbar_brand_mode TEXT NOT NULL DEFAULT 'default',
+      navbar_brand_name TEXT,
       email TEXT,
       website_url TEXT,
       github_url TEXT,
@@ -385,6 +394,9 @@ async function migrate(db: D1DatabaseBinding): Promise<void> {
     `INSERT OR IGNORE INTO profile_settings (
       id,
       display_name,
+      alias,
+      navbar_brand_mode,
+      navbar_brand_name,
       email,
       website_url,
       github_url,
@@ -397,10 +409,13 @@ async function migrate(db: D1DatabaseBinding): Promise<void> {
       education_history_json,
       seo_settings_json,
       updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       'main',
       defaultProfileSettings.displayName ?? 'My Name',
+      defaultProfileSettings.alias ?? 'Claritys',
+      defaultProfileSettings.navbarBrandMode ?? 'default',
+      defaultProfileSettings.navbarBrandName ?? '',
       defaultProfileSettings.email ?? 'email@domain.tld',
       defaultProfileSettings.websiteUrl ?? 'https://domain.tld',
       defaultProfileSettings.githubUrl ?? 'http://github.com/github',
@@ -572,6 +587,9 @@ function mapAccessLogRow(row: AccessLogRow): AccessLogRecord {
 function mapProfileSettingsRow(row: ProfileSettingsRow): ProfileSettingsRecord {
   const normalized = normalizeProfileSettings({
     displayName: row.display_name ?? undefined,
+    alias: row.alias ?? undefined,
+    navbarBrandMode: row.navbar_brand_mode as unknown as 'default' | 'custom' ?? undefined,
+    navbarBrandName: row.navbar_brand_name ?? undefined,
     email: row.email ?? undefined,
     websiteUrl: row.website_url ?? undefined,
     githubUrl: row.github_url ?? undefined,
@@ -922,6 +940,9 @@ export async function updateProfileSettings(
     `INSERT INTO profile_settings (
       id,
       display_name,
+      alias,
+      navbar_brand_mode,
+      navbar_brand_name,
       email,
       website_url,
       github_url,
@@ -934,9 +955,12 @@ export async function updateProfileSettings(
       education_history_json,
       seo_settings_json,
       updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT(id) DO UPDATE SET
        display_name = excluded.display_name,
+       alias = excluded.alias,
+       navbar_brand_mode = excluded.navbar_brand_mode,
+       navbar_brand_name = excluded.navbar_brand_name,
        email = excluded.email,
        website_url = excluded.website_url,
        github_url = excluded.github_url,
@@ -952,6 +976,9 @@ export async function updateProfileSettings(
     [
       'main',
       nextProfile.displayName ?? null,
+      nextProfile.alias ?? null,
+      nextProfile.navbarBrandMode ?? 'default',
+      nextProfile.navbarBrandName ?? null,
       nextProfile.email ?? null,
       nextProfile.websiteUrl ?? null,
       nextProfile.githubUrl ?? null,
