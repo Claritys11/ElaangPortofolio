@@ -1,0 +1,26 @@
+services:
+  portfolio:
+    build: .
+    container_name: portfolio-nextjs
+
+    restart: unless-stopped
+
+    env_file:
+      - .env.local
+
+    environment:
+      NODE_ENV: production
+
+    volumes:
+      - ./storage:/var/lib/claritys
+      - ./public/uploads:/app/public/uploads
+    ports:
+      - "3000:3000"
+  
+    networks:
+      - npm-network
+
+networks:
+  npm-network:
+    external: true
+    
