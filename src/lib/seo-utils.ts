@@ -3,19 +3,25 @@ import type { WriteupRecord } from '@/lib/portfolio-types';
 const FALLBACK_SITE_BASE_URL = 'https://clarityz.my.id';
 
 function normalizeBaseUrl(value: string | undefined): string {
-  if (!value?.trim()) {
+  const rawValue = value?.trim();
+
+  if (!rawValue) {
     return FALLBACK_SITE_BASE_URL;
   }
 
+  const candidate = /^[a-z][a-z\d+\-.]*:\/\//i.test(rawValue) ? rawValue : `https://${rawValue}`;
+
   try {
-    const url = new URL(value);
+    const url = new URL(candidate);
     return url.toString().replace(/\/$/, '');
   } catch {
     return FALLBACK_SITE_BASE_URL;
   }
 }
 
-export const SITE_BASE_URL = normalizeBaseUrl(process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL);
+export const SITE_BASE_URL = normalizeBaseUrl(
+  process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || process.env.COOLIFY_FQDN
+);
 export const BRAND_NAME = 'Elang Dimas Syadewa';
 export const BRAND_ALIAS = 'Claritys';
 export const SITE_NAME = `${BRAND_NAME} Portfolio`;
