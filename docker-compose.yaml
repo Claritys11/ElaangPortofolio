@@ -9,4 +9,4 @@ services:
       - ./storage:/var/lib/claritys
       - ./public/uploads:/app/public/uploads
     ports:
-      - "3002:3000"
+      - "3003:3000"
