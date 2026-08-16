@@ -31,18 +31,15 @@ jobs:
           --health-retries 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - name: Setup pnpm and Node.js
+        uses: pnpm/setup@v1
         with:
           version: 11.4.0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
           cache: pnpm
+          runtime: node@24
+          install: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

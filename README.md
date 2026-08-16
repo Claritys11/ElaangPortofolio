@@ -27,8 +27,8 @@ Firebase is not wired as a current runtime mode in this codebase. Do not configu
 
 ## Requirements
 
-- Node.js 20.11 or newer
-- pnpm 10 or newer, with this repository pinned to `pnpm@11.4.0`
+- Node.js 24 or newer
+- pnpm 11.4 or newer, with this repository pinned to `pnpm@11.4.0`
 - PostgreSQL database for local or deployed runtime
 
 ## Setup

@@ -27,8 +27,8 @@ Firebase belum terhubung sebagai mode runtime pada codebase ini. Jangan menambah
 
 ## Kebutuhan
 
-- Node.js 20.11 atau lebih baru
-- pnpm 10 atau lebih baru, dengan repository ini dipin ke `pnpm@11.4.0`
+- Node.js 24 atau lebih baru
+- pnpm 11.4 atau lebih baru, dengan repository ini dipin ke `pnpm@11.4.0`
 - Database PostgreSQL untuk runtime lokal atau deployment
 
 ## Setup
