@@ -23,6 +23,8 @@
 # misc
 .DS_Store
 *.pem
+.wrangler/
+.mf/
 
 # debug
 npm-debug.log*
@@ -37,14 +39,22 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+data/portfolio.sqlite3
+
 .genkit/*
 .env.local
+.env
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
 
-# firebase
-firebase-debug.log
-firestore-debug.log
-
-# sqlite
-data/*.sqlite
-data/*.sqlite3
-data/*.db
+.env.local
+storage/
+public/uploads/
+database/
+*.sqlite
+*.sqlite3
+README-env.md
+howtopas.txt
+BRIEF.md
+README-coolify.md

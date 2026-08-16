@@ -3,33 +3,46 @@
 import * as React from "react"
 import { ShellIntro } from "./ShellIntro"
 import { motion, AnimatePresence } from "motion/react"
+import { SystemLoader } from "./SystemLoader"
 
 export function ShellGate({ children }: { children: React.ReactNode }) {
   const [showIntro, setShowIntro] = React.useState<boolean | null>(null)
 
   React.useEffect(() => {
-    const hasEntered = sessionStorage.getItem("terminal_authorized")
-    if (hasEntered) {
+    try {
+      window.sessionStorage.getItem("terminal_authorized")
       setShowIntro(false)
-    } else {
-      setShowIntro(true)
+    } catch {
+      setShowIntro(false)
     }
   }, [])
 
   const handleComplete = () => {
-    sessionStorage.setItem("terminal_authorized", "true")
+    try {
+      window.sessionStorage.setItem("terminal_authorized", "true")
+    } catch {
+    }
     setShowIntro(false)
   }
 
-  // Prevent flash of content while checking session
-  if (showIntro === null) return null
+  if (showIntro === null) {
+    return (
+      <div className="min-h-screen px-4 py-10 flex items-center justify-center">
+        <SystemLoader
+          size="panel"
+          message="Checking terminal session"
+          detail="Reading browser session authorization state."
+        />
+      </div>
+    )
+  }
 
   return (
     <AnimatePresence mode="wait">
       {showIntro ? (
         <ShellIntro key="intro" onComplete={handleComplete} />
       ) : (
-        <motion.div 
+        <motion.div
           key="content"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

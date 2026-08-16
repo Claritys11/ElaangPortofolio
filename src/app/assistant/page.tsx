@@ -116,7 +116,9 @@ export default function AIAssistantPage() {
               <Label>Content Type</Label>
               <Select 
                 value={formData.contentType} 
-                onValueChange={(v: any) => setFormData({...formData, contentType: v})}
+                onValueChange={(value: "about_me" | "project_description" | "ctf_writeup_summary") =>
+                  setFormData({ ...formData, contentType: value })
+                }
               >
                 <SelectTrigger className="bg-muted/50 border-border">
                   <SelectValue placeholder="Select type" />

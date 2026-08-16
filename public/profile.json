@@ -1,9 +1,9 @@
 {
-  "displayName": "My Name",
-  "email": "email@domain.tld",
-  "websiteUrl": "https://domain.tld",
-  "githubUrl": "http://github.com/github",
-  "instagramUrl": "https://www.instagram.com",
+  "displayName": "Elang Dimas Syadewa",
+  "email": "elangdimassyadewa@gmail.com",
+  "websiteUrl": "https://clarityz.my.id",
+  "githubUrl": "http://github.com/Claritys11",
+  "instagramUrl": "https://www.instagram.com/elanggslibaw",
   "profileImageUrl": "/profile.jpg",
   "aboutText": "I'm a student passionate about cybersecurity, software, and web development. I enjoy solving complex problems, building projects, and exploring new technologies. Through Capture The Flag (CTF) challenges and coding projects, I continuously sharpen my skills in analysis, problem-solving, and developing practical solutions, while also improving my communication, collaboration, and adaptability.",
   "philosophyText": "\"Sorry, Wish We Could Go To The Moon Together.\" -D. M.",
@@ -39,6 +39,10 @@
     {
       "name": "Public Speaking",
       "level": 70
+    },
+    {
+      "name": "Steganography",
+      "level": 80
     }
   ],
   "professionalJourney": [
@@ -67,5 +71,5 @@
       "desc": "My goal is to grow as a professional in cybersecurity and software development while continuing to learn, build, and participate in technical challenges."
     }
   ],
-  "updatedAt": "2026-03-17T08:55:19.562Z"
+  "updatedAt": "2026-03-19T00:34:12.858Z"
 }

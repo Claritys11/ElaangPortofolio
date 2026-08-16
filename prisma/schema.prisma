@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Writeup {
+  id              String    @id @default(uuid())
+  slug            String?
+  title           String?
+  competition     String?
+  category        String?
+  difficulty      String?
+  date            DateTime? @db.Timestamptz(3)
+  summary         String?
+  content         String?
+  flag            String?
+  tagsJson        Json      @default("[]") @map("tags_json")
+  attachmentsJson Json      @default("[]") @map("attachments_json")
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@index([createdAt(sort: Desc)])
+  @@map("writeups")
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  title       String?
+  description String?
+  imageUrl    String?  @map("image_url")
+  projectUrl  String?  @map("project_url")
+  category    String?
+  tagsJson    Json     @default("[]") @map("tags_json")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@index([createdAt(sort: Desc)])
+  @@map("projects")
+}
+
+model Achievement {
+  id          String    @id @default(uuid())
+  title       String?
+  issuer      String?
+  platform    String?
+  description String?
+  imageUrl    String?   @map("image_url")
+  date        DateTime? @db.Timestamptz(3)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@index([createdAt(sort: Desc)])
+  @@map("achievements")
+}
+
+model SecureMessage {
+  id        String   @id @default(uuid())
+  title     String?
+  content   String?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  username  String?
+  source    String?
+
+  @@index([createdAt(sort: Desc)])
+  @@map("secure_messages")
+}
+
+model AccessLog {
+  id               String   @id @default(uuid())
+  username         String?
+  accessedAt       DateTime @map("accessed_at") @db.Timestamptz(3)
+  accessSuccessful Boolean  @map("access_successful")
+  ip               String?
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@index([accessedAt(sort: Desc)])
+  @@map("access_logs")
+}
+
+model ProfileSettings {
+  id                      String   @id @default("main")
+  displayName             String?  @map("display_name")
+  alias                   String?
+  navbarBrandMode         String   @default("default") @map("navbar_brand_mode")
+  navbarBrandName         String?  @map("navbar_brand_name")
+  email                   String?
+  websiteUrl              String?  @map("website_url")
+  githubUrl               String?  @map("github_url")
+  instagramUrl            String?  @map("instagram_url")
+  profileImageUrl         String?  @map("profile_image_url")
+  aboutText               String?  @map("about_text")
+  philosophyText          String?  @map("philosophy_text")
+  technicalArsenalJson    Json     @default("[]") @map("technical_arsenal_json")
+  professionalJourneyJson Json     @default("[]") @map("professional_journey_json")
+  educationHistoryJson    Json     @default("[]") @map("education_history_json")
+  seoSettingsJson         Json     @default("{}") @map("seo_settings_json")
+  updatedAt               DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@map("profile_settings")
+}

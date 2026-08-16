@@ -23,34 +23,47 @@ export function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false)
   const [profileSettings, setProfileSettings] = React.useState<ProfileSettingsRecord>(getDefaultProfileSettings)
 
-  React.useEffect(() => {
-    let active = true
-
-    const loadProfile = async () => {
-      try {
-        const payload = await fetchJson<ProfileSettingsRecord>("/api/public/profile")
-        if (!active) {
-          return
-        }
-
-        setProfileSettings(normalizeProfileSettings(payload))
-      } catch {
-        if (!active) {
-          return
-        }
-
-        setProfileSettings(getDefaultProfileSettings())
+  const loadProfile = React.useCallback(async (isActive: { current: boolean }) => {
+    try {
+      const payload = await fetchJson<ProfileSettingsRecord>("/api/public/profile", {
+        cache: "no-store",
+      })
+      if (!isActive.current) {
+        return
       }
-    }
 
-    void loadProfile()
+      setProfileSettings(normalizeProfileSettings(payload))
+    } catch {
+      if (!isActive.current) {
+        return
+      }
 
-    return () => {
-      active = false
+      setProfileSettings(getDefaultProfileSettings())
     }
   }, [])
 
-  const brandName = (profileSettings.displayName ?? "My Name").split(" ")[0] || "My"
+  React.useEffect(() => {
+    const active = { current: true }
+
+    const handleProfileUpdated = () => {
+      void loadProfile(active)
+    }
+
+    void loadProfile(active)
+    window.addEventListener("claritys:profile-updated", handleProfileUpdated)
+
+    return () => {
+      active.current = false
+      window.removeEventListener("claritys:profile-updated", handleProfileUpdated)
+    }
+  }, [loadProfile])
+
+  const baseDefaultBrandName = (profileSettings.displayName ?? "My Name").split(" ")[0] || "My"
+  const defaultBrandName = `${baseDefaultBrandName}'s Portfolio`
+  const customBrandName = profileSettings.navbarBrandName?.trim()
+  const brandName = profileSettings.navbarBrandMode === "custom" && customBrandName
+    ? customBrandName
+    : defaultBrandName
 
   return (
     <nav className="fixed top-0 w-full z-50 border-b border-border/40 bg-background/80 backdrop-blur-md">
@@ -61,7 +74,7 @@ export function Navbar() {
               <Shield className="h-6 w-6 text-primary" />
             </div>
             <span className="font-headline font-bold text-xl tracking-tighter text-foreground">
-              {brandName}&apos;s<span className="text-primary">.</span>
+              {brandName}<span className="text-primary">.</span>
             </span>
           </Link>
 
