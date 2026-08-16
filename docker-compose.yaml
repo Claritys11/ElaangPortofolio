@@ -1,0 +1,12 @@
+services:
+  portfolio:
+    build: .
+    container_name: portfolio-coolify
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+    volumes:
+      - ./storage:/var/lib/claritys
+      - ./public/uploads:/app/public/uploads
+    ports:
+      - "3002:3000"

@@ -1,6 +1,4 @@
-import { getStorageType } from '@/lib/storage-type';
-import * as firebaseStorage from '@/lib/firebase-rest-storage';
-import * as sqliteStorage from '@/lib/sqlite-storage';
+import * as prismaStorage from '@/lib/prisma-storage';
 import type {
   AchievementRecord,
   ProfileSettingsRecord,
@@ -9,14 +7,15 @@ import type {
 } from '@/lib/portfolio-types';
 
 function getServerStorage() {
-  // Admin/auth routes always use SQLite regardless of STORAGE_TYPE.
-  // Firebase mode only affects public client routes (handled by firebase-client-api.ts).
-  void getStorageType(); // retain import reference
-  return sqliteStorage;
+  return prismaStorage;
 }
 
 export function listWriteups() {
   return getServerStorage().listWriteups();
+}
+
+export function listWriteupSummaries() {
+  return getServerStorage().listWriteupSummaries();
 }
 
 export function getWriteupById(id: string) {
@@ -71,6 +70,10 @@ export function listSecureMessages() {
   return getServerStorage().listSecureMessages();
 }
 
+export function deleteSecureMessage(id: string) {
+  return getServerStorage().deleteSecureMessage(id);
+}
+
 export function createContactMessage(input: {
   name: string;
   email: string;
@@ -86,7 +89,7 @@ export function listAccessLogs(limit?: number) {
 
 export function createAccessLog(input: {
   username: string;
-  accessedAt: string;
+  accessedAt: Date;
   accessSuccessful: boolean;
   ip: string;
 }) {

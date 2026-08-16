@@ -1,198 +1,127 @@
-# SigmaBangetPortfolioGweh
+# Elaang Portfolio
 
-Portfolio pribadi bertema cyberpunk untuk menampilkan proyek, write-up CTF, achievement, dan inbox admin dalam satu dashboard modern berbasis Next.js 15.
+Portfolio pribadi bertema terminal cyberpunk untuk write-up CTF, proyek teknis, achievement, pesan kontak, dan dashboard admin privat. Dibangun dengan Next.js 15, React 19, Tailwind CSS, Prisma, dan PostgreSQL.
 
-![Portfolio Preview](./awd.png)
+Dokumentasi bahasa Inggris: [README.md](./README.md)
 
-## ✨ Highlight
+![Preview portfolio](./awd.png)
 
-- ⚡ Next.js 15 App Router + React 19 + Tailwind CSS
-- 🧠 AI flow support via Genkit (`src/ai`)
-- 🗂️ Dual storage mode: `sqlite` atau `firebase`
-- 🔐 Admin dashboard dengan cookie session server-side
-- 🧾 Profile publik disimpan di `public/profile.json` (editable dari admin)
+## Fitur Yang Sudah Ada
 
-## 🧱 Tech Stack
+- Halaman publik untuk home, about, projects, achievements, CTF write-ups, dan contact.
+- Halaman detail CTF dinamis dengan slug redirect, metadata, related write-ups, dan UI reveal flag.
+- Admin inbox di `/inbox` untuk messages, write-ups, projects, achievements, profile settings, uploads, dan access logs.
+- Session admin server-side menggunakan signed HTTP-only cookie.
+- Persistensi PostgreSQL melalui migrasi Prisma.
+- Storage upload lokal di `public/uploads`, disajikan lewat `/api/public/uploads/:name`.
+- Loading UI cyberpunk bersama yang accessible untuk route transition, session check, dan fetch data dashboard.
+- File pengembangan Genkit AI di `src/ai`.
 
-- **Frontend:** Next.js, React, Tailwind CSS, Radix UI
-- **Backend/API:** Next Route Handlers (`src/app/api/**`)
-- **Data:** SQLite (`sqlite3`) atau Firebase/Firestore
-- **Utilities:** date-fns, zod, Genkit
+## Mode Storage
 
-## 🧭 Arsitektur Storage
+Runtime aplikasi saat ini memakai PostgreSQL melalui Prisma. Isi `DATABASE_URL` dan jalankan migrasi Prisma sebelum menjalankan app.
 
-| Mode | Cocok untuk | Perilaku |
-|---|---|---|
-| `sqlite` | Local dev paling simpel | API `/api/**` aktif, data utama di SQLite, profile tetap di `public/profile.json` |
-| `firebase` | Integrasi Firebase/Firestore | Request browser ke `/api/**` (non-auth, non-profile) dialihkan ke Firebase client; direct hit ke endpoint tersebut akan kena `502` dari middleware |
+SQLite hanya didukung sebagai sumber migrasi melalui `scripts/migrate-sqlite-to-postgres.mjs`; SQLite bukan database runtime aktif pada branch ini.
 
-> Rekomendasi untuk mulai cepat: pakai `sqlite` dulu, lalu migrasi ke `firebase` setelah env siap.
+Firebase belum terhubung sebagai mode runtime pada codebase ini. Jangan menambahkan credential Firebase kecuali perubahan mendatang benar-benar menambahkan dan mendokumentasikan integrasi tersebut.
 
-## 🚀 Quick Start
+## Kebutuhan
 
-### 1) Prasyarat
+- Node.js 20.11 atau lebih baru
+- pnpm 10 atau lebih baru, dengan repository ini dipin ke `pnpm@11.4.0`
+- Database PostgreSQL untuk runtime lokal atau deployment
 
-- Node.js 18+ (disarankan 20+)
-- `pnpm` (recommended) atau `npm`
-
-### 2) Clone & install
+## Setup
 
 ```bash
-git clone https://github.com/dfbro/SigmaBangetPortfolioGweh
-cd SigmaBangetPortfolioGweh
+git clone https://github.com/Claritys11/ElaangPortofolio.git
+cd ElaangPortofolio
 pnpm install
-```
-
-Alternatif npm:
-
-```bash
-npm install
-```
-
-### 3) Setup environment
-
-```bash
 cp .env.example .env.local
 ```
 
-Lalu isi `.env.local` sesuai mode yang dipilih.
-
----
-
-## ⚙️ Setting Environment
-
-### Opsi A — Mode SQLite (paling cepat untuk development)
-
-Gunakan template minimal ini:
+Isi `.env.local`:
 
 ```env
-STORAGE_TYPE="sqlite"
-NEXT_PUBLIC_STORAGE_TYPE="sqlite"
-SQLITE_DB_PATH="./data/portfolio.sqlite3"
-
 ADMIN_USERNAME="admin"
 ADMIN_PASSWORD="ganti-dengan-password-kuat"
 ADMIN_SESSION_SECRET="isi-random-string-minimal-32-karakter"
+DATABASE_URL="postgresql://user:password@host:5432/dbname"
 ```
 
-Generate secret aman (contoh):
+Buat session secret dengan:
 
 ```bash
 openssl rand -base64 48
 ```
 
-### Opsi B — Mode Firebase
+Jalankan migrasi database:
 
-```env
-STORAGE_TYPE="firebase"
-NEXT_PUBLIC_STORAGE_TYPE="firebase"
-
-ADMIN_USERNAME="admin"
-ADMIN_PASSWORD="harus-sesuai-untuk-login-admin-dan-fallback-firebase"
-ADMIN_SESSION_SECRET="isi-random-string-minimal-32-karakter"
-
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=""
-NEXT_PUBLIC_FIREBASE_APP_ID=""
-NEXT_PUBLIC_FIREBASE_API_KEY=""
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=""
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=""
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=""
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=""
-
-NEXT_PUBLIC_FIREBASE_ADMIN_EMAIL=""
-FIREBASE_ADMIN_PROJECT_ID=""
-FIREBASE_ADMIN_CLIENT_EMAIL=""
-FIREBASE_ADMIN_PRIVATE_KEY=""
+```bash
+pnpm db:migrate
 ```
 
-#### Catatan penting Firebase
-
-- Cara **paling aman** untuk akses admin server-side: isi `FIREBASE_ADMIN_CLIENT_EMAIL` + `FIREBASE_ADMIN_PRIVATE_KEY` (service account).
-- Jika service account kosong, sistem fallback ke login email/password Firebase dan butuh `NEXT_PUBLIC_FIREBASE_ADMIN_EMAIL` + `ADMIN_PASSWORD` yang valid di Firebase Auth.
-- Di mode `firebase`, endpoint API non-auth/non-profile bisa mengembalikan `502` jika dipanggil langsung dari luar browser.
-
----
-
-## 🏃 Menjalankan Project
-
-### Development
+Jalankan lokal:
 
 ```bash
 pnpm dev
 ```
 
-Server jalan di:
+Development server berjalan di `http://localhost:9002`.
 
-- http://localhost:9002
-
-### Build production
+## Validasi
 
 ```bash
-pnpm build
-pnpm start
-```
-
-### Quality checks
-
-```bash
-pnpm typecheck
 pnpm lint
+pnpm typecheck
+pnpm build
+pnpm check
 ```
 
-## 🛠️ Admin Setup & Content Setting
+`pnpm check` menjalankan validasi wajib yang reliable secara berurutan.
 
-Setelah app jalan:
+## Penggunaan Admin
 
-1. Buka `/inbox`
-2. Login dengan `ADMIN_USERNAME` + `ADMIN_PASSWORD`
-3. Kelola:
-   - Messages
-   - Write-ups
-   - Projects
-   - Achievements
-   - Profile (termasuk domain, foto profil, about text, philosophy, skill, journey)
+1. Jalankan app.
+2. Buka `/inbox`.
+3. Login dengan `ADMIN_USERNAME` dan `ADMIN_PASSWORD`.
+4. Kelola messages, write-ups, projects, achievements, profile settings, uploads, dan audit logs.
 
-### Profile data source
+Jangan commit credential admin atau `ADMIN_SESSION_SECRET`. Gunakan database non-production untuk development lokal.
 
-- Profile publik dibaca dari `public/profile.json`
-- Perubahan dari tab Profile di admin akan langsung menulis file tersebut
+## SEO Dan URL Situs
 
-## 📂 Struktur Folder Penting
+Kode memiliki fallback base URL di `src/lib/seo-utils.ts` untuk metadata, robots, sitemap, dan URL write-up. Profile SEO settings dari dashboard admin dapat mengubah canonical dan preview value. Jangan mengklaim domain production sudah final kecuali deployment dan DNS sudah diverifikasi.
+
+## Struktur Project
 
 ```text
-src/app/                 # App Router pages + API routes
-src/app/api/             # Endpoint auth/admin/public/contact
-src/lib/                 # Storage, types, helper, session
-src/firebase/            # Firebase client config/provider
-public/profile.json      # Sumber data profile publik
-data/portfolio.sqlite3   # Database SQLite (jika mode sqlite)
+src/app/                 Halaman App Router, loading fallback, dan API routes
+src/components/          UI bersama dan komponen portfolio
+src/lib/                 Helper storage, session, SEO, upload, dan type
+prisma/                  Schema Prisma dan migrasi PostgreSQL
+scripts/                 Utilitas migrasi one-off
+.github/                 Community files, issue forms, Dependabot, dan CI
 ```
 
-## 🧯 Troubleshooting
+## Kontribusi
 
-### 1) Error SQLite binding saat install/build
-
-Jika pakai `pnpm` dan modul native belum kebuild:
+Gunakan alur fork, branch, commit, push, dan Pull Request:
 
 ```bash
-pnpm approve-builds --all
+git checkout -b feat/deskripsi-singkat
 pnpm install
+pnpm check
+git commit -m "feat: jelaskan perubahan"
+git push origin feat/deskripsi-singkat
 ```
 
-### 2) `ADMIN_SESSION_SECRET must be set and at least 32 characters`
+Commit harus mengikuti Conventional Commits, seperti `feat:`, `fix:`, `docs:`, `chore:`, atau `test:`. Lihat [CONTRIBUTING.md](./CONTRIBUTING.md).
 
-- Pastikan `ADMIN_SESSION_SECRET` ada dan panjangnya minimal 32 karakter.
+## Security
 
-### 3) API `502` saat mode Firebase
+Laporkan isu security secara privat. Jangan membuka public issue untuk vulnerability atau menyertakan credential asli dalam laporan. Lihat [SECURITY.md](./SECURITY.md).
 
-- Ini expected untuk endpoint non-auth/non-profile jika dipanggil langsung via network.
-- Akses dari UI tetap bekerja melalui layer Firebase client.
+## License
 
-## 📌 Catatan
-
-- `NEXT_PUBLIC_NAME`, `NEXT_PUBLIC_EMAIL`, dll tidak lagi dipakai sebagai sumber utama profile.
-- Sumber profile utama sekarang adalah `public/profile.json`.
-
----
-
-Kalau kamu mau, README ini bisa saya lanjutkan dengan badge status (build/lint), diagram arsitektur, dan section deploy (Vercel/Firebase Hosting) biar lebih “portfolio-ready”.
+Repository ini saat ini memakai license WTFPL di [LICENSE](./LICENSE).
