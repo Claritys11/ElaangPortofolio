@@ -1,6 +1,21 @@
 import type { WriteupRecord } from '@/lib/portfolio-types';
 
-export const SITE_BASE_URL = 'https://clarityz.my.id';
+const FALLBACK_SITE_BASE_URL = 'https://clarityz.my.id';
+
+function normalizeBaseUrl(value: string | undefined): string {
+  if (!value?.trim()) {
+    return FALLBACK_SITE_BASE_URL;
+  }
+
+  try {
+    const url = new URL(value);
+    return url.toString().replace(/\/$/, '');
+  } catch {
+    return FALLBACK_SITE_BASE_URL;
+  }
+}
+
+export const SITE_BASE_URL = normalizeBaseUrl(process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL);
 export const BRAND_NAME = 'Elang Dimas Syadewa';
 export const BRAND_ALIAS = 'Claritys';
 export const SITE_NAME = `${BRAND_NAME} Portfolio`;

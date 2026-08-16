@@ -10,7 +10,7 @@ Indonesian documentation: [README.id.md](./README.id.md)
 
 - Public pages for home, about, projects, achievements, CTF write-ups, and contact.
 - Dynamic CTF detail pages with slug redirects, metadata, related write-ups, and flag reveal UI.
-- Admin inbox at `/inbox` for messages, write-ups, projects, achievements, profile settings, uploads, and access logs.
+- Admin dashboard at `/admin` for messages, write-ups, projects, achievements, profile settings, uploads, and access logs.
 - Server-side admin sessions using signed HTTP-only cookies.
 - PostgreSQL persistence through Prisma migrations.
 - Local upload storage under `public/uploads`, served by `/api/public/uploads/:name`.
@@ -47,6 +47,7 @@ ADMIN_USERNAME="admin"
 ADMIN_PASSWORD="replace-with-a-strong-password"
 ADMIN_SESSION_SECRET="use-a-random-string-with-at-least-32-characters"
 DATABASE_URL="postgresql://user:password@host:5432/dbname"
+NEXT_PUBLIC_SITE_URL="https://example.com"
 ```
 
 Generate a session secret with:
@@ -83,7 +84,7 @@ pnpm check
 ## Admin Usage
 
 1. Start the app.
-2. Open `/inbox`.
+2. Open `/admin`.
 3. Sign in with `ADMIN_USERNAME` and `ADMIN_PASSWORD`.
 4. Manage messages, write-ups, projects, achievements, profile settings, uploads, and audit logs.
 
@@ -91,7 +92,7 @@ Keep admin credentials and `ADMIN_SESSION_SECRET` out of git. Use a non-producti
 
 ## SEO And Site URL
 
-The code includes a fallback base URL in `src/lib/seo-utils.ts` for metadata, robots, sitemap, and write-up URLs. Profile SEO settings can override canonical and preview values from the admin dashboard. Avoid claiming a production domain is final unless the deployment and DNS are verified.
+Set `NEXT_PUBLIC_SITE_URL` to the public origin for metadata, robots, sitemap, and write-up URLs. Server-only `SITE_URL` is also supported as a fallback for deployments that prefer non-public environment variable names. Profile SEO settings can override canonical URL, preview image, title template, site name, locale, keywords, and structured profile fields from the `/admin` dashboard. The legacy `/inbox` route permanently redirects to `/admin`, and private admin routes are excluded from indexing.
 
 ## Project Structure
 
