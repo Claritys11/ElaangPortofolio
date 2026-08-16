@@ -10,7 +10,7 @@ Dokumentasi bahasa Inggris: [README.md](./README.md)
 
 - Halaman publik untuk home, about, projects, achievements, CTF write-ups, dan contact.
 - Halaman detail CTF dinamis dengan slug redirect, metadata, related write-ups, dan UI reveal flag.
-- Admin inbox di `/inbox` untuk messages, write-ups, projects, achievements, profile settings, uploads, dan access logs.
+- Admin dashboard di `/admin` untuk messages, write-ups, projects, achievements, profile settings, uploads, dan access logs.
 - Session admin server-side menggunakan signed HTTP-only cookie.
 - Persistensi PostgreSQL melalui migrasi Prisma.
 - Storage upload lokal di `public/uploads`, disajikan lewat `/api/public/uploads/:name`.
@@ -47,6 +47,7 @@ ADMIN_USERNAME="admin"
 ADMIN_PASSWORD="ganti-dengan-password-kuat"
 ADMIN_SESSION_SECRET="isi-random-string-minimal-32-karakter"
 DATABASE_URL="postgresql://user:password@host:5432/dbname"
+NEXT_PUBLIC_SITE_URL="https://example.com"
 ```
 
 Buat session secret dengan:
@@ -83,7 +84,7 @@ pnpm check
 ## Penggunaan Admin
 
 1. Jalankan app.
-2. Buka `/inbox`.
+2. Buka `/admin`.
 3. Login dengan `ADMIN_USERNAME` dan `ADMIN_PASSWORD`.
 4. Kelola messages, write-ups, projects, achievements, profile settings, uploads, dan audit logs.
 
@@ -91,7 +92,7 @@ Jangan commit credential admin atau `ADMIN_SESSION_SECRET`. Gunakan database non
 
 ## SEO Dan URL Situs
 
-Kode memiliki fallback base URL di `src/lib/seo-utils.ts` untuk metadata, robots, sitemap, dan URL write-up. Profile SEO settings dari dashboard admin dapat mengubah canonical dan preview value. Jangan mengklaim domain production sudah final kecuali deployment dan DNS sudah diverifikasi.
+Isi `NEXT_PUBLIC_SITE_URL` dengan origin publik untuk metadata, robots, sitemap, dan URL write-up. `SITE_URL` server-only juga didukung sebagai fallback untuk deployment yang memilih nama environment variable non-public. Profile SEO settings dari dashboard `/admin` dapat mengubah canonical URL, preview image, title template, site name, locale, keywords, dan structured profile fields. Route legacy `/inbox` permanent redirect ke `/admin`, dan route admin privat dikecualikan dari indexing.
 
 ## Struktur Project
 
