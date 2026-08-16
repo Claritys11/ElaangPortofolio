@@ -10,3 +10,4 @@ This project has not published formal releases yet. Notable unreleased changes s
 - Added package metadata, engine requirements, pnpm pinning, and validation scripts.
 - Consolidated the admin dashboard under `/admin` and redirected the legacy `/inbox` route.
 - Added environment-variable support for the public site URL used by SEO integrations.
+- Pinned Prisma packages to the supported 6.x line and blocked automatic Prisma major updates until the schema is migrated.
