@@ -4,6 +4,7 @@ import { Navbar } from '@/components/Navbar';
 import { Toaster } from '@/components/ui/toaster';
 import { TVEffect } from '@/components/TVEffect';
 import { ShellGate } from '@/components/ShellGate';
+import { RouteLoadingOverlay } from '@/components/RouteLoadingOverlay';
 import { normalizeProfileSettings } from '@/lib/about-default';
 import { getProfileSettings } from '@/lib/server-storage';
 import { BRAND_ALIAS, BRAND_NAME, SITE_BASE_URL, SITE_NAME } from '@/lib/seo-utils';
@@ -225,6 +226,7 @@ export default async function RootLayout({
         <ShellGate>
           <TVEffect />
           <Navbar />
+          <RouteLoadingOverlay />
           <main className="pt-16">{children}</main>
           <Toaster />
         </ShellGate>
