@@ -4,6 +4,7 @@ import * as React from "react"
 import { Activity, CheckCircle2, Lock } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
+import { GithubContributionCalendar } from "@/components/ui/github-contribution-calendar"
 import { Hero } from "@/components/ui/animated-hero"
 import { cn } from "@/lib/utils"
 import { BRAND_ALIAS, BRAND_NAME } from "@/lib/seo-utils"
@@ -125,6 +126,11 @@ export function HomeClient({ profileSettings, summary }: HomeClientProps) {
           </div>
         </div>
       </section>
+
+      <GithubContributionCalendar
+        githubUrl={profileSettings.githubUrl}
+        displayName={displayName}
+      />
     </div>
   )
 }
