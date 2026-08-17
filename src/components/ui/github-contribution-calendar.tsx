@@ -19,6 +19,13 @@ interface ContributionDay {
   level: number
 }
 
+interface GithubContributionResponse {
+  username: string
+  totalContributions: number
+  days: ContributionDay[]
+  sourceUrl: string
+}
+
 const WEEK_COUNT = 53
 const DAY_COUNT = WEEK_COUNT * 7
 const levelClasses = [
@@ -92,12 +99,52 @@ export function GithubContributionCalendar({
   const username = extractGithubUsername(githubUrl)
   const profileUrl = githubUrl?.trim() || `https://github.com/${username}`
   const [days, setDays] = React.useState<ContributionDay[]>([])
+  const [totalContributions, setTotalContributions] = React.useState(0)
+  const [isSynced, setIsSynced] = React.useState(false)
+  const [syncError, setSyncError] = React.useState(false)
 
   React.useEffect(() => {
-    setDays(buildCalendarDays(username))
-  }, [username])
+    let isActive = true
 
-  const totalContributions = days.reduce((total, day) => total + day.count, 0)
+    async function loadContributions() {
+      setIsSynced(false)
+      setSyncError(false)
+
+      try {
+        const response = await fetch(`/api/public/github-contributions/${encodeURIComponent(username)}`, {
+          cache: "no-store",
+        })
+
+        if (!response.ok) {
+          throw new Error("GitHub contribution sync failed")
+        }
+
+        const payload = (await response.json()) as GithubContributionResponse
+        if (!isActive) {
+          return
+        }
+
+        setDays(payload.days)
+        setTotalContributions(payload.totalContributions)
+        setIsSynced(true)
+      } catch {
+        if (!isActive) {
+          return
+        }
+
+        const fallbackDays = buildCalendarDays(username)
+        setDays(fallbackDays)
+        setTotalContributions(fallbackDays.reduce((total, day) => total + day.count, 0))
+        setSyncError(true)
+      }
+    }
+
+    void loadContributions()
+
+    return () => {
+      isActive = false
+    }
+  }, [username])
 
   return (
     <section
@@ -136,6 +183,9 @@ export function GithubContributionCalendar({
             <div>
               <p className="font-code text-xs uppercase tracking-widest text-muted-foreground">Recent contribution map</p>
               <p className="mt-1 font-headline text-2xl font-bold text-foreground">{totalContributions.toLocaleString()} contributions</p>
+              <p className="mt-1 font-code text-[10px] uppercase tracking-widest text-muted-foreground">
+                {isSynced ? "Synced from GitHub profile" : syncError ? "Using fallback map while GitHub is unavailable" : "Syncing GitHub profile..."}
+              </p>
             </div>
             <div className="flex items-center gap-2 font-code text-[10px] uppercase tracking-widest text-muted-foreground">
               <span>Less</span>
