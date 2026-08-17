@@ -6,6 +6,7 @@ import { motion } from "motion/react"
 import { Activity, Award, Code2, MoveRight, PhoneCall, Terminal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { BackgroundPaths } from "@/components/ui/background-paths"
+import { GlowingEffect } from "@/components/ui/glowing-effect"
 import { cn } from "@/lib/utils"
 
 interface HeroProps {
@@ -74,6 +75,12 @@ function Hero({
     setTitleNumber(0)
   }, [visibleTitleKey])
 
+  const statCards = [
+    { value: writeupCount, label: "Write-ups" },
+    { value: projectCount, label: "Projects" },
+    { value: achievementCount, label: "Records" },
+  ]
+
   return (
     <section
       className={cn(
@@ -95,7 +102,7 @@ function Hero({
           >
             <Button variant="secondary" size="sm" className="gap-3 border border-primary/20 bg-primary/10 font-code text-xs uppercase tracking-widest text-primary hover:bg-primary/15" asChild>
               <Link href="/about">
-                {alias} protocol online <MoveRight className="h-4 w-4" />
+                {alias} official portfolio <MoveRight className="h-4 w-4" />
               </Link>
             </Button>
           </motion.div>
@@ -140,19 +147,23 @@ function Hero({
             </Button>
           </div>
 
-          <div className="grid w-full max-w-3xl grid-cols-3 gap-3 border-y border-border/60 py-4 text-left sm:gap-6">
-            <div>
-              <p className="font-headline text-2xl font-bold text-foreground sm:text-3xl">{writeupCount}</p>
-              <p className="font-code text-[10px] uppercase tracking-widest text-muted-foreground">Write-ups</p>
-            </div>
-            <div>
-              <p className="font-headline text-2xl font-bold text-foreground sm:text-3xl">{projectCount}</p>
-              <p className="font-code text-[10px] uppercase tracking-widest text-muted-foreground">Projects</p>
-            </div>
-            <div>
-              <p className="font-headline text-2xl font-bold text-foreground sm:text-3xl">{achievementCount}</p>
-              <p className="font-code text-[10px] uppercase tracking-widest text-muted-foreground">Records</p>
-            </div>
+          <div className="grid w-full max-w-3xl grid-cols-3 gap-3 text-left sm:gap-4">
+            {statCards.map((stat) => (
+              <div key={stat.label} className="relative rounded-xl border-[0.75px] border-border p-1">
+                <GlowingEffect
+                  spread={34}
+                  glow
+                  disabled={false}
+                  proximity={56}
+                  inactiveZone={0.01}
+                  borderWidth={2}
+                />
+                <div className="relative h-full rounded-lg border border-border/70 bg-background/60 px-3 py-4 shadow-sm backdrop-blur-sm transition-colors hover:border-primary/50 hover:bg-primary/5 sm:px-5">
+                  <p className="font-headline text-2xl font-bold text-foreground sm:text-3xl">{stat.value}</p>
+                  <p className="font-code text-[10px] uppercase tracking-widest text-muted-foreground">{stat.label}</p>
+                </div>
+              </div>
+            ))}
           </div>
 
           <div className="grid w-full gap-3 md:grid-cols-3">
@@ -160,13 +171,20 @@ function Hero({
               const Icon = item.icon
 
               return (
-                <Button
+                <Link
                   key={item.href}
-                  variant="outline"
-                  className="h-auto justify-start border-border/70 bg-background/55 p-4 text-left hover:border-primary/50 hover:bg-primary/5"
-                  asChild
+                  href={item.href}
+                  className="group relative rounded-xl border-[0.75px] border-border p-1 text-left"
                 >
-                  <Link href={item.href} className="flex items-start gap-3">
+                  <GlowingEffect
+                    spread={40}
+                    glow
+                    disabled={false}
+                    proximity={64}
+                    inactiveZone={0.01}
+                    borderWidth={2}
+                  />
+                  <span className="relative flex h-full items-start gap-3 rounded-lg border border-border/70 bg-background/60 p-4 shadow-sm backdrop-blur-sm transition-colors group-hover:border-primary/50 group-hover:bg-primary/5">
                     <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-primary/30 bg-primary/10 text-primary">
                       <Icon className="h-4 w-4" />
                     </span>
@@ -174,8 +192,8 @@ function Hero({
                       <span className="block font-headline text-sm font-bold text-foreground">{item.label}</span>
                       <span className="mt-1 block whitespace-normal text-xs leading-5 text-muted-foreground">{item.detail}</span>
                     </span>
-                  </Link>
-                </Button>
+                  </span>
+                </Link>
               )
             })}
           </div>
