@@ -5,6 +5,7 @@ import Link from "next/link"
 import { motion } from "motion/react"
 import { Activity, Award, Code2, MoveRight, PhoneCall, Terminal } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { BackgroundPaths } from "@/components/ui/background-paths"
 import { cn } from "@/lib/utils"
 
 interface HeroProps {
@@ -80,6 +81,7 @@ function Hero({
         className
       )}
     >
+      <BackgroundPaths className="opacity-70 [mask-image:linear-gradient(to_bottom,transparent,black_14%,black_78%,transparent)]" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-primary/10 to-transparent" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-background to-transparent" />
       <div className="pointer-events-none absolute left-1/2 top-16 h-[26rem] w-[min(42rem,92vw)] -translate-x-1/2 rounded-full border border-primary/15 bg-primary/5 blur-3xl" />
