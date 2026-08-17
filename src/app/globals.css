@@ -184,15 +184,15 @@
 }
 
 .system-loader-scan {
-  animation: system-loader-scan 2.8s linear infinite;
+  animation: system-loader-scan 4.2s linear infinite;
 }
 
 .system-loader-progress {
-  animation: system-loader-progress 1.7s ease-in-out infinite;
+  animation: system-loader-progress 2.8s ease-in-out infinite;
 }
 
 .system-loader-pulse {
-  animation: system-loader-pulse 1.4s ease-in-out infinite;
+  animation: system-loader-pulse 1.9s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
