@@ -82,6 +82,13 @@ export const DEFAULT_SEO_SETTINGS: SeoSettingsRecord = {
   ],
   jobTitle: "Cybersecurity Enthusiast, CTF Player, Web Developer",
   sameAs: [],
+  heroAnimatedTitles: [
+    "CTF player",
+    "web security builder",
+    "student",
+    "problem solver",
+    "write-up maker",
+  ],
 }
 
 function pickString(value: unknown, fallback: string): string {
@@ -148,6 +155,7 @@ function cloneSeoSettings(value: SeoSettingsRecord): SeoSettingsRecord {
     keywords: [...(value.keywords ?? [])],
     jobTitle: value.jobTitle,
     sameAs: [...(value.sameAs ?? [])],
+    heroAnimatedTitles: [...(value.heroAnimatedTitles ?? [])],
   }
 }
 
@@ -260,6 +268,7 @@ function normalizeSeoSettings(value: unknown): SeoSettingsRecord {
     keywords: pickStringArray(source.keywords, defaults.keywords ?? []),
     jobTitle: pickString(source.jobTitle, defaults.jobTitle ?? "Cybersecurity Specialist"),
     sameAs: pickStringArray(source.sameAs, defaults.sameAs ?? []),
+    heroAnimatedTitles: pickStringArray(source.heroAnimatedTitles, defaults.heroAnimatedTitles ?? []),
   }
 }
 
@@ -282,7 +291,7 @@ export function getDefaultProfileSettings(): ProfileSettingsRecord {
     navbarBrandName: "",
     email: "email@domain.tld",
     websiteUrl: "https://clarityz.my.id",
-    githubUrl: "http://github.com/github",
+    githubUrl: "https://github.com/claritys11",
     instagramUrl: "https://www.instagram.com",
     profileImageUrl: "/profile.jpg",
     aboutText: DEFAULT_ABOUT_TEXT,
@@ -306,7 +315,7 @@ export function normalizeProfileSettings(
     navbarBrandName: pickString(value?.navbarBrandName, defaults.navbarBrandName ?? ""),
     email: pickString(value?.email, defaults.email ?? "email@domain.tld"),
     websiteUrl: pickString(value?.websiteUrl, defaults.websiteUrl ?? "https://domain.tld"),
-    githubUrl: pickString(value?.githubUrl, defaults.githubUrl ?? "http://github.com/github"),
+    githubUrl: pickString(value?.githubUrl, defaults.githubUrl ?? "https://github.com/claritys11"),
     instagramUrl: pickString(
       value?.instagramUrl,
       defaults.instagramUrl ?? "https://www.instagram.com"

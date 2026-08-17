@@ -28,7 +28,7 @@ export function AboutClient({ profileSettings }: AboutClientProps) {
   )
 
   const githubLabel = React.useMemo(
-    () => formatUrlLabel(profileSettings.githubUrl ?? "http://github.com/github", "github.com/github"),
+    () => formatUrlLabel(profileSettings.githubUrl ?? "https://github.com/claritys11", "github.com/claritys11"),
     [profileSettings.githubUrl]
   )
 
