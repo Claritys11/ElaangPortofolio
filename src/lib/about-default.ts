@@ -291,7 +291,7 @@ export function getDefaultProfileSettings(): ProfileSettingsRecord {
     navbarBrandName: "",
     email: "email@domain.tld",
     websiteUrl: "https://clarityz.my.id",
-    githubUrl: "http://github.com/github",
+    githubUrl: "https://github.com/claritys11",
     instagramUrl: "https://www.instagram.com",
     profileImageUrl: "/profile.jpg",
     aboutText: DEFAULT_ABOUT_TEXT,
@@ -315,7 +315,7 @@ export function normalizeProfileSettings(
     navbarBrandName: pickString(value?.navbarBrandName, defaults.navbarBrandName ?? ""),
     email: pickString(value?.email, defaults.email ?? "email@domain.tld"),
     websiteUrl: pickString(value?.websiteUrl, defaults.websiteUrl ?? "https://domain.tld"),
-    githubUrl: pickString(value?.githubUrl, defaults.githubUrl ?? "http://github.com/github"),
+    githubUrl: pickString(value?.githubUrl, defaults.githubUrl ?? "https://github.com/claritys11"),
     instagramUrl: pickString(
       value?.instagramUrl,
       defaults.instagramUrl ?? "https://www.instagram.com"
