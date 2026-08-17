@@ -142,6 +142,7 @@ interface SeoFormState {
   jobTitle: string
   keywordsText: string
   sameAsText: string
+  heroAnimatedTitlesText: string
 }
 
 interface ProfileFormState {
@@ -264,6 +265,13 @@ function normalizeAttachmentPayload(attachments: AttachmentFormState[]) {
 function parseCommaSeparatedValues(value: string): string[] {
   return value
     .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+}
+
+function parseLineSeparatedValues(value: string): string[] {
+  return value
+    .split(/\r?\n/)
     .map((entry) => entry.trim())
     .filter(Boolean)
 }
@@ -550,6 +558,7 @@ function toProfileFormState(profile?: ProfileSettingsRecord | null): ProfileForm
       jobTitle: seo.jobTitle || "",
       keywordsText: (seo.keywords ?? []).join(", "),
       sameAsText: (seo.sameAs ?? []).join(", "),
+      heroAnimatedTitlesText: (seo.heroAnimatedTitles ?? []).join("\n"),
     },
   }
 }
@@ -1578,6 +1587,7 @@ export default function AdminPage() {
         jobTitle: profileForm.seo.jobTitle,
         keywords: parseCommaSeparatedValues(profileForm.seo.keywordsText),
         sameAs: parseCommaSeparatedValues(profileForm.seo.sameAsText),
+        heroAnimatedTitles: parseLineSeparatedValues(profileForm.seo.heroAnimatedTitlesText),
       },
     })
 
@@ -2456,6 +2466,26 @@ export default function AdminPage() {
                         setProfileForm((prev) => ({ ...prev, aboutText: event.target.value }))
                       }
                       className="min-h-[180px]"
+                    />
+                  </section>
+
+                  <section className="space-y-3 rounded-lg border border-border bg-muted/10 p-4 md:p-5">
+                    <div className="space-y-1">
+                      <Label>Hero Animated Titles</Label>
+                      <p className="text-xs leading-relaxed text-muted-foreground">
+                        One line becomes one rotating title on the homepage hero.
+                      </p>
+                    </div>
+                    <Textarea
+                      value={profileForm.seo.heroAnimatedTitlesText}
+                      onChange={(event) =>
+                        setProfileForm((prev) => ({
+                          ...prev,
+                          seo: { ...prev.seo, heroAnimatedTitlesText: event.target.value },
+                        }))
+                      }
+                      className="min-h-[130px] font-code"
+                      placeholder={"CTF player\nweb security builder\nstudent\nproblem solver"}
                     />
                   </section>
 

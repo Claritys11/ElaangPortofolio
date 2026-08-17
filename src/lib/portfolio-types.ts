@@ -105,6 +105,7 @@ export interface SeoSettingsRecord {
   keywords?: string[];
   jobTitle?: string;
   sameAs?: string[];
+  heroAnimatedTitles?: string[];
 }
 
 export interface ProfileSettingsRecord {

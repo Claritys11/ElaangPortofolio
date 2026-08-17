@@ -82,6 +82,13 @@ export const DEFAULT_SEO_SETTINGS: SeoSettingsRecord = {
   ],
   jobTitle: "Cybersecurity Enthusiast, CTF Player, Web Developer",
   sameAs: [],
+  heroAnimatedTitles: [
+    "CTF player",
+    "web security builder",
+    "student",
+    "problem solver",
+    "write-up maker",
+  ],
 }
 
 function pickString(value: unknown, fallback: string): string {
@@ -148,6 +155,7 @@ function cloneSeoSettings(value: SeoSettingsRecord): SeoSettingsRecord {
     keywords: [...(value.keywords ?? [])],
     jobTitle: value.jobTitle,
     sameAs: [...(value.sameAs ?? [])],
+    heroAnimatedTitles: [...(value.heroAnimatedTitles ?? [])],
   }
 }
 
@@ -260,6 +268,7 @@ function normalizeSeoSettings(value: unknown): SeoSettingsRecord {
     keywords: pickStringArray(source.keywords, defaults.keywords ?? []),
     jobTitle: pickString(source.jobTitle, defaults.jobTitle ?? "Cybersecurity Specialist"),
     sameAs: pickStringArray(source.sameAs, defaults.sameAs ?? []),
+    heroAnimatedTitles: pickStringArray(source.heroAnimatedTitles, defaults.heroAnimatedTitles ?? []),
   }
 }
 
