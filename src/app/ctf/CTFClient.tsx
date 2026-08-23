@@ -4,11 +4,12 @@ import * as React from "react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Terminal, Search, ExternalLink, Calendar, Tag, Layers, Trophy } from "lucide-react"
+import { Terminal, Search, ExternalLink, Calendar, Tag, Layers, Trophy, Clock, AlignLeft } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
 import { getWriteupPath } from "@/lib/seo-utils"
+import { formatWriteupDate, getWriteupStats } from "@/lib/writeup-metrics"
 import type { WriteupRecord } from "@/lib/portfolio-types"
 
 const CATEGORIES = ["All", "Web", "Pwn", "Crypto", "Reverse", "Forensics"]
@@ -109,7 +110,10 @@ export function CTFClient({ writeups }: CTFClientProps) {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredWriteups.length > 0 ? (
-              filteredWriteups.map((w) => (
+              filteredWriteups.map((w) => {
+                const stats = getWriteupStats(w.content, w.summary)
+
+                return (
                 <Link key={w.id} href={getWriteupPath(w)} className="block group">
                   <div className="relative h-full rounded-xl border-[0.75px] border-border p-1">
                     <GlowingEffect
@@ -141,9 +145,17 @@ export function CTFClient({ writeups }: CTFClientProps) {
                       <h2 className="text-xl font-headline font-bold mb-2 group-hover:text-primary transition-colors">
                         {w.title}
                       </h2>
-                      <p className="flex items-center text-xs text-muted-foreground mb-4">
-                        <Calendar className="h-3 w-3 mr-1" /> {w.date}
-                      </p>
+                      <div className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-1 font-code text-[10px] uppercase tracking-wider text-muted-foreground">
+                        <span className="inline-flex items-center gap-1">
+                          <Calendar className="h-3 w-3" /> {formatWriteupDate(w.date || w.createdAt)}
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <AlignLeft className="h-3 w-3" /> {stats.wordCount.toLocaleString()} words
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <Clock className="h-3 w-3" /> {stats.readingMinutes} min
+                        </span>
+                      </div>
                       <p className="text-sm text-muted-foreground line-clamp-3 mb-6 flex-1">
                         {w.summary}
                       </p>
@@ -163,7 +175,8 @@ export function CTFClient({ writeups }: CTFClientProps) {
                     </div>
                   </div>
                 </Link>
-              ))
+                )
+              })
             ) : (
               <div className="col-span-full py-20 text-center space-y-4 border-2 border-dashed border-border rounded-lg">
                 <Terminal className="h-12 w-12 text-muted mx-auto" />

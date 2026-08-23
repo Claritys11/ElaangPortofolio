@@ -195,6 +195,63 @@
   animation: system-loader-pulse 1.9s ease-in-out infinite;
 }
 
+.writeup-prose {
+  color: hsl(var(--foreground));
+}
+
+.writeup-prose :where(h2, h3) {
+  letter-spacing: 0;
+}
+
+.writeup-prose :where(h2) {
+  margin-top: 2.75rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid hsl(var(--border) / 0.7);
+  padding-bottom: 0.65rem;
+}
+
+.writeup-prose :where(h3) {
+  margin-top: 2rem;
+}
+
+.writeup-prose :where(p, li) {
+  line-height: 1.85;
+}
+
+.writeup-prose :where(pre) {
+  border: 1px solid hsl(var(--border) / 0.72);
+  background: hsl(var(--background) / 0.86);
+  box-shadow: 0 18px 60px hsl(var(--primary) / 0.06);
+}
+
+.writeup-prose :where(code):not(:where(pre code)) {
+  border: 1px solid hsl(var(--border) / 0.7);
+  border-radius: 0.35rem;
+  background: hsl(var(--muted) / 0.68);
+  padding: 0.12rem 0.32rem;
+  font-weight: 500;
+}
+
+.writeup-prose :where(img) {
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.65rem;
+}
+
+.notion-editor p.is-editor-empty:first-child::before {
+  color: hsl(var(--muted-foreground) / 0.72);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.notion-editor :where(pre) {
+  border: 1px solid hsl(var(--border) / 0.72);
+  border-radius: 0.65rem;
+  background: hsl(var(--muted) / 0.38);
+  padding: 1rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
