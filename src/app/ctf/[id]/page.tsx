@@ -12,8 +12,11 @@ import {
   Unlock,
   FileText,
   Code,
+  Clock,
+  AlignLeft,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { formatWriteupDate, getWriteupStats } from "@/lib/writeup-metrics"
 import { getWriteupById, listWriteupSummaries } from "@/lib/server-storage"
 import {
   BRAND_NAME,
@@ -26,6 +29,7 @@ import {
 } from "@/lib/seo-utils"
 import { FlagReveal } from "./FlagReveal"
 import { WriteupActions } from "./WriteupActions"
+import { WriteupArticleContent } from "./WriteupArticleContent"
 import Link from "next/link"
 
 // ──────────────────────────────────────────
@@ -114,6 +118,8 @@ export default async function WriteupDetailPage({
     .slice(0, 3)
 
   const canonicalUrl = getWriteupUrl(data)
+  const formattedDate = formatWriteupDate(data.date || data.createdAt)
+  const stats = getWriteupStats(data.content, data.summary)
   const articleJsonLd = {
     "@type": "BlogPosting",
     "@id": `${canonicalUrl}#article`,
@@ -168,7 +174,7 @@ export default async function WriteupDetailPage({
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12 lg:py-20">
+    <div className="mx-auto max-w-7xl px-4 py-12 lg:px-8 lg:py-20">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -185,10 +191,10 @@ export default async function WriteupDetailPage({
         ← Back to Database
       </Link>
 
-      <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-        <article className="max-w-none space-y-12 pb-20">
-        <header className="space-y-8">
-        <div className="space-y-4">
+      <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <article className="space-y-12 pb-20">
+        <header className="mx-auto max-w-4xl space-y-8">
+        <div className="space-y-5">
           <div className="flex items-center gap-2">
             <Badge
               variant="outline"
@@ -209,9 +215,23 @@ export default async function WriteupDetailPage({
               {data.difficulty}
             </span>
           </div>
-          <h1 className="text-5xl font-headline font-bold leading-tight tracking-tight">
+          <h1 className="text-4xl font-headline font-bold leading-tight tracking-tight sm:text-5xl">
             {data.title}
           </h1>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 font-code text-[11px] uppercase tracking-widest text-muted-foreground">
+            <span className="inline-flex items-center gap-1.5">
+              <Calendar className="h-3.5 w-3.5" />
+              <time dateTime={data.date || data.createdAt}>{formattedDate}</time>
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <AlignLeft className="h-3.5 w-3.5" />
+              {stats.wordCount.toLocaleString()} words
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Clock className="h-3.5 w-3.5" />
+              {stats.readingMinutes} min read
+            </span>
+          </div>
           <p className="max-w-3xl text-base text-muted-foreground">
             {getWriteupMetaDescription(data)}
           </p>
@@ -237,7 +257,7 @@ export default async function WriteupDetailPage({
               <Calendar className="h-4 w-4 mr-3 text-muted-foreground" />
               <dt className="text-muted-foreground w-24">Date</dt>
               <dd className="font-medium">
-                <time dateTime={data.date || data.createdAt}>{data.date}</time>
+                <time dateTime={data.date || data.createdAt}>{formattedDate}</time>
               </dd>
             </div>
             <div className="flex items-center text-sm">
@@ -270,7 +290,7 @@ export default async function WriteupDetailPage({
         <Separator className="bg-border/60" />
 
         {/* Content Body */}
-          <section className="space-y-4">
+          <section className="mx-auto max-w-4xl space-y-4">
             <h2 className="text-2xl font-headline font-bold flex items-center">
               <FileText className="h-5 w-5 mr-3 text-secondary" />
               Overview
@@ -280,7 +300,7 @@ export default async function WriteupDetailPage({
             </p>
           </section>
 
-          <section className="space-y-4">
+          <section className="space-y-5">
             <h2 className="text-2xl font-headline font-bold flex items-center">
               <Code className="h-5 w-5 mr-3 text-secondary" />
               Documentation
@@ -294,18 +314,19 @@ export default async function WriteupDetailPage({
                 inactiveZone={0.01}
                 borderWidth={2}
               />
-              <div
-                className="relative prose prose-invert prose-primary max-w-none bg-muted/20 p-6 rounded-lg font-body overflow-hidden"
-                dangerouslySetInnerHTML={{ __html: data.content || "" }}
-              />
+              <div className="relative rounded-lg bg-muted/20 p-5 sm:p-7">
+                <WriteupArticleContent html={data.content || ""} />
+              </div>
             </div>
           </section>
 
           {/* Flag Reveal — isolated client component for interactivity */}
-          <FlagReveal flag={data.flag} />
+          <div className="mx-auto max-w-4xl">
+            <FlagReveal flag={data.flag} />
+          </div>
 
           {relatedWriteups.length > 0 && (
-            <nav aria-label="Related writeups" className="space-y-4">
+            <nav aria-label="Related writeups" className="mx-auto max-w-4xl space-y-4">
               <h2 className="text-2xl font-headline font-bold">Related Writeups</h2>
               <div className="grid gap-3">
                 {relatedWriteups.map((writeup) => (
