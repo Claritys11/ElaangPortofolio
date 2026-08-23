@@ -36,6 +36,7 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { fetchJson } from "@/lib/api-client"
 import { getDefaultProfileSettings, mergeProfileSettings } from "@/lib/about-default"
+import { formatWriteupDate, getWriteupStats } from "@/lib/writeup-metrics"
 import type {
   AccessLogRecord,
   AchievementRecord,
@@ -613,6 +614,7 @@ export default function AdminPage() {
 
   const draftAutosaveTimerRef = React.useRef<number | null>(null)
   const draftSnapshotRef = React.useRef("")
+  const currentWriteupStats = getWriteupStats(writeupForm.content, writeupForm.summary)
 
   const resetDashboard = React.useCallback(() => {
     setMessages([])
@@ -1780,7 +1782,12 @@ export default function AdminPage() {
                           >
                             <div className="truncate">
                               <p className="text-sm font-bold truncate">{writeup.title || "Untitled"}</p>
-                              <p className="text-[10px] text-muted-foreground">{writeup.competition || "No Competition"}</p>
+                              <p className="text-[10px] text-muted-foreground">
+                                {writeup.competition || "No Competition"} · {formatWriteupDate(writeup.date || writeup.createdAt)}
+                              </p>
+                              <p className="text-[10px] text-muted-foreground">
+                                {getWriteupStats(writeup.content, writeup.summary).wordCount.toLocaleString()} words · {getWriteupStats(writeup.content, writeup.summary).readingMinutes} min read
+                              </p>
                             </div>
                             <Button type="button" variant="ghost" size="icon" onClick={(event) => { event.stopPropagation(); triggerDelete(writeup.id, "ctfWriteups") }} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4 text-destructive" /></Button>
                           </div>
@@ -1816,7 +1823,9 @@ export default function AdminPage() {
                           >
                             <div className="truncate">
                               <p className="text-sm font-bold truncate">{getDraftDisplayName("writeup", draft)}</p>
-                              <p className="text-[10px] text-muted-foreground">Local draft</p>
+                              <p className="text-[10px] text-muted-foreground">
+                                Local draft · {getWriteupStats(draft.data.content, draft.data.summary).wordCount.toLocaleString()} words · {getWriteupStats(draft.data.content, draft.data.summary).readingMinutes} min read
+                              </p>
                             </div>
                             <Button type="button" variant="ghost" size="icon" onClick={(event) => { event.stopPropagation(); deleteLocalDraft("writeup", draft.id) }} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4 text-destructive" /></Button>
                           </div>
@@ -1852,7 +1861,12 @@ export default function AdminPage() {
                   <div className="space-y-2"><Label>Summary</Label><Textarea value={writeupForm.summary || ""} onChange={(event) => setWriteupForm({ ...writeupForm, summary: event.target.value })} /></div>
                   <div className="space-y-2">
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                      <Label>Documentation Content</Label>
+                      <div>
+                        <Label>Documentation Content</Label>
+                        <p className="mt-1 text-[10px] text-muted-foreground">
+                          {currentWriteupStats.wordCount.toLocaleString()} words · {currentWriteupStats.readingMinutes} min read · headings become the public table of contents
+                        </p>
+                      </div>
                       <div className="flex items-center gap-2">
                         <input
                           ref={writeupPdfImportInputRef}

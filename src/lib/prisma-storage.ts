@@ -194,10 +194,10 @@ export async function listWriteups(): Promise<WriteupRecord[]> {
 
 export async function listWriteupSummaries(): Promise<WriteupRecord[]> {
   const rows = await prisma.writeup.findMany({
-    select: { id: true, slug: true, title: true, competition: true, category: true, difficulty: true, date: true, summary: true, tagsJson: true, createdAt: true, updatedAt: true },
+    select: { id: true, slug: true, title: true, competition: true, category: true, difficulty: true, date: true, summary: true, content: true, tagsJson: true, createdAt: true, updatedAt: true },
     orderBy: { createdAt: 'desc' },
   });
-  return rows.map((row) => mapWriteup({ ...row, content: null, flag: null, attachmentsJson: [] }));
+  return rows.map((row) => mapWriteup({ ...row, flag: null, attachmentsJson: [] }));
 }
 
 export async function getWriteupById(id: string): Promise<WriteupRecord | null> {

@@ -21,7 +21,11 @@ import {
   Quote,
   Undo,
   Redo,
-  Eraser
+  Eraser,
+  Code2,
+  Minus,
+  Pilcrow,
+  Sparkles
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -60,7 +64,7 @@ export function RichEditor({
     },
     editorProps: {
       attributes: {
-        class: "prose prose-invert prose-sm focus:outline-none max-w-none min-h-[300px] p-4 bg-background rounded-b-lg border-x border-b border-border",
+        class: "notion-editor prose prose-invert prose-sm focus:outline-none max-w-none min-h-[520px] bg-background px-5 py-6 sm:px-8",
       },
     },
   })
@@ -110,11 +114,32 @@ export function RichEditor({
     }
   }
 
+  const insertWriteupTemplate = () => {
+    editor
+      ?.chain()
+      .focus()
+      .insertContent(`
+        <h2>Recon</h2>
+        <p>Challenge overview, files, protections, and first observations.</p>
+        <pre><code>$ file chall
+$ checksec --file=chall</code></pre>
+        <h2>Vulnerability</h2>
+        <p>Explain the bug, root cause, and the important constraints.</p>
+        <h2>Exploit Strategy</h2>
+        <p>Walk through the plan step by step.</p>
+        <h2>Solver</h2>
+        <pre><code># paste exploit or important snippet here</code></pre>
+        <h2>Flag</h2>
+        <p>Final result and short lesson learned.</p>
+      `)
+      .run()
+  }
+
   if (!editor) return null
 
   return (
-    <div className="w-full flex flex-col border border-border rounded-lg overflow-hidden">
-      <div className="flex flex-wrap gap-1 p-2 bg-muted/50 border-b border-border items-center sticky top-0 z-10">
+    <div className="w-full flex flex-col overflow-hidden rounded-lg border border-border bg-background shadow-sm">
+      <div className="flex flex-wrap gap-1 border-b border-border bg-muted/50 p-2 items-center sticky top-0 z-10">
         <Button 
           type="button"
           variant="ghost" 
@@ -202,6 +227,24 @@ export function RichEditor({
         >
           <Quote className="h-4 w-4" />
         </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+          className={cn("h-8 w-8 p-0", editor.isActive("codeBlock") && "bg-primary/20 text-primary")}
+        >
+          <Code2 className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => editor.chain().focus().setHorizontalRule().run()}
+          className="h-8 w-8 p-0"
+        >
+          <Minus className="h-4 w-4" />
+        </Button>
 
         <div className="w-px h-4 bg-border mx-1" />
 
@@ -216,6 +259,10 @@ export function RichEditor({
         </Button>
 
         <div className="ml-auto flex gap-1">
+          <Button type="button" variant="outline" size="sm" onClick={insertWriteupTemplate} className="h-8 gap-2 px-2 font-code text-[10px] uppercase tracking-widest">
+            <Sparkles className="h-3.5 w-3.5" />
+            Template
+          </Button>
           <Button type="button" variant="ghost" size="sm" onClick={() => editor.chain().focus().undo().run()} className="h-8 w-8 p-0">
             <Undo className="h-4 w-4" />
           </Button>
@@ -223,6 +270,33 @@ export function RichEditor({
             <Redo className="h-4 w-4" />
           </Button>
         </div>
+      </div>
+      <div className="flex flex-wrap items-center gap-2 border-b border-border/70 bg-card/40 px-3 py-2">
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().setParagraph().run()}
+          className="inline-flex items-center gap-1.5 rounded-md border border-border/70 bg-background/60 px-2.5 py-1 font-code text-[10px] uppercase tracking-widest text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+        >
+          <Pilcrow className="h-3.5 w-3.5" />
+          Text
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          className="rounded-md border border-border/70 bg-background/60 px-2.5 py-1 font-code text-[10px] uppercase tracking-widest text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+        >
+          Section
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+          className="rounded-md border border-border/70 bg-background/60 px-2.5 py-1 font-code text-[10px] uppercase tracking-widest text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+        >
+          Code Block
+        </button>
+        <span className="ml-auto hidden text-[10px] text-muted-foreground sm:inline">
+          Use headings to generate the public table of contents.
+        </span>
       </div>
       <EditorContent editor={editor} />
     </div>
