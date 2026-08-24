@@ -219,9 +219,139 @@
 }
 
 .writeup-prose :where(pre) {
+  position: relative;
+  overflow: hidden;
   border: 1px solid hsl(var(--border) / 0.72);
   background: hsl(var(--background) / 0.86);
+  padding: 3.4rem 0 0;
   box-shadow: 0 18px 60px hsl(var(--primary) / 0.06);
+}
+
+.writeup-prose :where(pre code) {
+  display: block;
+  overflow-x: auto;
+  padding: 1rem 1.1rem 1.15rem;
+  color: hsl(var(--foreground) / 0.9);
+  font-size: 0.86rem;
+  line-height: 1.8;
+}
+
+.writeup-code-header {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 2.65rem;
+  border-bottom: 1px solid hsl(var(--border) / 0.72);
+  background: linear-gradient(180deg, hsl(var(--muted) / 0.9), hsl(var(--background) / 0.78));
+  padding: 0.45rem 0.65rem 0.45rem 0.85rem;
+}
+
+.writeup-code-language {
+  border: 1px solid hsl(var(--primary) / 0.24);
+  border-radius: 999px;
+  background: hsl(var(--primary) / 0.08);
+  color: hsl(var(--primary));
+  font-family: var(--font-code, "Source Code Pro", monospace);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  padding: 0.36rem 0.55rem;
+  text-transform: uppercase;
+}
+
+.writeup-code-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid hsl(var(--border) / 0.75);
+  border-radius: 0.42rem;
+  background: hsl(var(--background) / 0.86);
+  color: hsl(var(--muted-foreground));
+  font-family: var(--font-code, "Source Code Pro", monospace);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 0.38rem 0.55rem;
+  text-transform: uppercase;
+  transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+}
+
+.writeup-code-copy:hover {
+  border-color: hsl(var(--primary) / 0.48);
+  background: hsl(var(--primary) / 0.08);
+  color: hsl(var(--primary));
+}
+
+.writeup-code-copy-icon {
+  position: relative;
+  display: inline-block;
+  height: 0.85rem;
+  width: 0.85rem;
+}
+
+.writeup-code-copy-icon::before,
+.writeup-code-copy-icon::after {
+  content: "";
+  position: absolute;
+  border: 1px solid currentColor;
+  border-radius: 0.12rem;
+  height: 0.62rem;
+  width: 0.48rem;
+}
+
+.writeup-code-copy-icon::before {
+  left: 0.08rem;
+  top: 0.2rem;
+  opacity: 0.55;
+}
+
+.writeup-code-copy-icon::after {
+  left: 0.25rem;
+  top: 0.03rem;
+  background: hsl(var(--background));
+}
+
+.writeup-code-copy-icon.is-copied::before {
+  border-color: transparent;
+}
+
+.writeup-code-copy-icon.is-copied::after {
+  left: 0.18rem;
+  top: 0.05rem;
+  height: 0.45rem;
+  width: 0.78rem;
+  border-color: transparent transparent currentColor currentColor;
+  border-radius: 0;
+  background: transparent;
+  transform: rotate(-45deg);
+}
+
+.code-token-comment {
+  color: #7dd3fc;
+  opacity: 0.74;
+}
+
+.code-token-string {
+  color: #fbbf24;
+}
+
+.code-token-keyword {
+  color: #c084fc;
+  font-weight: 700;
+}
+
+.code-token-number {
+  color: #34d399;
+}
+
+.code-token-attr,
+.code-token-prompt {
+  color: #60a5fa;
 }
 
 .writeup-prose :where(code):not(:where(pre code)) {
@@ -250,6 +380,12 @@
   border-radius: 0.65rem;
   background: hsl(var(--muted) / 0.38);
   padding: 1rem;
+}
+
+.notion-editor :where(pre code) {
+  color: hsl(var(--foreground) / 0.9);
+  font-size: 0.86rem;
+  line-height: 1.8;
 }
 
 @media (prefers-reduced-motion: reduce) {
