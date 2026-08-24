@@ -43,7 +43,7 @@ export function AboutClient({ profileSettings }: AboutClientProps) {
   )
 
   return (
-    <main className="relative isolate min-h-screen overflow-hidden">
+    <main className="relative isolate min-h-screen overflow-x-hidden">
       <PageBackground />
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid md:grid-cols-3 gap-8 md:gap-12">
