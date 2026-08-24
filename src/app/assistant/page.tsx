@@ -11,6 +11,8 @@ import { Label } from "@/components/ui/label"
 import { Sparkles, Terminal, Copy, Check, Loader2, RotateCcw } from "lucide-react"
 import { refineContent, ContentRefinementInput, ContentRefinementOutput } from "@/ai/flows/content-refinement-assistant-flow"
 import { useToast } from "@/hooks/use-toast"
+import { GlowingEffect } from "@/components/ui/glowing-effect"
+import { PageBackground } from "@/components/PageBackground"
 
 export default function AIAssistantPage() {
   const { toast } = useToast()
@@ -92,21 +94,25 @@ export default function AIAssistantPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="space-y-4 mb-12 text-center">
-        <div className="inline-flex items-center space-x-2 text-primary">
-          <Sparkles className="h-5 w-5" />
-          <span className="font-code text-sm font-bold uppercase tracking-widest">AI Engine</span>
+    <main className="relative isolate min-h-screen overflow-hidden">
+      <PageBackground />
+      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="space-y-4 mb-12 text-center">
+          <div className="inline-flex items-center space-x-2 text-primary">
+            <Sparkles className="h-5 w-5" />
+            <span className="font-code text-sm font-bold uppercase tracking-widest">AI Engine</span>
+          </div>
+          <h1 className="text-4xl font-headline font-bold">Bio & Content Assistant</h1>
+          <p className="text-muted-foreground max-w-xl mx-auto">
+            Optimize your professional summaries and project descriptions with our specialized 
+            AI assistant designed for cybersecurity portfolios.
+          </p>
         </div>
-        <h1 className="text-4xl font-headline font-bold">Bio & Content Assistant</h1>
-        <p className="text-muted-foreground max-w-xl mx-auto">
-          Optimize your professional summaries and project descriptions with our specialized 
-          AI assistant designed for cybersecurity portfolios.
-        </p>
-      </div>
 
-      <div className="grid md:grid-cols-2 gap-8">
-        <Card className="bg-card border-border">
+        <div className="grid md:grid-cols-2 gap-8">
+          <div className="relative rounded-xl border border-border p-1">
+            <GlowingEffect spread={42} glow disabled={false} proximity={72} inactiveZone={0.01} borderWidth={2} />
+            <Card className="relative bg-card/80 border-none backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-xl font-headline">Parameters</CardTitle>
             <CardDescription>Configure the refinement output</CardDescription>
@@ -186,9 +192,12 @@ export default function AIAssistantPage() {
               )}
             </Button>
           </CardFooter>
-        </Card>
+            </Card>
+          </div>
 
-        <Card className="bg-card border-border flex flex-col h-full">
+          <div className="relative rounded-xl border border-border p-1">
+            <GlowingEffect spread={42} glow disabled={false} proximity={72} inactiveZone={0.01} borderWidth={2} />
+            <Card className="relative bg-card/80 border-none flex flex-col h-full backdrop-blur-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0">
             <div>
               <CardTitle className="text-xl font-headline">Refined Output</CardTitle>
@@ -243,8 +252,10 @@ export default function AIAssistantPage() {
               </Button>
             </CardFooter>
           )}
-        </Card>
+            </Card>
+          </div>
+        </div>
       </div>
-    </div>
+    </main>
   )
 }

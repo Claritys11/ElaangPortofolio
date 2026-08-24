@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Mail, Github, MessageSquare, Send, Globe, Shield, Instagram, Terminal } from "lucide-react"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
+import { PageBackground } from "@/components/PageBackground"
 import { useToast } from "@/hooks/use-toast"
 import { fetchJson } from "@/lib/api-client"
 import type { ProfileSettingsRecord } from "@/lib/portfolio-types"
@@ -54,20 +55,22 @@ export function ContactClient({ profileSettings }: ContactClientProps) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="space-y-4 mb-12">
-        <div className="flex items-center space-x-2 text-primary">
-          <MessageSquare className="h-5 w-5" />
-          <span className="font-code text-sm font-bold uppercase tracking-widest">Connect</span>
+    <main className="relative isolate min-h-screen overflow-hidden">
+      <PageBackground />
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="space-y-4 mb-12">
+          <div className="flex items-center space-x-2 text-primary">
+            <MessageSquare className="h-5 w-5" />
+            <span className="font-code text-sm font-bold uppercase tracking-widest">Connect</span>
+          </div>
+          <h1 className="text-4xl font-headline font-bold">Establish Connection</h1>
+          <p className="text-muted-foreground max-w-2xl">
+            Interested in a collaboration, have a security query, or just want to say hi? 
+            Drop a message through the encrypted channel below.
+          </p>
         </div>
-        <h1 className="text-4xl font-headline font-bold">Establish Connection</h1>
-        <p className="text-muted-foreground max-w-2xl">
-          Interested in a collaboration, have a security query, or just want to say hi? 
-          Drop a message through the encrypted channel below.
-        </p>
-      </div>
 
-      <div className="grid lg:grid-cols-5 gap-8">
+        <div className="grid lg:grid-cols-5 gap-8">
         <div className="lg:col-span-2 space-y-6">
           <div className="relative h-full rounded-xl border border-border p-1 group">
             <GlowingEffect
@@ -222,7 +225,8 @@ export function ContactClient({ profileSettings }: ContactClientProps) {
             </Card>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </main>
   )
 }

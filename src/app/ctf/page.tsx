@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { listWriteupSummaries } from "@/lib/server-storage"
 import { SITE_BASE_URL } from "@/lib/seo-utils"
 import { CTFClient } from "./CTFClient"
+import { PageBackground } from "@/components/PageBackground"
 
 const ctfUrl = `${SITE_BASE_URL}/ctf`
 
@@ -27,8 +28,11 @@ export default async function CTFPage() {
   const writeups = await listWriteupSummaries().catch(() => [])
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <CTFClient writeups={writeups} />
-    </div>
+    <main className="relative isolate min-h-screen overflow-hidden">
+      <PageBackground />
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <CTFClient writeups={writeups} />
+      </div>
+    </main>
   )
 }
