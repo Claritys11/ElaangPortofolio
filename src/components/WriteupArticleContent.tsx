@@ -14,6 +14,11 @@ interface WriteupArticleContentProps {
   html: string
 }
 
+interface TransformedContent {
+  html: string
+  toc: TocItem[]
+}
+
 function slugifyHeading(value: string, index: number): string {
   const slug = value
     .toLowerCase()
@@ -25,6 +30,16 @@ function slugifyHeading(value: string, index: number): string {
   return slug || `section-${index + 1}`
 }
 
+function decodeHtml(value: string): string {
+  return value
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+}
+
 function escapeHtml(value: string): string {
   return value
     .replace(/&/g, "&amp;")
@@ -34,11 +49,22 @@ function escapeHtml(value: string): string {
     .replace(/'/g, "&#39;")
 }
 
-function getCodeLanguage(pre: HTMLPreElement, code: HTMLElement | null, rawCode: string): string {
+function stripTags(value: string): string {
+  return decodeHtml(value.replace(/<[^>]+>/g, ""))
+}
+
+function readAttribute(tag: string, name: string): string {
+  const match = tag.match(new RegExp(`${name}=["']([^"']*)["']`, "i"))
+  return match?.[1] ?? ""
+}
+
+function getCodeLanguage(preAttrs: string, codeAttrs: string, rawCode: string): string {
+  const classNames = `${readAttribute(preAttrs, "class")} ${readAttribute(codeAttrs, "class")}`
   const declared =
-    pre.getAttribute("data-language") ||
-    code?.getAttribute("data-language") ||
-    Array.from(code?.classList || [])
+    readAttribute(preAttrs, "data-language") ||
+    readAttribute(codeAttrs, "data-language") ||
+    classNames
+      .split(/\s+/)
       .find((className) => className.startsWith("language-"))
       ?.replace("language-", "")
 
@@ -85,116 +111,107 @@ function highlightCode(rawCode: string, language: string): string {
   )
 }
 
+function transformWriteupHtml(html: string): TransformedContent {
+  const headingCounts = new Map<string, number>()
+  const toc: TocItem[] = []
+  let headingIndex = 0
+
+  const withHeadingIds = (html || "").replace(
+    /<h([23])([^>]*)>([\s\S]*?)<\/h\1>/gi,
+    (match, level: string, attrs: string, innerHtml: string) => {
+      const text = stripTags(innerHtml).trim()
+      if (!text) return match
+
+      const existingId = readAttribute(attrs, "id")
+      const baseId = existingId || slugifyHeading(text, headingIndex)
+      const count = headingCounts.get(baseId) || 0
+      headingCounts.set(baseId, count + 1)
+      const id = count ? `${baseId}-${count + 1}` : baseId
+      headingIndex += 1
+
+      toc.push({ id, text, level: Number(level) === 3 ? 3 : 2 })
+
+      const cleanAttrs = attrs
+        .replace(/\s+id=["'][^"']*["']/i, "")
+        .replace(/\s+class=["']([^"']*)["']/i, (_classMatch, className: string) => ` class="${className} scroll-mt-24"`)
+
+      const hasClass = /\sclass=["'][^"']*["']/i.test(attrs)
+      return `<h${level}${cleanAttrs} id="${escapeHtml(id)}"${hasClass ? "" : ' class="scroll-mt-24"'}>${innerHtml}</h${level}>`
+    }
+  )
+
+  const transformedHtml = withHeadingIds.replace(
+    /<pre([^>]*)>([\s\S]*?)<\/pre>/gi,
+    (_match, preAttrs: string, preInner: string) => {
+      const codeMatch = preInner.match(/<code([^>]*)>([\s\S]*?)<\/code>/i)
+      const codeAttrs = codeMatch?.[1] ?? ""
+      const rawCode = stripTags(codeMatch?.[2] ?? preInner).trimEnd()
+      const language = getCodeLanguage(preAttrs, codeAttrs, rawCode)
+      const highlighted = highlightCode(rawCode, language)
+
+      return `<pre class="writeup-code-block group/code" data-language="${escapeHtml(language)}"><div class="writeup-code-header"><span class="writeup-code-language">${escapeHtml(language)}</span><button type="button" class="writeup-code-copy" data-code-copy="true" aria-label="Copy ${escapeHtml(language)} code block"><span class="writeup-code-copy-icon" aria-hidden="true"></span><span>Copy</span></button></div><code class="writeup-code language-${escapeHtml(language)}">${highlighted}</code></pre>`
+    }
+  )
+
+  return { html: transformedHtml, toc }
+}
+
 export function WriteupArticleContent({ html }: WriteupArticleContentProps) {
   const contentRef = React.useRef<HTMLDivElement | null>(null)
-  const [tocItems, setTocItems] = React.useState<TocItem[]>([])
+  const transformed = React.useMemo(() => transformWriteupHtml(html), [html])
 
   React.useEffect(() => {
     const root = contentRef.current
     if (!root) return
 
-    const headingCounts = new Map<string, number>()
-    const headings = Array.from(root.querySelectorAll<HTMLHeadingElement>("h2, h3"))
-    const nextToc = headings
-      .map((heading, index) => {
-        const text = heading.textContent?.trim() || ""
-        if (!text) return null
+    const handleClick = async (event: MouseEvent) => {
+      const button = (event.target as HTMLElement | null)?.closest<HTMLButtonElement>("[data-code-copy]")
+      if (!button) return
 
-        const baseId = heading.id || slugifyHeading(text, index)
-        const count = headingCounts.get(baseId) || 0
-        headingCounts.set(baseId, count + 1)
-        const id = count ? `${baseId}-${count + 1}` : baseId
-        heading.id = id
-        heading.classList.add("scroll-mt-24")
+      const pre = button.closest("pre")
+      const code = pre?.querySelector("code")?.textContent?.trim() || ""
 
-        return {
-          id,
-          text,
-          level: heading.tagName.toLowerCase() === "h3" ? 3 : 2,
-        } satisfies TocItem
-      })
-      .filter((item): item is TocItem => Boolean(item))
-
-    setTocItems(nextToc)
-
-    const cleanups = Array.from(root.querySelectorAll<HTMLPreElement>("pre")).map((pre, index) => {
-      const code = pre.querySelector<HTMLElement>("code")
-      const rawCode = code?.textContent || pre.textContent || ""
-      const language = getCodeLanguage(pre, code, rawCode)
-
-      pre.classList.add("writeup-code-block", "relative", "group/code")
-      pre.setAttribute("data-language", language)
-      if (code) {
-        code.classList.add("writeup-code")
-        code.innerHTML = highlightCode(rawCode, language)
+      try {
+        await navigator.clipboard.writeText(code)
+        button.innerHTML = `<span class="writeup-code-copy-icon is-copied" aria-hidden="true"></span><span>Copied</span>`
+        window.setTimeout(() => {
+          button.innerHTML = `<span class="writeup-code-copy-icon" aria-hidden="true"></span><span>Copy</span>`
+        }, 1500)
+      } catch {
+        button.innerHTML = `<span class="writeup-code-copy-icon" aria-hidden="true"></span><span>Failed</span>`
+        window.setTimeout(() => {
+          button.innerHTML = `<span class="writeup-code-copy-icon" aria-hidden="true"></span><span>Copy</span>`
+        }, 1500)
       }
+    }
 
-      const header = document.createElement("div")
-      header.className = "writeup-code-header"
-
-      const languageLabel = document.createElement("span")
-      languageLabel.className = "writeup-code-language"
-      languageLabel.textContent = language
-
-      const button = document.createElement("button")
-      button.type = "button"
-      button.className = "writeup-code-copy"
-      button.setAttribute("aria-label", `Copy code block ${index + 1}`)
-      button.innerHTML = `<span class="writeup-code-copy-icon" aria-hidden="true"></span><span>Copy</span>`
-
-      const handleClick = async () => {
-        try {
-          await navigator.clipboard.writeText(rawCode.trim())
-          button.innerHTML = `<span class="writeup-code-copy-icon is-copied" aria-hidden="true"></span><span>Copied</span>`
-          window.setTimeout(() => {
-            button.innerHTML = `<span class="writeup-code-copy-icon" aria-hidden="true"></span><span>Copy</span>`
-          }, 1500)
-        } catch {
-          button.innerHTML = `<span class="writeup-code-copy-icon" aria-hidden="true"></span><span>Failed</span>`
-          window.setTimeout(() => {
-            button.innerHTML = `<span class="writeup-code-copy-icon" aria-hidden="true"></span><span>Copy</span>`
-          }, 1500)
-        }
-      }
-
-      button.addEventListener("click", handleClick)
-      header.append(languageLabel, button)
-      pre.prepend(header)
-
-      return () => {
-        button.removeEventListener("click", handleClick)
-        header.remove()
-        if (code) {
-          code.textContent = rawCode
-        }
-      }
-    })
+    root.addEventListener("click", handleClick)
 
     return () => {
-      cleanups.forEach((cleanup) => cleanup())
+      root.removeEventListener("click", handleClick)
     }
-  }, [html])
+  }, [transformed.html])
 
   return (
-    <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_17rem] xl:items-start">
+    <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_17rem] xl:items-stretch">
       <div className="min-w-0">
         <div
           ref={contentRef}
           className="writeup-prose prose prose-invert prose-primary max-w-none"
-          dangerouslySetInnerHTML={{ __html: html || "" }}
+          dangerouslySetInnerHTML={{ __html: transformed.html }}
         />
 
       </div>
 
-      <aside className="hidden xl:block">
+      <aside className="relative hidden xl:block">
         <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-hidden rounded-lg border border-border/70 bg-background/60 p-4 backdrop-blur-sm">
           <div className="mb-3 flex items-center gap-2 font-code text-[10px] uppercase tracking-widest text-primary">
             <ListTree className="h-3.5 w-3.5" />
             On this write-up
           </div>
-          {tocItems.length ? (
+          {transformed.toc.length ? (
             <nav className="max-h-[calc(100vh-11rem)] space-y-1 overflow-y-auto pr-1">
-              {tocItems.map((item) => (
+              {transformed.toc.map((item) => (
                 <a
                   key={item.id}
                   href={`#${item.id}`}
