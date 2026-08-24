@@ -10,16 +10,16 @@ import { GlowingEffect } from "@/components/ui/glowing-effect"
 const projectsUrl = `${SITE_BASE_URL}/projects`
 
 export const metadata: Metadata = {
-  title: "Technical Projects",
+  title: "Technical Projects by Elang Dimas Syadewa",
   description:
-    "A showcase of technical projects built by Claritys — covering cybersecurity tools, web applications, and security research.",
+    "Technical projects built by Elang Dimas Syadewa (Claritys), covering cybersecurity tools, web applications, and security research.",
   alternates: {
     canonical: projectsUrl,
   },
   openGraph: {
-    title: "Technical Projects | Claritys Portfolio",
+    title: "Technical Projects by Elang Dimas Syadewa | Claritys Portfolio",
     description:
-      "A showcase of technical projects built by Claritys — covering cybersecurity tools, web applications, and security research.",
+      "Technical projects built by Elang Dimas Syadewa (Claritys), covering cybersecurity tools, web applications, and security research.",
     url: projectsUrl,
     type: "website",
   },

@@ -1,21 +1,29 @@
 import type { WriteupRecord } from '@/lib/portfolio-types';
 
-const FALLBACK_SITE_BASE_URL = 'https://clarityz.my.id';
+const PRIMARY_SITE_BASE_URL = 'https://claritys.my.id';
+const PRIMARY_SITE_HOST = 'claritys.my.id';
+const LEGACY_SITE_HOSTS = new Set(['clarityz.my.id', 'portf.claritys.my.id']);
 
 function normalizeBaseUrl(value: string | undefined): string {
   const rawValue = value?.trim();
 
   if (!rawValue) {
-    return FALLBACK_SITE_BASE_URL;
+    return PRIMARY_SITE_BASE_URL;
   }
 
   const candidate = /^[a-z][a-z\d+\-.]*:\/\//i.test(rawValue) ? rawValue : `https://${rawValue}`;
 
   try {
     const url = new URL(candidate);
+    const host = url.hostname.replace(/^www\./, '');
+
+    if (host === PRIMARY_SITE_HOST || LEGACY_SITE_HOSTS.has(host)) {
+      return PRIMARY_SITE_BASE_URL;
+    }
+
     return url.toString().replace(/\/$/, '');
   } catch {
-    return FALLBACK_SITE_BASE_URL;
+    return PRIMARY_SITE_BASE_URL;
   }
 }
 
@@ -25,6 +33,30 @@ export const SITE_BASE_URL = normalizeBaseUrl(
 export const BRAND_NAME = 'Elang Dimas Syadewa';
 export const BRAND_ALIAS = 'Claritys';
 export const SITE_NAME = `${BRAND_NAME} Portfolio`;
+
+export function resolveCanonicalUrl(value: string | undefined, path = '/'): string {
+  const baseUrl = new URL(SITE_BASE_URL);
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+
+  if (!value?.trim()) {
+    return new URL(normalizedPath, baseUrl).toString().replace(/\/$/, '');
+  }
+
+  try {
+    const candidate = new URL(value);
+    const baseHost = baseUrl.hostname.replace(/^www\./, '');
+    const candidateHost = candidate.hostname.replace(/^www\./, '');
+
+    // Keep all canonical signals on the primary production domain.
+    if (candidateHost !== baseHost) {
+      return new URL(normalizedPath, baseUrl).toString().replace(/\/$/, '');
+    }
+
+    return candidate.toString().replace(/\/$/, '');
+  } catch {
+    return new URL(normalizedPath, baseUrl).toString().replace(/\/$/, '');
+  }
+}
 
 export function stripHtml(value: string | undefined): string {
   return (value ?? '')

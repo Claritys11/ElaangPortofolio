@@ -11,16 +11,16 @@ const achievementsUrl = `${SITE_BASE_URL}/achievements`
 export const revalidate = 60
 
 export const metadata: Metadata = {
-  title: "Achievements & Certifications",
+  title: "Achievements & Certifications of Elang Dimas Syadewa",
   description:
-    "Hall of fame: professional certifications, CTF competition placements, and competitive milestones earned by Claritys in cybersecurity.",
+    "Achievements, certifications, CTF competition placements, and competitive milestones earned by Elang Dimas Syadewa (Claritys) in cybersecurity.",
   alternates: {
     canonical: achievementsUrl,
   },
   openGraph: {
-    title: "Achievements & Certifications | Claritys Portfolio",
+    title: "Achievements & Certifications of Elang Dimas Syadewa | Claritys Portfolio",
     description:
-      "Hall of fame: professional certifications, CTF competition placements, and competitive milestones earned by Claritys.",
+      "Achievements, certifications, CTF competition placements, and competitive milestones earned by Elang Dimas Syadewa (Claritys).",
     url: achievementsUrl,
     type: "website",
   },
