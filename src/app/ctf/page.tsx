@@ -28,7 +28,7 @@ export default async function CTFPage() {
   const writeups = await listWriteupSummaries().catch(() => [])
 
   return (
-    <main className="relative isolate min-h-screen overflow-hidden">
+    <main className="relative isolate min-h-screen overflow-x-hidden">
       <PageBackground />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <CTFClient writeups={writeups} />

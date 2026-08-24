@@ -7,8 +7,6 @@ export default function robots(): MetadataRoute.Robots {
     '/admin/',
     '/inbox',
     '/inbox/',
-    '/assistant',
-    '/assistant/',
     '/api/admin/',
     '/api/auth/',
   ];

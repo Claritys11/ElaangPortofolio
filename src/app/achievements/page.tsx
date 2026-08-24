@@ -49,7 +49,7 @@ export default async function AchievementsPage() {
   const quickStats = sorted.filter((a) => !a.imageUrl || a.platform)
 
   return (
-    <main className="relative isolate min-h-screen overflow-hidden">
+    <main className="relative isolate min-h-screen overflow-x-hidden">
       <PageBackground />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-16">

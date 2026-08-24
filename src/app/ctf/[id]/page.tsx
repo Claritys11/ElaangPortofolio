@@ -30,6 +30,7 @@ import {
 import { FlagReveal } from "./FlagReveal"
 import { WriteupActions } from "./WriteupActions"
 import { WriteupArticleContent } from "@/components/WriteupArticleContent"
+import { PageBackground } from "@/components/PageBackground"
 import Link from "next/link"
 
 // ──────────────────────────────────────────
@@ -174,7 +175,9 @@ export default async function WriteupDetailPage({
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-12 lg:px-8 lg:py-20">
+    <main className="relative isolate min-h-screen overflow-x-hidden">
+      <PageBackground />
+      <div className="relative z-10 mx-auto max-w-7xl px-4 py-12 lg:px-8 lg:py-20">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -344,6 +347,7 @@ export default async function WriteupDetailPage({
           )}
         </article>
       </div>
-    </div>
+      </div>
+    </main>
   )
 }
