@@ -3,6 +3,7 @@ import { Award } from "lucide-react"
 import { listAchievements } from "@/lib/server-storage"
 import { SITE_BASE_URL } from "@/lib/seo-utils"
 import { AchievementClient } from "./AchievementClient"
+import { PageBackground } from "@/components/PageBackground"
 
 const achievementsUrl = `${SITE_BASE_URL}/achievements`
 
@@ -48,22 +49,25 @@ export default async function AchievementsPage() {
   const quickStats = sorted.filter((a) => !a.imageUrl || a.platform)
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-16">
-        <div className="space-y-4">
-          <div className="flex items-center space-x-2 text-primary">
-            <Award className="h-5 w-5" />
-            <span className="font-code text-sm font-bold uppercase tracking-widest">Hall of Fame</span>
+    <main className="relative isolate min-h-screen overflow-hidden">
+      <PageBackground />
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-16">
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2 text-primary">
+              <Award className="h-5 w-5" />
+              <span className="font-code text-sm font-bold uppercase tracking-widest">Hall of Fame</span>
+            </div>
+            <h1 className="text-4xl font-headline font-bold">Achievements &amp; Certifications</h1>
+            <p className="text-muted-foreground max-w-2xl">
+              A visual documentation of my professional journey, validation of skills, and competitive milestones.
+            </p>
           </div>
-          <h1 className="text-4xl font-headline font-bold">Achievements &amp; Certifications</h1>
-          <p className="text-muted-foreground max-w-2xl">
-            A visual documentation of my professional journey, validation of skills, and competitive milestones.
-          </p>
         </div>
-      </div>
 
-      {/* Dialog + Collapsible interactions handled in the client component */}
-      <AchievementClient certifications={certifications} quickStats={quickStats} />
-    </div>
+        {/* Dialog + Collapsible interactions handled in the client component */}
+        <AchievementClient certifications={certifications} quickStats={quickStats} />
+      </div>
+    </main>
   )
 }

@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { User, Terminal, Briefcase, GraduationCap, Code2, Globe, Instagram, Heart } from "lucide-react"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
+import { PageBackground } from "@/components/PageBackground"
 import type { ProfileSettingsRecord } from "@/lib/portfolio-types"
 
 function formatUrlLabel(source: string, fallback: string): string {
@@ -42,8 +43,10 @@ export function AboutClient({ profileSettings }: AboutClientProps) {
   )
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="grid md:grid-cols-3 gap-8 md:gap-12">
+    <main className="relative isolate min-h-screen overflow-hidden">
+      <PageBackground />
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid md:grid-cols-3 gap-8 md:gap-12">
         <div className="md:col-span-1 space-y-8">
           <div className="relative group p-1 rounded-xl border border-border max-w-[300px] mx-auto md:max-w-none">
             <GlowingEffect disabled={false} proximity={64} spread={40} glow={true} />
@@ -161,7 +164,8 @@ export function AboutClient({ profileSettings }: AboutClientProps) {
             </div>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </main>
   )
 }
