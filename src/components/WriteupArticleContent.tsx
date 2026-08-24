@@ -140,7 +140,7 @@ function transformWriteupHtml(html: string): TransformedContent {
     }
   )
 
-  const transformedHtml = withHeadingIds.replace(
+  const withEnhancedCode = withHeadingIds.replace(
     /<pre([^>]*)>([\s\S]*?)<\/pre>/gi,
     (_match, preAttrs: string, preInner: string) => {
       const codeMatch = preInner.match(/<code([^>]*)>([\s\S]*?)<\/code>/i)
@@ -150,6 +150,19 @@ function transformWriteupHtml(html: string): TransformedContent {
       const highlighted = highlightCode(rawCode, language)
 
       return `<pre class="writeup-code-block group/code" data-language="${escapeHtml(language)}"><div class="writeup-code-header"><span class="writeup-code-language">${escapeHtml(language)}</span><button type="button" class="writeup-code-copy" data-code-copy="true" aria-label="Copy ${escapeHtml(language)} code block"><span class="writeup-code-copy-icon" aria-hidden="true"></span><span>Copy</span></button></div><code class="writeup-code language-${escapeHtml(language)}">${highlighted}</code></pre>`
+    }
+  )
+
+  const transformedHtml = withEnhancedCode.replace(
+    /<table([^>]*)>([\s\S]*?)<\/table>/gi,
+    (_match, attrs: string, innerHtml: string) => {
+      const hasClass = /\sclass=["'][^"']*["']/i.test(attrs)
+      const cleanAttrs = attrs.replace(
+        /\sclass=["']([^"']*)["']/i,
+        (_classMatch, className: string) => ` class="${className} writeup-table"`
+      )
+
+      return `<div class="writeup-table-shell"><table${cleanAttrs}${hasClass ? "" : ' class="writeup-table"'}>${innerHtml}</table></div>`
     }
   )
 

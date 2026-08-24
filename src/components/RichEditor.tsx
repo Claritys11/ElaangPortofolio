@@ -7,6 +7,10 @@ import Underline from "@tiptap/extension-underline"
 import Image from "@tiptap/extension-image"
 import Link from "@tiptap/extension-link"
 import Placeholder from "@tiptap/extension-placeholder"
+import Table from "@tiptap/extension-table"
+import TableCell from "@tiptap/extension-table-cell"
+import TableHeader from "@tiptap/extension-table-header"
+import TableRow from "@tiptap/extension-table-row"
 import { 
   Bold, 
   Italic, 
@@ -25,7 +29,11 @@ import {
   Code2,
   Minus,
   Pilcrow,
-  Sparkles
+  Sparkles,
+  Table2,
+  Columns3,
+  Rows3,
+  Trash2
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -54,6 +62,12 @@ export function RichEditor({
       Link.configure({
         openOnClick: false,
       }),
+      Table.configure({
+        resizable: true,
+      }),
+      TableRow,
+      TableHeader,
+      TableCell,
       Placeholder.configure({
         placeholder,
       }),
@@ -125,6 +139,21 @@ export function RichEditor({
 $ checksec --file=chall</code></pre>
         <h2>Vulnerability</h2>
         <p>Explain the bug, root cause, and the important constraints.</p>
+        <h2>Artifacts</h2>
+        <table>
+          <tbody>
+            <tr>
+              <th>Name</th>
+              <th>Purpose</th>
+              <th>Notes</th>
+            </tr>
+            <tr>
+              <td>chall</td>
+              <td>Binary or source file</td>
+              <td>Record architecture, protections, and first clue.</td>
+            </tr>
+          </tbody>
+        </table>
         <h2>Exploit Strategy</h2>
         <p>Walk through the plan step by step.</p>
         <h2>Solver</h2>
@@ -248,6 +277,52 @@ $ checksec --file=chall</code></pre>
 
         <div className="w-px h-4 bg-border mx-1" />
 
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
+          className={cn("h-8 w-8 p-0", editor.isActive("table") && "bg-primary/20 text-primary")}
+          title="Insert table"
+        >
+          <Table2 className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => editor.chain().focus().addColumnAfter().run()}
+          disabled={!editor.isActive("table")}
+          className="h-8 w-8 p-0"
+          title="Add column"
+        >
+          <Columns3 className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => editor.chain().focus().addRowAfter().run()}
+          disabled={!editor.isActive("table")}
+          className="h-8 w-8 p-0"
+          title="Add row"
+        >
+          <Rows3 className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => editor.chain().focus().deleteTable().run()}
+          disabled={!editor.isActive("table")}
+          className="h-8 w-8 p-0"
+          title="Delete table"
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+
+        <div className="w-px h-4 bg-border mx-1" />
+
         <Button type="button" variant="ghost" size="sm" onClick={addImage} className="h-8 w-8 p-0">
           <ImageIcon className="h-4 w-4" />
         </Button>
@@ -294,8 +369,16 @@ $ checksec --file=chall</code></pre>
         >
           Code Block
         </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
+          className="inline-flex items-center gap-1.5 rounded-md border border-border/70 bg-background/60 px-2.5 py-1 font-code text-[10px] uppercase tracking-widest text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+        >
+          <Table2 className="h-3.5 w-3.5" />
+          Table
+        </button>
         <span className="ml-auto hidden text-[10px] text-muted-foreground sm:inline">
-          Use headings to generate the public table of contents.
+          Use headings for the table of contents, tables for imported Notion data.
         </span>
       </div>
       <EditorContent editor={editor} />

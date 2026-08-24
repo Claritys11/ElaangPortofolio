@@ -236,6 +236,57 @@
   line-height: 1.8;
 }
 
+.writeup-table-shell {
+  width: 100%;
+  max-width: 100%;
+  margin: 1.35rem 0;
+  overflow-x: auto;
+  border: 1px solid hsl(var(--border) / 0.75);
+  border-radius: 0.7rem;
+  background: hsl(var(--background) / 0.62);
+  box-shadow: 0 16px 50px hsl(var(--primary) / 0.045);
+}
+
+.writeup-prose :where(table),
+.writeup-table {
+  width: 100%;
+  min-width: 36rem;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.writeup-prose :where(th, td) {
+  border-right: 1px solid hsl(var(--border) / 0.68);
+  border-bottom: 1px solid hsl(var(--border) / 0.68);
+  padding: 0.75rem 0.9rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.writeup-prose :where(th) {
+  background: hsl(var(--muted) / 0.64);
+  color: hsl(var(--foreground));
+  font-size: 0.78rem;
+  font-weight: 750;
+  letter-spacing: 0;
+}
+
+.writeup-prose :where(td) {
+  color: hsl(var(--foreground) / 0.88);
+}
+
+.writeup-prose :where(tr:last-child td) {
+  border-bottom: 0;
+}
+
+.writeup-prose :where(th:last-child, td:last-child) {
+  border-right: 0;
+}
+
+.writeup-prose :where(tr:last-child th) {
+  border-bottom: 0;
+}
+
 .writeup-code-header {
   position: absolute;
   inset: 0 0 auto 0;
@@ -386,6 +437,54 @@
   color: hsl(var(--foreground) / 0.9);
   font-size: 0.86rem;
   line-height: 1.8;
+}
+
+.notion-editor :where(table) {
+  width: 100%;
+  margin: 1rem 0;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.notion-editor :where(th, td) {
+  position: relative;
+  min-width: 1em;
+  border: 1px solid hsl(var(--border) / 0.78);
+  padding: 0.55rem 0.7rem;
+  vertical-align: top;
+}
+
+.notion-editor :where(th) {
+  background: hsl(var(--muted) / 0.66);
+  color: hsl(var(--foreground));
+  font-weight: 700;
+}
+
+.notion-editor :where(td) {
+  background: hsl(var(--background) / 0.42);
+}
+
+.notion-editor .selectedCell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: hsl(var(--primary) / 0.16);
+}
+
+.notion-editor .column-resize-handle {
+  position: absolute;
+  top: 0;
+  right: -2px;
+  bottom: -2px;
+  width: 2px;
+  pointer-events: none;
+  background: hsl(var(--primary));
+}
+
+.notion-editor.resize-cursor {
+  cursor: col-resize;
 }
 
 @media (prefers-reduced-motion: reduce) {
