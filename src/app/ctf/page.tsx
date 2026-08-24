@@ -7,16 +7,16 @@ import { PageBackground } from "@/components/PageBackground"
 const ctfUrl = `${SITE_BASE_URL}/ctf`
 
 export const metadata: Metadata = {
-  title: "CTF Write-Ups",
+  title: "CTF Write-Ups by Elang Dimas Syadewa",
   description:
-    "Technical write-ups from Capture The Flag competitions — Web, Pwn, Crypto, Reverse Engineering, and Forensics challenges solved by Claritys.",
+    "Technical CTF write-ups by Elang Dimas Syadewa (Claritys), covering Web, Pwn, Crypto, Reverse Engineering, and Forensics challenges.",
   alternates: {
     canonical: ctfUrl,
   },
   openGraph: {
-    title: "CTF Write-Ups | Claritys Portfolio",
+    title: "CTF Write-Ups by Elang Dimas Syadewa | Claritys Portfolio",
     description:
-      "Technical write-ups from Capture The Flag competitions — Web, Pwn, Crypto, Reverse Engineering, and Forensics.",
+      "Technical CTF write-ups by Elang Dimas Syadewa (Claritys), covering Web, Pwn, Crypto, Reverse Engineering, and Forensics.",
     url: ctfUrl,
     type: "website",
   },

@@ -7,7 +7,7 @@ import { ShellGate } from '@/components/ShellGate';
 import { RouteLoadingOverlay } from '@/components/RouteLoadingOverlay';
 import { normalizeProfileSettings } from '@/lib/about-default';
 import { getProfileSettings } from '@/lib/server-storage';
-import { BRAND_ALIAS, BRAND_NAME, SITE_BASE_URL, SITE_NAME } from '@/lib/seo-utils';
+import { BRAND_ALIAS, BRAND_NAME, resolveCanonicalUrl, SITE_NAME } from '@/lib/seo-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,7 +38,13 @@ function toHtmlLang(locale: string | undefined): string {
 function getFallbackKeywords(name: string, igUsername: string): string[] {
   return [
     name,
+    `${name} ${BRAND_ALIAS}`,
+    `${name} portfolio`,
+    `${name} cybersecurity`,
+    `${name} CTF`,
     igUsername,
+    BRAND_ALIAS,
+    'claritys11',
     'Cybersecurity',
     'CTF Player',
     'Write-ups',
@@ -63,7 +69,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const description =
     seo.description?.trim() || profile.aboutText || FALLBACK_DESCRIPTION;
 
-  const baseUrl = toAbsoluteUrl(seo.canonicalUrl || profile.websiteUrl, SITE_BASE_URL);
+  const baseUrl = resolveCanonicalUrl(seo.canonicalUrl);
   const previewImage = toAbsoluteUrl(
     seo.previewImageUrl,
     `${baseUrl.replace(/\/$/, '')}/preview.png`
@@ -147,7 +153,7 @@ export default async function RootLayout({
 
   const name = profile.displayName || BRAND_NAME;
   const alias = profile.alias || BRAND_ALIAS;
-  const baseUrl = toAbsoluteUrl(seo.canonicalUrl || profile.websiteUrl, SITE_BASE_URL);
+  const baseUrl = resolveCanonicalUrl(seo.canonicalUrl);
   const previewImage = toAbsoluteUrl(
     seo.previewImageUrl,
     `${baseUrl.replace(/\/$/, '')}/preview.png`
@@ -159,17 +165,22 @@ export default async function RootLayout({
     .map((entry) => (entry ?? '').trim())
     .filter(Boolean);
   const jobTitle = seo.jobTitle?.trim() || 'Cybersecurity Enthusiast, CTF Player, Web Developer';
+  const canonicalRoot = baseUrl.replace(/\/$/, '');
+  const sameAs = Array.from(new Set([...customSameAs, ...fallbackSameAs]));
 
   const personJsonLd = {
     '@type': 'Person',
-    '@id': `${baseUrl.replace(/\/$/, '')}#person`,
+    '@id': `${canonicalRoot}#person`,
     name,
-    alternateName: alias,
+    alternateName: Array.from(new Set([alias, 'claritys11', `${name} ${alias}`].filter(Boolean))),
     url: baseUrl,
     image: previewImage,
-    sameAs: customSameAs.length ? customSameAs : fallbackSameAs,
+    sameAs,
     jobTitle,
     description,
+    mainEntityOfPage: {
+      '@id': `${canonicalRoot}#profile-page`,
+    },
     knowsAbout: [
       'Cybersecurity',
       'Capture The Flag',
@@ -182,13 +193,37 @@ export default async function RootLayout({
 
   const websiteJsonLd = {
     '@type': 'WebSite',
-    '@id': `${baseUrl.replace(/\/$/, '')}#website`,
-    name: SITE_NAME,
-    alternateName: `${BRAND_NAME} Official Portfolio`,
+    '@id': `${canonicalRoot}#website`,
+    name: seo.siteName?.trim() || SITE_NAME,
+    alternateName: Array.from(new Set([
+      `${BRAND_NAME} Official Portfolio`,
+      `${BRAND_NAME} Cybersecurity Portfolio`,
+      `${BRAND_ALIAS} Portfolio`,
+    ])),
     url: baseUrl,
     description,
     publisher: {
-      '@id': `${baseUrl.replace(/\/$/, '')}#person`,
+      '@id': `${canonicalRoot}#person`,
+    },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${canonicalRoot}/ctf?query={search_term_string}`,
+      'query-input': 'required name=search_term_string',
+    },
+  };
+
+  const profilePageJsonLd = {
+    '@type': 'ProfilePage',
+    '@id': `${canonicalRoot}#profile-page`,
+    url: baseUrl,
+    name: `${name} — ${alias} Cybersecurity Portfolio`,
+    description,
+    primaryImageOfPage: {
+      '@type': 'ImageObject',
+      url: previewImage,
+    },
+    mainEntity: {
+      '@id': `${canonicalRoot}#person`,
     },
   };
 
@@ -213,7 +248,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
-              '@graph': [personJsonLd, websiteJsonLd],
+              '@graph': [personJsonLd, websiteJsonLd, profilePageJsonLd],
             }),
           }}
         />
