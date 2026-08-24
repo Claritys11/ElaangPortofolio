@@ -29,7 +29,7 @@ import {
 } from "@/lib/seo-utils"
 import { FlagReveal } from "./FlagReveal"
 import { WriteupActions } from "./WriteupActions"
-import { WriteupArticleContent } from "./WriteupArticleContent"
+import { WriteupArticleContent } from "@/components/WriteupArticleContent"
 import Link from "next/link"
 
 // ──────────────────────────────────────────

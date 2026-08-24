@@ -139,7 +139,7 @@ $ checksec --file=chall</code></pre>
 
   return (
     <div className="w-full flex flex-col overflow-visible rounded-lg border border-border bg-background shadow-sm">
-      <div className="sticky top-16 z-30 flex flex-wrap gap-1 rounded-t-lg border-b border-border bg-muted/95 p-2 items-center backdrop-blur supports-[backdrop-filter]:bg-muted/80">
+      <div data-writeup-toolbar className="sticky top-16 z-30 flex flex-wrap gap-1 rounded-t-lg border-b border-border bg-muted/95 p-2 items-center backdrop-blur supports-[backdrop-filter]:bg-muted/80">
         <Button 
           type="button"
           variant="ghost" 
@@ -271,7 +271,7 @@ $ checksec --file=chall</code></pre>
           </Button>
         </div>
       </div>
-      <div className="sticky top-[7.05rem] z-20 flex flex-wrap items-center gap-2 border-b border-border/70 bg-card/95 px-3 py-2 backdrop-blur supports-[backdrop-filter]:bg-card/80">
+      <div data-writeup-quickbar className="sticky top-[7.05rem] z-20 flex flex-wrap items-center gap-2 border-b border-border/70 bg-card/95 px-3 py-2 backdrop-blur supports-[backdrop-filter]:bg-card/80">
         <button
           type="button"
           onClick={() => editor.chain().focus().setParagraph().run()}
