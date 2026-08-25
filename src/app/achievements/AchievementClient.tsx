@@ -1,8 +1,17 @@
 "use client"
 
 import * as React from "react"
-import { Award, Trophy, CheckCircle2, ZoomIn, Paperclip, ChevronDown, ExternalLink } from "lucide-react"
+import {
+  Award,
+  Trophy,
+  CheckCircle2,
+  ZoomIn,
+  Paperclip,
+  ChevronDown,
+  ExternalLink,
+} from "lucide-react"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
+import { Badge } from "@/components/ui/badge"
 import {
   Dialog,
   DialogContent,
@@ -12,6 +21,16 @@ import {
 } from "@/components/ui/dialog"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import type { AchievementRecord } from "@/lib/portfolio-types"
+import {
+  achievementCategoryLabels,
+  formatAchievementDate,
+  getAchievementCategory,
+  getAchievementSource,
+  sortAchievements,
+  type AchievementCategoryFilter,
+  type AchievementSortMode,
+} from "@/lib/achievement-utils"
+import { AchievementFilters } from "./AchievementFilters"
 
 // ── Attachment list (client — uses Collapsible state) ──────────────────────
 function AchievementAttachmentList({
@@ -69,13 +88,57 @@ function AchievementAttachmentList({
 
 // ── Main client component ───────────────────────────────────────────────────
 interface AchievementClientProps {
-  certifications: AchievementRecord[]
-  quickStats: AchievementRecord[]
+  achievements: AchievementRecord[]
 }
 
-export function AchievementClient({ certifications, quickStats }: AchievementClientProps) {
+export function AchievementClient({ achievements }: AchievementClientProps) {
+  const [categoryFilter, setCategoryFilter] = React.useState<AchievementCategoryFilter>("all")
+  const [sourceFilter, setSourceFilter] = React.useState("all")
+  const [sortMode, setSortMode] = React.useState<AchievementSortMode>("best")
+
+  const sourceOptions = React.useMemo(() => {
+    const sources = achievements
+      .map(getAchievementSource)
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b))
+
+    return Array.from(new Set(sources))
+  }, [achievements])
+
+  const filteredAchievements = React.useMemo(() => {
+    const filtered = achievements.filter((item) => {
+      const category = getAchievementCategory(item)
+      const source = getAchievementSource(item)
+      const matchesCategory = categoryFilter === "all" || category === categoryFilter
+      const matchesSource = sourceFilter === "all" || source === sourceFilter
+      return matchesCategory && matchesSource
+    })
+
+    return sortAchievements(filtered, sortMode)
+  }, [achievements, categoryFilter, sourceFilter, sortMode])
+
+  const certifications = filteredAchievements.filter((item) => getAchievementCategory(item) === "certification")
+  const quickStats = filteredAchievements.filter((item) => getAchievementCategory(item) !== "certification")
+
   return (
     <>
+      <AchievementFilters
+        categoryFilter={categoryFilter}
+        sourceFilter={sourceFilter}
+        sortMode={sortMode}
+        sourceOptions={sourceOptions}
+        shownCount={filteredAchievements.length}
+        totalCount={achievements.length}
+        onCategoryChange={setCategoryFilter}
+        onSourceChange={setSourceFilter}
+        onSortChange={setSortMode}
+        onReset={() => {
+          setCategoryFilter("all")
+          setSourceFilter("all")
+          setSortMode("best")
+        }}
+      />
+
       {/* Certifications grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20 items-start">
         {certifications.length > 0 ? (
@@ -105,6 +168,9 @@ export function AchievementClient({ certifications, quickStats }: AchievementCli
                     <div className="p-6 min-w-0 flex-1 flex flex-col justify-between border-t border-border/50">
                       <div>
                         <p className="text-[10px] font-code text-primary uppercase mb-1">{cert.issuer}</p>
+                        <Badge variant="outline" className="mb-3 rounded-md font-code uppercase tracking-wider">
+                          {achievementCategoryLabels[getAchievementCategory(cert)]}
+                        </Badge>
                         <h3 className="text-lg font-headline font-bold">{cert.title}</h3>
                         <p className="text-xs text-muted-foreground mt-2 line-clamp-2 italic">{cert.description}</p>
                         <AchievementAttachmentList attachments={cert.attachments} stopCardAction />
@@ -114,7 +180,7 @@ export function AchievementClient({ certifications, quickStats }: AchievementCli
                           <CheckCircle2 className="h-3 w-3 mr-1 text-primary" />
                           VERIFIED
                         </div>
-                        <p className="text-xs text-muted-foreground">{cert.date}</p>
+                        <p className="text-xs text-muted-foreground">{formatAchievementDate(cert.date)}</p>
                       </div>
                     </div>
                   </div>
@@ -159,10 +225,13 @@ export function AchievementClient({ certifications, quickStats }: AchievementCli
                   <Trophy className="h-6 w-6 text-primary" />
                 </div>
                 <p className="text-xs font-code text-secondary mb-1">{item.platform || item.issuer}</p>
+                <Badge variant="outline" className="mb-3 w-fit rounded-md font-code uppercase tracking-wider">
+                  {achievementCategoryLabels[getAchievementCategory(item)]}
+                </Badge>
                 <h3 className="text-lg font-headline font-bold mb-2">{item.title}</h3>
                 <p className="text-sm text-muted-foreground line-clamp-3">{item.description}</p>
                 <AchievementAttachmentList attachments={item.attachments} />
-                <div className="mt-auto pt-4 text-[10px] font-code text-muted-foreground">{item.date}</div>
+                <div className="mt-auto pt-4 text-[10px] font-code text-muted-foreground">{formatAchievementDate(item.date)}</div>
               </div>
             </div>
           ))

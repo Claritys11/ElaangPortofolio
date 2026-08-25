@@ -28,6 +28,13 @@ function asOptionalString(value: unknown): string | undefined {
   return typeof value === 'string' ? value : undefined;
 }
 
+function asOptionalNumber(value: unknown): number | undefined {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value !== 'string' || !value.trim()) return undefined;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
 function asOptionalStringArray(value: unknown): string[] | undefined {
   if (!Array.isArray(value)) return undefined;
   return value
@@ -153,11 +160,12 @@ function mapProject(row: {
 
 function mapAchievement(row: {
   id: string; title: string | null; issuer: string | null; platform: string | null; description: string | null;
-  imageUrl: string | null; date: Date | null; createdAt: Date; updatedAt: Date;
+  imageUrl: string | null; date: Date | null; proofScore: number | null; createdAt: Date; updatedAt: Date;
 }): AchievementRecord {
   return {
     id: row.id, title: row.title ?? undefined, issuer: row.issuer ?? undefined, platform: row.platform ?? undefined,
     description: row.description ?? undefined, imageUrl: row.imageUrl ?? undefined, date: toIso(row.date),
+    proofScore: row.proofScore ?? undefined,
     createdAt: toIso(row.createdAt), updatedAt: toIso(row.updatedAt),
   };
 }
@@ -276,6 +284,7 @@ export async function createAchievement(data: Partial<AchievementRecord>): Promi
   const row = await prisma.achievement.create({ data: {
     title: asOptionalString(data.title), issuer: asOptionalString(data.issuer), platform: asOptionalString(data.platform),
     description: asOptionalString(data.description), imageUrl: asOptionalString(data.imageUrl), date: toDate(asOptionalString(data.date)),
+    proofScore: asOptionalNumber(data.proofScore),
     ...(toDate(asOptionalString(data.createdAt)) ? { createdAt: toDate(asOptionalString(data.createdAt)) } : {}),
   } });
   return row.id;
@@ -288,6 +297,9 @@ export async function updateAchievement(id: string, data: Partial<AchievementRec
     title: asOptionalString(data.title) ?? existing.title, issuer: asOptionalString(data.issuer) ?? existing.issuer,
     platform: asOptionalString(data.platform) ?? existing.platform, description: asOptionalString(data.description) ?? existing.description,
     imageUrl: asOptionalString(data.imageUrl) ?? existing.imageUrl, date: toDate(asOptionalString(data.date)) ?? existing.date,
+    proofScore: Object.prototype.hasOwnProperty.call(data, 'proofScore')
+      ? asOptionalNumber(data.proofScore) ?? null
+      : existing.proofScore,
   } });
   return true;
 }

@@ -27,7 +27,6 @@ export const metadata: Metadata = {
 }
 
 // Server Component — fetches achievements at request time.
-// Splits into certifications (have imageUrl + issuer) and quickStats.
 export default async function AchievementsPage() {
   const raw = await listAchievements().catch(() => [])
 
@@ -44,9 +43,6 @@ export default async function AchievementsPage() {
     }
     return timeB - timeA
   })
-
-  const certifications = sorted.filter((a) => a.imageUrl && a.issuer)
-  const quickStats = sorted.filter((a) => !a.imageUrl || a.platform)
 
   return (
     <main className="relative isolate min-h-screen overflow-x-hidden">
@@ -65,8 +61,8 @@ export default async function AchievementsPage() {
           </div>
         </div>
 
-        {/* Dialog + Collapsible interactions handled in the client component */}
-        <AchievementClient certifications={certifications} quickStats={quickStats} />
+        {/* Dialog + filtering interactions handled in the client component */}
+        <AchievementClient achievements={sorted} />
       </div>
     </main>
   )
