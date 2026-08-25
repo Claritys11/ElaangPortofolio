@@ -111,6 +111,7 @@ interface AchievementFormState {
   description: string
   imageUrl: string
   date: string
+  proofScore: string
   attachments: AttachmentFormState[]
 }
 
@@ -214,6 +215,7 @@ function createEmptyAchievementForm(): AchievementFormState {
     description: "",
     imageUrl: "",
     date: format(new Date(), "yyyy-MM-dd"),
+    proofScore: "",
     attachments: [],
   }
 }
@@ -298,6 +300,12 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function toStringField(source: Record<string, unknown>, key: string): string {
   const value = source[key]
+  return typeof value === "string" ? value : ""
+}
+
+function toStringNumberField(source: Record<string, unknown>, key: string): string {
+  const value = source[key]
+  if (typeof value === "number" && Number.isFinite(value)) return String(value)
   return typeof value === "string" ? value : ""
 }
 
@@ -394,6 +402,7 @@ function parseAchievementDraftData(value: unknown): AchievementFormState | null 
     description: toStringField(value, "description"),
     imageUrl: toStringField(value, "imageUrl"),
     date: toStringField(value, "date") || format(new Date(), "yyyy-MM-dd"),
+    proofScore: toStringNumberField(value, "proofScore"),
     attachments,
   }
 }
@@ -1182,6 +1191,7 @@ export default function AdminPage() {
       description: achievement.description || "",
       imageUrl: achievement.imageUrl || "",
       date: achievement.date || format(new Date(), "yyyy-MM-dd"),
+      proofScore: typeof achievement.proofScore === "number" ? String(achievement.proofScore) : "",
       attachments: toAttachmentFormState(achievement.attachments),
     })
 
@@ -1284,6 +1294,7 @@ export default function AdminPage() {
   const saveAchievement = async () => {
     const payload = {
       ...achievementForm,
+      proofScore: achievementForm.proofScore.trim() ? Number(achievementForm.proofScore) : null,
       attachments: normalizeAttachmentPayload(achievementForm.attachments),
     }
     const currentDraftId = activeDraftId
@@ -2166,7 +2177,10 @@ export default function AdminPage() {
                           >
                             <div className="truncate">
                               <p className="text-sm font-bold truncate">{achievement.title || "Untitled"}</p>
-                              <p className="text-[10px] text-muted-foreground">{achievement.issuer || "No Issuer"}</p>
+                              <p className="text-[10px] text-muted-foreground">
+                                {achievement.issuer || "No Issuer"}
+                                {typeof achievement.proofScore === "number" ? ` · Proof ${achievement.proofScore}` : ""}
+                              </p>
                             </div>
                             <Button type="button" variant="ghost" size="icon" onClick={(event) => { event.stopPropagation(); triggerDelete(achievement.id, "achievements") }} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4 text-destructive" /></Button>
                           </div>
@@ -2225,6 +2239,20 @@ export default function AdminPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>Platform / Category</Label><Input value={achievementForm.platform || ""} onChange={(event) => setAchievementForm({ ...achievementForm, platform: event.target.value })} /></div>
                     <div className="space-y-2"><Label>Date Achieved</Label><Input value={achievementForm.date || ""} onChange={(event) => setAchievementForm({ ...achievementForm, date: event.target.value })} placeholder="e.g. Nov 2024" /></div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Best Proof Score</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={achievementForm.proofScore}
+                      onChange={(event) => setAchievementForm({ ...achievementForm, proofScore: event.target.value })}
+                      placeholder="Leave empty for automatic ranking"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Higher scores appear first when visitors sort achievements by Best proof.
+                    </p>
                   </div>
                   <div className="space-y-4 border-y py-4 my-2">
                     <div className="flex items-center justify-between mb-2">

@@ -42,6 +42,7 @@ export interface AchievementRecord {
   description?: string;
   imageUrl?: string;
   date?: string;
+  proofScore?: number | null;
   attachments?: AttachmentRecord[];
   createdAt?: string;
   updatedAt?: string;

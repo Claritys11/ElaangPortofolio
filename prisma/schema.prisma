@@ -50,6 +50,7 @@ model Achievement {
   description String?
   imageUrl    String?   @map("image_url")
   date        DateTime? @db.Timestamptz(3)
+  proofScore  Int?      @map("proof_score")
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
 
