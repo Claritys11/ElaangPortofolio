@@ -17,7 +17,7 @@ export function ShellIntro({ onComplete }: { onComplete: () => void }) {
 
   const bootLines = [
     "INITIALIZING SECURE UPLINK...",
-    "NODE ESTABLISHED AT claritys.my.id",
+    "NODE ESTABLISHED AT clarityz.my.id",
     "ENCRYPTION: AES-256-GCM ACTIVE",
     "----------------------------------------",
     "WELCOME TO CLARITYS_PORTFOLIO V2.0.4",

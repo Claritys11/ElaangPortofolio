@@ -1,8 +1,8 @@
 import type { WriteupRecord } from '@/lib/portfolio-types';
 
-const PRIMARY_SITE_BASE_URL = 'https://claritys.my.id';
-const PRIMARY_SITE_HOST = 'claritys.my.id';
-const LEGACY_SITE_HOSTS = new Set(['clarityz.my.id', 'portf.claritys.my.id']);
+const PRIMARY_SITE_BASE_URL = 'https://clarityz.my.id';
+const PRIMARY_SITE_HOST = 'clarityz.my.id';
+const LEGACY_SITE_HOSTS = new Set(['claritys.my.id', 'portf.claritys.my.id']);
 
 function normalizeBaseUrl(value: string | undefined): string {
   const rawValue = value?.trim();
