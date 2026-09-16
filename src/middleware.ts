@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const PRIMARY_HOST = 'claritys.my.id';
-const LEGACY_HOSTS = new Set(['www.claritys.my.id', 'clarityz.my.id', 'www.clarityz.my.id', 'portf.claritys.my.id']);
+const PRIMARY_HOST = 'claritys.web.id';
+const LEGACY_HOSTS = new Set(['clarityz.my.id', 'www.clarityz.my.id', 'claritys.my.id', 'www.claritys.my.id', 'portf.claritys.my.id']);
 const PRIVATE_PREFIXES = ['/admin', '/inbox', '/api/admin', '/api/auth'];
 
 export function middleware(request: NextRequest) {
