@@ -75,7 +75,7 @@ export async function GET(
   const response = await fetch(sourceUrl, {
     headers: {
       Accept: 'text/html',
-      'User-Agent': 'ClaritysPortfolio/1.0 (+https://clarityz.my.id)',
+      'User-Agent': 'ClaritysPortfolio/1.0 (+https://claritys.web.id)',
     },
     next: { revalidate: 60 * 60 },
   });
