@@ -1,0 +1,10 @@
+export type Attachment = { url: string; name: string; contentType: string };
+export type WriteupSummary = { id: string; href: string; slug: string | null; title: string; competition: string; category: string; difficulty: string | null; date: string | null; summary: string; tags: string[]; cover: string | null };
+export type WriteupDetail = WriteupSummary & { content: string; flag: string | null; attachments: Attachment[] };
+export type ProjectItem = { id: string; title: string; description: string; imageUrl: string | null; projectUrl: string | null; category: string; tags: string[] };
+export type AchievementItem = { id: string; title: string; issuer: string | null; platform: string | null; description: string; imageUrl: string | null; date: string | null; year: number | null; proofScore: number };
+export type Skill = { name: string; level: number };
+export type JourneyItem = { role: string; company: string; period: string; desc: string };
+export type EducationItem = { level: string; school: string; period: string };
+export type SeoSettings = { jobTitle?: string; keywords: string[]; sameAs: string[]; locale?: string; description?: string };
+export type Profile = { displayName: string; alias: string; brand: string; email: string | null; websiteUrl: string | null; githubUrl: string | null; instagramUrl: string | null; profileImageUrl: string; aboutText: string; philosophyText: string; skills: Skill[]; journey: JourneyItem[]; education: EducationItem[]; seo: SeoSettings };
