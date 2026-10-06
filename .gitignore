@@ -13,3 +13,4 @@ test-results/
 playwright-report/
 .legacy/
 .superpowers/
+src/generated/
