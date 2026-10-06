@@ -75,14 +75,14 @@ Header with category, difficulty, competition, date, and tags. Article body is t
 Grid of the 4 projects, larger cards, plus a detail modal or external link.
 
 ### `/achievements`
-Full timeline with filters (platform, year) and certificate image lightbox.
+Full timeline grouped by year, with a filter (all / competitions / learning; `platform` is too sparse in the data to filter on) and a certificate image lightbox.
 
 ### `/about`
 The about text, journey timeline (`professional_journey_json`), skills (rendered sorted by level, with **Binary Exploitation / Pwn pinned first** in the UI regardless of stored order), education, and links.
 
 ### Global
 - Nav: brand (`navbar_brand_name` when mode=`custom`), links, theme toggle, scroll counter.
-- Page transitions: a short ink-panel wipe via GSAP.
+- Page transitions: a short ink-panel wipe (pure CSS keyframes in the route `template.tsx`, so it works without JS and is disabled under reduced motion).
 - `sitemap.ts`, `robots.ts`, OG images from SEO settings, and `seo_settings_json` used for metadata and Person JSON-LD.
 - Data is fetched in Server Components through Prisma (`lib/data/*`), deduped per request with React `cache()`. DB-backed pages use `export const dynamic = "force-dynamic"`, so `next build` never needs a database (the Docker build has none) and admin edits show up immediately. The data set is tiny (<500 rows), so per-request queries are cheap.
 
