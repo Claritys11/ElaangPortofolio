@@ -22,4 +22,7 @@ describe("clientIp", () => {
     expect(clientIp(new Headers({ "x-real-ip": "5.6.7.8" }))).toBe("5.6.7.8");
     expect(clientIp(new Headers())).toBe("unknown");
   });
+  it("prefers Cloudflare's CF-Connecting-IP (set by the edge, client values overwritten)", () => {
+    expect(clientIp(new Headers({ "cf-connecting-ip": "203.0.113.7", "x-forwarded-for": "6.6.6.6, 198.51.100.1" }))).toBe("203.0.113.7");
+  });
 });

@@ -52,19 +52,30 @@ Use a user-defined Docker network (as above): on some hosts the default `docker0
 | `ADMIN_USERNAME`, `ADMIN_PASSWORD` | Admin login |
 | `ADMIN_SESSION_SECRET` | 32+ characters: `openssl rand -base64 48` |
 | `SITE_URL` | Optional, defaults to `https://claritys.web.id` (read at runtime) |
-| `TRUSTED_PROXY_HOPS` | Optional, default `1` (Coolify's Traefik). Use `2` if Cloudflare is in front |
+| `TRUSTED_PROXY_HOPS` | Optional, default `1`. Ignored behind Cloudflare, where `CF-Connecting-IP` is used |
 
 Uploads are bind-mounted from `./public/uploads`, the same path the previous version used, so existing files carry over. On start the container:
 
 1. fixes ownership of `./public/uploads` (older deployments wrote it as root), then drops to an unprivileged user;
 2. runs `prisma migrate deploy`. Migrations are additive, so the database does not need a restart and the previous version keeps working against it;
-3. starts the server on port 3000. Traefik reaches it over the Docker network, and the host port is bound to `127.0.0.1:3015`.
+3. starts the server on port 3000, published only on `127.0.0.1:3020`.
+
+### Public access via Cloudflare Tunnel
+
+`cloudflared` on the host forwards the domain to the published port. In `/etc/cloudflared/<account>/config.yml`:
+
+```yaml
+  - hostname: claritys.web.id
+    service: http://localhost:3020
+```
+
+then `sudo systemctl restart cloudflared` (or your unit name). The previous site used `localhost:3015`, so both can run side by side. Deploy the new one and check `curl -I http://localhost:3020` before switching the tunnel. To roll back, point the tunnel at 3015 again.
 
 Restoring a backup into a fresh setup: `DATABASE_URL=... scripts/restore.sh portfolio-YYYY-MM-DD.dump uploads-YYYY-MM-DD.tar.gz`.
 
 ### Rolling back
 
-The previous site lives on the `legacy-v1` branch. Point the deployment at it and redeploy. The database changes made by this version (one nullable column, one index) are compatible with it.
+The previous site lives on the `legacy-v1` branch. Point the deployment at it and redeploy (or, during the cutover, point the tunnel back at `localhost:3015`). The database changes made by this version (one nullable column, one index) are compatible with it.
 
 ## Admin
 

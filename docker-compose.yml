@@ -12,11 +12,11 @@ services:
       # At least 32 characters: openssl rand -base64 48
       ADMIN_SESSION_SECRET: ${ADMIN_SESSION_SECRET:?set ADMIN_SESSION_SECRET}
       SITE_URL: ${SITE_URL:-https://claritys.web.id}
-      # Reverse proxies in front of the app (Coolify/Traefik = 1; add 1 for Cloudflare).
+      # Behind Cloudflare the client IP comes from CF-Connecting-IP; this only matters without it.
       TRUSTED_PROXY_HOPS: ${TRUSTED_PROXY_HOPS:-1}
     volumes:
       - ./public/uploads:/app/public/uploads
-    # Traefik reaches the container over the Docker network; the host port is localhost-only so
-    # nobody can bypass the proxy (the rate limiter trusts the proxy's X-Forwarded-For hop).
+    # cloudflared on the host forwards claritys.web.id -> http://localhost:3020.
+    # Localhost-only so nobody can bypass the tunnel (the rate limiter trusts Cloudflare's headers).
     ports:
-      - "127.0.0.1:3015:3000"
+      - "127.0.0.1:3020:3000"
