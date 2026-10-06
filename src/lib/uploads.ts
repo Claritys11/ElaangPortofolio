@@ -4,7 +4,7 @@ import { mkdir, readdir, stat, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { Readable } from "node:stream";
 
-export const UPLOADS_DIR = path.resolve(process.env.UPLOADS_DIR ?? path.join(process.cwd(), "public", "uploads"));
+export const UPLOADS_DIR = path.resolve(process.env.UPLOADS_DIR ?? path.join(/* turbopackIgnore: true */ process.cwd(), "public", "uploads"));
 export const MAX_UPLOAD_BYTES = 30 * 1024 * 1024;
 
 export class UploadError extends Error {
