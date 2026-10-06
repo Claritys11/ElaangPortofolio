@@ -30,6 +30,8 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   ];
   return (
     <SmoothScroll>
+      {/* Fade under the blend-mode nav so long-form text doesn't scroll visibly through it. */}
+      <div aria-hidden className="pointer-events-none fixed inset-x-0 top-0 z-40 h-20 bg-gradient-to-b from-background via-background/80 to-transparent" />
       <Nav brand={profile.brand} />
       <script
         type="application/ld+json"

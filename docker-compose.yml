@@ -1,0 +1,32 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    env_file: .env.production
+    environment:
+      DATABASE_URL: postgresql://portfolio:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@db:5432/portfolio
+    # Bound to localhost: put a reverse proxy (Coolify/Traefik, Caddy, nginx) in front.
+    # The rate limiter trusts the X-Forwarded-For hop that proxy appends (TRUSTED_PROXY_HOPS).
+    ports:
+      - "127.0.0.1:3020:3000"
+    volumes:
+      - uploads:/app/public/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: portfolio
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: portfolio
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portfolio"]
+      interval: 5s
+      retries: 10
+volumes:
+  uploads:
+  pgdata:

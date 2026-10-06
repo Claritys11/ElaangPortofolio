@@ -1,0 +1,16 @@
+node_modules
+.next
+.git
+.legacy
+.remember
+.superpowers
+.playwright-mcp
+*.dump
+*.tar.gz
+public/uploads
+.env*
+!.env.example
+test-results
+playwright-report
+src/generated
+docs

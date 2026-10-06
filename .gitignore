@@ -15,3 +15,5 @@ playwright-report/
 .superpowers/
 src/generated/
 .playwright-mcp/
+test-results/
+playwright-report/
