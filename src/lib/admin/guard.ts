@@ -7,3 +7,8 @@ export async function requireAdmin() {
   if (!s) redirect("/admin/login");
   return { username: s.username };
 }
+
+/** Defence in depth for /api/admin routes (proxy.ts already gates them). */
+export async function requireAdminApi() {
+  return getSession();
+}
