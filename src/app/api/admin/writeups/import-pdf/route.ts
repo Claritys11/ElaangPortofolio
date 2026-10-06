@@ -4,6 +4,7 @@ import JSZip from 'jszip';
 import { marked } from 'marked';
 import { PDFParse } from 'pdf-parse';
 import { COOKIE_NAME, verifySessionToken } from '@/lib/session';
+import { normalizeLegacyHtml } from '@/lib/html';
 import { writeUploadBuffer } from '@/lib/uploads';
 
 export const runtime = 'nodejs';
@@ -305,7 +306,7 @@ export async function POST(req: NextRequest) {
   try {
     const buffer = Buffer.from(await file.arrayBuffer());
     const imported = isZip ? await importNotionZip(file, buffer) : await importPdf(file, buffer);
-    return NextResponse.json(imported);
+    return NextResponse.json({ ...imported, content: await normalizeLegacyHtml(imported.content) });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to import this file.';
     return NextResponse.json({ error: message }, { status: 500 });

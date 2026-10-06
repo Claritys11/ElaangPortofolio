@@ -1,13 +1,12 @@
 "use client";
 
-import { useActionState } from "react";
 import { Field } from "@/components/admin/field";
+import { useFormAction } from "@/components/admin/use-form-action";
 import { ImageField } from "@/components/admin/image-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { saveAchievement } from "@/lib/admin/actions/achievements";
-import type { ActionState } from "@/lib/admin/form";
 
 type Initial = {
   id?: string;
@@ -21,10 +20,10 @@ type Initial = {
 };
 
 export function AchievementForm({ initial = {} }: { initial?: Initial }) {
-  const [state, action, pending] = useActionState<ActionState, FormData>(saveAchievement, { ok: true });
+  const [state, action, pending] = useFormAction(saveAchievement);
   const f = state.fields ?? {};
   return (
-    <form action={action} className="grid max-w-2xl gap-6">
+    <form onSubmit={action} className="grid max-w-2xl gap-6">
       {initial.id && <input type="hidden" name="id" value={initial.id} />}
       <Field label="Title" name="title" error={f.title}>
         <Input id="title" name="title" defaultValue={initial.title ?? ""} required />

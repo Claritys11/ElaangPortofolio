@@ -1,15 +1,15 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Field } from "@/components/admin/field";
+import { useFormAction } from "@/components/admin/use-form-action";
 import { ImageField } from "@/components/admin/image-field";
 import { ListEditor } from "@/components/admin/list-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { saveProfile } from "@/lib/admin/actions/profile";
-import type { ActionState } from "@/lib/admin/form";
 
 type Seo = Record<string, unknown> & { jobTitle?: string; locale?: string; description?: string; keywords: string[]; sameAs: string[] };
 
@@ -34,7 +34,7 @@ export type ProfileInitial = {
 type TextKey = "displayName" | "alias" | "navbarBrandName" | "email" | "websiteUrl" | "githubUrl" | "instagramUrl";
 
 export function ProfileForm({ initial }: { initial: ProfileInitial }) {
-  const [state, action, pending] = useActionState<ActionState, FormData>(saveProfile, { ok: true });
+  const [state, action, pending] = useFormAction(saveProfile);
   useEffect(() => {
     if (state.ok && state.message) toast.success(state.message);
   }, [state]);
@@ -45,7 +45,7 @@ export function ProfileForm({ initial }: { initial: ProfileInitial }) {
     </Field>
   );
   return (
-    <form action={action} className="grid max-w-3xl gap-8">
+    <form onSubmit={action} className="grid max-w-3xl gap-8">
       <div className="grid gap-6 md:grid-cols-2">
         {text("displayName", "Display name")}
         {text("alias", "Alias (also the footer glitch word)")}

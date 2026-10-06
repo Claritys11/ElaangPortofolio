@@ -92,3 +92,11 @@ export async function renderWriteupHtml(input: string) {
   const file = await processor.process(input);
   return { html: String(file), toc: (file.data.toc as TocItem[] | undefined) ?? [] };
 }
+
+// Same legacy rewrites, unsanitized, for the admin editor: Tiptap drops <h1> (levels 2–4) and the
+// Notion language attribute, so editing an old writeup would otherwise degrade it on save.
+const legacyProcessor = unified().use(rehypeParse, { fragment: true }).use(normalizeLegacy).use(rehypeStringify);
+
+export async function normalizeLegacyHtml(input: string): Promise<string> {
+  return String(await legacyProcessor.process(input));
+}

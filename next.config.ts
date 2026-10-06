@@ -3,6 +3,12 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: "standalone",
   poweredByHeader: false,
+  experimental: {
+    // The proxy buffers request bodies (default 10MB) and silently truncates beyond; uploads allow 30MB.
+    proxyClientMaxBodySize: "32mb",
+    // Default 1MB rejects writeups with large HTML or legacy data: images; schemas allow more.
+    serverActions: { bodySizeLimit: "10mb" },
+  },
   // pdf-parse loads its worker at runtime; keep it out of the bundle.
   serverExternalPackages: ["pdf-parse"],
   // Runtime fs access to public/uploads makes the tracer include the whole project; keep backups and dev-only trees out.

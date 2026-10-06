@@ -41,3 +41,17 @@ describe("renderWriteupHtml", () => {
     expect(html).toContain("language-python");
   });
 });
+
+import { normalizeLegacyHtml } from "@/lib/html";
+
+describe("normalizeLegacyHtml (editor input)", () => {
+  it("rewrites legacy markup into forms Tiptap keeps: h1→h2, notion code syntax → language class", async () => {
+    const out = await normalizeLegacyHtml('<h1>Overview</h1><pre data-notion-code-syntax="python"><code>print(1)</code></pre><p>keep <b>me</b></p>');
+    expect(out).toContain("<h2>Overview</h2>");
+    expect(out).toContain('<code class="language-python">print(1)</code>');
+    expect(out).toContain("<p>keep <b>me</b></p>");
+  });
+  it("does not sanitize or otherwise alter content (editor is admin-only)", async () => {
+    expect(await normalizeLegacyHtml('<p><img src="/api/public/uploads/a.png"></p>')).toBe('<p><img src="/api/public/uploads/a.png"></p>');
+  });
+});

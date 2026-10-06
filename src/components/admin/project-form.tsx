@@ -1,21 +1,20 @@
 "use client";
 
-import { useActionState } from "react";
 import { Field } from "@/components/admin/field";
+import { useFormAction } from "@/components/admin/use-form-action";
 import { ImageField } from "@/components/admin/image-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { saveProject } from "@/lib/admin/actions/projects";
-import type { ActionState } from "@/lib/admin/form";
 
 type Initial = { id?: string; title?: string | null; description?: string | null; imageUrl?: string | null; projectUrl?: string | null; category?: string | null; tags?: string[] };
 
 export function ProjectForm({ initial = {} }: { initial?: Initial }) {
-  const [state, action, pending] = useActionState<ActionState, FormData>(saveProject, { ok: true });
+  const [state, action, pending] = useFormAction(saveProject);
   const f = state.fields ?? {};
   return (
-    <form action={action} className="grid max-w-2xl gap-6">
+    <form onSubmit={action} className="grid max-w-2xl gap-6">
       {initial.id && <input type="hidden" name="id" value={initial.id} />}
       <Field label="Title" name="title" error={f.title}>
         <Input id="title" name="title" defaultValue={initial.title ?? ""} required />

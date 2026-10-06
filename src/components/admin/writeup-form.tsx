@@ -1,15 +1,15 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useState } from "react";
 import { AttachmentsField } from "@/components/admin/attachments-field";
 import { Field } from "@/components/admin/field";
+import { useFormAction } from "@/components/admin/use-form-action";
 import { PdfImport } from "@/components/admin/pdf-import";
 import { RichEditor } from "@/components/admin/rich-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { saveWriteup } from "@/lib/admin/actions/writeups";
-import type { ActionState } from "@/lib/admin/form";
 import type { Attachment } from "@/lib/types";
 
 export type WriteupInitial = {
@@ -30,13 +30,13 @@ export type WriteupInitial = {
 const CATEGORIES = ["Pwn", "Reverse", "Forensics", "Crypto", "Web", "Misc", "OSINT"];
 
 export function WriteupForm({ initial = {} }: { initial?: WriteupInitial }) {
-  const [state, action, pending] = useActionState<ActionState, FormData>(saveWriteup, { ok: true });
+  const [state, action, pending] = useFormAction(saveWriteup);
   const [title, setTitle] = useState(initial.title ?? "");
   const [summary, setSummary] = useState(initial.summary ?? "");
   const [imported, setImported] = useState<{ html: string; nonce: number }>();
   const f = state.fields ?? {};
   return (
-    <form action={action} className="grid gap-6">
+    <form onSubmit={action} className="grid gap-6">
       {initial.id && <input type="hidden" name="id" value={initial.id} />}
       <div className="flex justify-end">
         <PdfImport
