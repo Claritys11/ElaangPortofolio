@@ -5,15 +5,30 @@ import { Nav } from "@/components/site/nav";
 import { CinematicFooter, type FooterLink } from "@/components/ui/motion-footer";
 import { getProfile } from "@/lib/data/profile";
 import { getCategoryStats, getCompetitions } from "@/lib/data/writeups";
+import { jsonLdScript, pageOpenGraph, truncate } from "@/lib/seo";
+import { siteGraph } from "@/lib/seo-graph";
+import { siteUrl } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const p = await getProfile();
+  const siteName = p.seo.siteName ?? `${p.displayName} Portfolio`;
   return {
+    // absolute: the root layout's own template must not wrap the site's home title.
+    title: {
+      absolute: p.seo.defaultTitle ?? `${p.displayName} (${p.alias}) — Pwn & CTF Writeups`,
+      template: p.seo.titleTemplate ?? `%s — ${p.displayName} (${p.alias})`,
+    },
+    description: truncate(p.seo.description ?? "Pwn-focused CTF player and builder from Malang, Indonesia.", 158),
     keywords: p.seo.keywords,
-    description: p.seo.description ?? "Pwn-focused CTF player and builder from Malang, Indonesia.",
-    openGraph: { siteName: p.alias, locale: p.seo.locale },
+    authors: [{ name: p.displayName, url: siteUrl() }],
+    creator: p.displayName,
+    applicationName: siteName,
+    openGraph: pageOpenGraph("/", { siteName, locale: p.seo.locale ?? "id_ID" }),
+    twitter: { card: "summary_large_image" },
+    robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
+    category: "technology",
   };
 }
 
@@ -33,21 +48,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       {/* Fade under the blend-mode nav so long-form text doesn't scroll visibly through it. */}
       <div aria-hidden className="pointer-events-none fixed inset-x-0 top-0 z-40 h-20 bg-gradient-to-b from-background via-background/80 to-transparent" />
       <Nav brand={profile.brand} />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Person",
-            name: profile.displayName,
-            alternateName: profile.alias,
-            jobTitle: profile.seo.jobTitle,
-            url: profile.websiteUrl,
-            sameAs: profile.seo.sameAs,
-            knowsAbout: profile.skills.map((s) => s.name),
-          }).replace(/</g, "\\u003c"),
-        }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(siteGraph(profile, siteUrl())) }} />
       <div id="content" className="relative z-10 bg-background">
         {children}
         <ContactSection />

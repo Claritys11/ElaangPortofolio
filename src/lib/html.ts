@@ -94,10 +94,17 @@ function codeChrome() {
 }
 
 function lazyImages() {
-  return (tree: Root) =>
+  return (tree: Root, file: VFile) => {
+    // Legacy images have no alt text; give them a descriptive one so they're indexable and accessible.
+    const prefix = (file.data.altPrefix as string | undefined) ?? "";
+    let n = 0;
     visit(tree, "element", (node: Element) => {
-      if (node.tagName === "img") node.properties = { ...node.properties, loading: "lazy", decoding: "async" };
+      if (node.tagName !== "img") return;
+      n++;
+      const alt = String(node.properties?.alt ?? "").trim();
+      node.properties = { ...node.properties, loading: "lazy", decoding: "async", ...(!alt && prefix ? { alt: `${prefix} — figure ${n}` } : {}) };
     });
+  };
 }
 
 // Preloading all ~200 bundled grammars costs ~7s cold; preload what CTF writeups use and lazy-load the rest.
@@ -123,8 +130,8 @@ const processor = unified()
   .use(codeChrome)
   .use(rehypeStringify);
 
-export async function renderWriteupHtml(input: string) {
-  const file = await processor.process(input);
+export async function renderWriteupHtml(input: string, opts: { altPrefix?: string } = {}) {
+  const file = await processor.process({ value: input, data: { altPrefix: opts.altPrefix } });
   return { html: String(file), toc: (file.data.toc as TocItem[] | undefined) ?? [] };
 }
 

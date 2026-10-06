@@ -129,6 +129,9 @@ function SeoFields({ initial, error }: { initial: Seo; error?: string[] }) {
     });
   return (
     <>
+      <Input aria-label="Site name" placeholder="Site name (e.g. Elang Dimas Syadewa Portfolio)" value={String(seo.siteName ?? "")} onChange={(e) => setSeo({ ...seo, siteName: e.target.value })} />
+      <Input aria-label="Home page title" placeholder="Home page title (Google result headline)" value={String(seo.defaultTitle ?? "")} onChange={(e) => setSeo({ ...seo, defaultTitle: e.target.value })} />
+      <Input aria-label="Title template" placeholder="Title template, %s = page title (e.g. %s | Elang Dimas Syadewa)" value={String(seo.titleTemplate ?? "")} onChange={(e) => setSeo({ ...seo, titleTemplate: e.target.value })} />
       <Input aria-label="Job title" placeholder="Job title" value={seo.jobTitle ?? ""} onChange={(e) => setSeo({ ...seo, jobTitle: e.target.value })} />
       <Input aria-label="Locale" placeholder="Locale (id_ID)" value={seo.locale ?? ""} onChange={(e) => setSeo({ ...seo, locale: e.target.value })} />
       <Textarea aria-label="Description" placeholder="Meta description" value={seo.description ?? ""} onChange={(e) => setSeo({ ...seo, description: e.target.value })} />

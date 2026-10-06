@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 
 /** Renders sanitized writeup HTML and wires the copy buttons that the HTML pipeline adds to code blocks. */
-export function ArticleBody({ html }: { html: string }) {
+export function ArticleBody({ html, lang }: { html: string; lang?: string }) {
   const ref = useRef<HTMLElement>(null);
   useEffect(() => {
     const root = ref.current;
@@ -27,5 +27,5 @@ export function ArticleBody({ html }: { html: string }) {
     root.addEventListener("click", onClick);
     return () => root.removeEventListener("click", onClick);
   }, []);
-  return <article ref={ref} className="writeup-prose min-w-0" dangerouslySetInnerHTML={{ __html: html }} />;
+  return <article ref={ref} lang={lang} className="writeup-prose min-w-0" dangerouslySetInnerHTML={{ __html: html }} />;
 }

@@ -4,7 +4,7 @@ import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
 import { gsap, NO_REDUCED, SplitText } from "@/lib/motion";
 
-type Props = { text: string; as?: "h1" | "h2" | "p"; className?: string; delay?: number; onScroll?: boolean };
+type Props = { text: string; as?: "h1" | "h2" | "p" | "span"; className?: string; delay?: number; onScroll?: boolean };
 
 export function SplitHeading({ text, as: Tag = "h2", className, delay = 0, onScroll = false }: Props) {
   const ref = useRef<HTMLHeadingElement>(null);

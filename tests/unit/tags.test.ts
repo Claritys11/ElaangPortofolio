@@ -40,7 +40,7 @@ describe("suggestTags", () => {
 });
 
 const w = (id: string, category: string, tags: string[], competition = "", date = "2026-01-01T00:00:00.000Z"): WriteupSummary => ({
-  id, href: `/writeups/${id}`, slug: id, title: id, competition, category, difficulty: null, date, summary: "", tags, cover: null,
+  id, href: `/writeups/${id}`, slug: id, title: id, competition, category, difficulty: null, date, updated: date, summary: "", tags, cover: null,
 });
 
 describe("relatedWriteups", () => {

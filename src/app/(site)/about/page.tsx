@@ -11,10 +11,21 @@ import { listAchievements } from "@/lib/data/achievements";
 import { getProfile } from "@/lib/data/profile";
 import { getCategoryStats, getCompetitions, listWriteups } from "@/lib/data/writeups";
 import { formatDate } from "@/lib/format";
+import { breadcrumbJsonLd, jsonLdScript, pageOpenGraph, truncate } from "@/lib/seo";
+import { ids } from "@/lib/seo-graph";
+import { siteUrl } from "@/lib/site";
 import { isGenericTag } from "@/lib/tags";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "About" };
+export async function generateMetadata(): Promise<Metadata> {
+  const p = await getProfile();
+  return {
+    title: "About",
+    description: truncate(`${p.displayName} (${p.alias}) — ${p.seo.jobTitle ?? "CTF player"} from Malang, Indonesia. ${p.aboutText}`, 158),
+    alternates: { canonical: "/about" },
+    openGraph: pageOpenGraph("/about", { type: "profile", firstName: p.displayName.split(" ")[0], lastName: p.displayName.split(" ").slice(1).join(" "), username: p.alias }),
+  };
+}
 
 export default async function AboutPage() {
   const [p, writeups, stats, competitions, achievements] = await Promise.all([getProfile(), listWriteups(), getCategoryStats(), getCompetitions(), listAchievements()]);
@@ -22,6 +33,24 @@ export default async function AboutPage() {
   const pwn = writeups.filter((w) => w.category === "Pwn").slice(0, 4);
   const [focus, ...rest] = p.skills;
   const latest = writeups.find((w) => w.competition);
+  const base = siteUrl();
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "ProfilePage",
+        url: `${base}/about`,
+        name: `About ${p.displayName}`,
+        isPartOf: { "@id": ids(base).website },
+        mainEntity: { "@id": ids(base).person },
+        dateModified: writeups[0]?.updated,
+      },
+      breadcrumbJsonLd(base, [
+        { name: "Home", path: "/" },
+        { name: "About", path: "/about" },
+      ]),
+    ],
+  };
   // Most common technique tags across pwn writeups (generic labels skipped).
   const tagCounts = new Map<string, number>();
   for (const w of writeups.filter((x) => x.category === "Pwn")) for (const t of w.tags) if (!isGenericTag(t)) tagCounts.set(t.toLowerCase(), (tagCounts.get(t.toLowerCase()) ?? 0) + 1);
@@ -29,6 +58,7 @@ export default async function AboutPage() {
 
   return (
     <main className="mx-auto max-w-[1600px] px-4 pt-32 pb-24 md:px-8 md:pt-44">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
       <AboutIntro alias={p.alias} name={p.displayName} text={p.aboutText} imageUrl={p.profileImageUrl} location="Malang, ID" />
 
       <section className="mt-32 md:mt-44">

@@ -20,15 +20,18 @@ export function Hero({ name, alias, role, location, school }: Props) {
           <dd className="text-foreground">open to CTF teams</dd>
         </dl>
       </div>
-      <SplitHeading as="h1" text={first} className="font-display text-[22vw] leading-[0.8] font-black tracking-[-0.05em] md:text-[17vw]" />
-      {rest.length > 0 && (
-        <SplitHeading
-          as="p"
-          text={rest.join(" ")}
-          delay={0.15}
-          className="font-display text-[11vw] leading-[0.9] font-light tracking-[-0.04em] [font-stretch:125%] md:text-[8.5vw]"
-        />
-      )}
+      {/* One h1 carrying the full name (search engines read it as the page's main subject). */}
+      <h1>
+        <SplitHeading as="span" text={first} className="block font-display text-[22vw] leading-[0.8] font-black tracking-[-0.05em] md:text-[17vw]" />
+        {rest.length > 0 && (
+          <SplitHeading
+            as="span"
+            text={rest.join(" ")}
+            delay={0.15}
+            className="block font-display text-[11vw] leading-[0.9] font-light tracking-[-0.04em] [font-stretch:125%] md:text-[8.5vw]"
+          />
+        )}
+      </h1>
       <div className="mt-10 flex items-center justify-between border-t border-border pt-5">
         <ScrambleLine text={role} className="font-mono text-sm tracking-[0.2em] md:text-base" />
         <span className="meta hidden md:inline">scroll ↓</span>

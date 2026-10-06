@@ -11,38 +11,78 @@ import { getAdjacentWriteups, getWriteup, listWriteups } from "@/lib/data/writeu
 import { relatedWriteups } from "@/lib/related";
 import { formatDate, readingMinutes } from "@/lib/format";
 import { renderWriteupHtml } from "@/lib/html";
+import { breadcrumbJsonLd, detectLang, jsonLdScript, plainText, writeupSeoDescription, writeupSeoTitle } from "@/lib/seo";
+import { ids } from "@/lib/seo-graph";
+import { siteUrl } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 type Params = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const w = await getWriteup((await params).slug);
-  if (!w) return { title: "Not found" };
+  if (!w) return { title: "Not found", robots: { index: false } };
+  const description = writeupSeoDescription(w, w.content);
   return {
-    title: w.title,
-    description: w.summary || `${w.category} writeup from ${w.competition}`,
+    title: writeupSeoTitle(w),
+    description,
+    keywords: [...w.tags, w.category, w.competition, "CTF writeup"].filter(Boolean),
     alternates: { canonical: w.href },
-    openGraph: { type: "article", title: w.title, description: w.summary, images: w.cover ? [w.cover] : undefined, publishedTime: w.date ?? undefined },
+    openGraph: {
+      type: "article",
+      url: w.href,
+      siteName: "Elang Dimas Syadewa Portfolio",
+      locale: "id_ID",
+      title: writeupSeoTitle(w),
+      description,
+      publishedTime: w.date ?? undefined,
+      modifiedTime: w.updated,
+      section: w.category,
+      tags: w.tags,
+      authors: ["Elang Dimas Syadewa"],
+    },
   };
 }
 
 export default async function WriteupPage({ params }: Params) {
   const w = await getWriteup((await params).slug);
   if (!w) notFound();
-  const [{ html, toc }, adjacent, profile, all] = await Promise.all([renderWriteupHtml(w.content), getAdjacentWriteups(w), getProfile(), listWriteups()]);
+  const [{ html, toc }, adjacent, profile, all] = await Promise.all([renderWriteupHtml(w.content, { altPrefix: w.title }), getAdjacentWriteups(w), getProfile(), listWriteups()]);
   const related = relatedWriteups(w, all, 3);
+  const base = siteUrl();
+  const lang = detectLang(plainText(w.content));
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "TechArticle",
-    headline: w.title,
-    datePublished: w.date ?? undefined,
-    author: { "@type": "Person", name: profile.displayName, url: profile.websiteUrl ?? undefined },
-    keywords: w.tags.join(", "),
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        "@id": `${base}${w.href}#article`,
+        mainEntityOfPage: `${base}${w.href}`,
+        headline: writeupSeoTitle(w),
+        name: w.title,
+        description: writeupSeoDescription(w, w.content),
+        datePublished: w.date ?? undefined,
+        dateModified: w.updated,
+        author: { "@id": ids(base).person, name: profile.displayName },
+        publisher: { "@id": ids(base).person },
+        isPartOf: { "@id": ids(base).website },
+        image: w.cover ? (w.cover.startsWith("http") ? w.cover : `${base}${w.cover}`) : `${base}/opengraph-image`,
+        articleSection: w.category,
+        keywords: w.tags.join(", "),
+        about: [w.category, w.competition].filter(Boolean),
+        inLanguage: lang,
+        wordCount: plainText(w.content).split(" ").length,
+        proficiencyLevel: w.difficulty ?? undefined,
+      },
+      breadcrumbJsonLd(base, [
+        { name: "Home", path: "/" },
+        { name: "Writeups", path: "/writeups" },
+        { name: w.title, path: w.href },
+      ]),
+    ],
   };
-
   return (
     <main className="mx-auto max-w-[1600px] px-4 pt-32 pb-24 md:px-8 md:pt-44">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
       <Link href="/writeups" className="meta hover:text-foreground">
         ← writeups
       </Link>
@@ -66,7 +106,7 @@ export default async function WriteupPage({ params }: Params) {
       </header>
 
       <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1fr)_17rem] xl:gap-20">
-        <ArticleBody html={html} />
+        <ArticleBody html={html} lang={lang} />
         <div>
           <ArticleSidebar
             toc={toc}
