@@ -1,4 +1,5 @@
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
+import { ContactSection } from "@/components/site/contact-section";
 import { Nav } from "@/components/site/nav";
 import { CinematicFooter, type FooterLink } from "@/components/ui/motion-footer";
 import { getProfile } from "@/lib/data/profile";
@@ -22,6 +23,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <Nav brand={profile.brand} />
       <div id="content" className="relative z-10 bg-background">
         {children}
+        <ContactSection />
       </div>
       <CinematicFooter
         giantText="ELANG"
