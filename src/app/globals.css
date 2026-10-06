@@ -146,3 +146,82 @@ html.lenis body {
     display: none;
   }
 }
+
+/* Writeup article */
+.writeup-prose {
+  max-width: 72ch;
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+.writeup-prose > * + * {
+  margin-top: 1.25em;
+}
+.writeup-prose h2 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-top: 2.5em;
+  scroll-margin-top: 6rem;
+}
+.writeup-prose h3 {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 600;
+  margin-top: 2em;
+  scroll-margin-top: 6rem;
+}
+.writeup-prose a {
+  text-decoration: underline;
+  text-decoration-color: var(--primary);
+  text-underline-offset: 4px;
+}
+.writeup-prose img {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.writeup-prose ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+.writeup-prose ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
+.writeup-prose blockquote {
+  border-left: 2px solid var(--primary);
+  padding-left: 1rem;
+  color: var(--muted-foreground);
+}
+.writeup-prose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--muted);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+.writeup-prose pre {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+}
+.writeup-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  display: block;
+  overflow-x: auto;
+}
+.writeup-prose th,
+.writeup-prose td {
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}

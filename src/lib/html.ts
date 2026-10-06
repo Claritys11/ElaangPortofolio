@@ -24,6 +24,20 @@ const schema: SanitizeSchema = {
   },
 };
 
+// Legacy content: in-article <h1>s compete with the page title, and Notion imports carry the
+// code language on <pre data-notion-code-syntax> (stripped by the sanitizer) instead of a class.
+function normalizeLegacy() {
+  return (tree: Root) =>
+    visit(tree, "element", (node: Element) => {
+      if (node.tagName === "h1") node.tagName = "h2";
+      const lang = node.tagName === "pre" ? String(node.properties?.dataNotionCodeSyntax ?? "").toLowerCase() : "";
+      if (lang && /^[\w+#-]+$/.test(lang)) {
+        const code = node.children.find((c): c is Element => c.type === "element" && c.tagName === "code");
+        if (code && !code.properties?.className) code.properties = { ...code.properties, className: [`language-${lang}`] };
+      }
+    });
+}
+
 function externalLinks() {
   return (tree: Root) =>
     visit(tree, "element", (node: Element) => {
@@ -58,6 +72,7 @@ const PRELOAD_LANGS: BundledLanguage[] = ["c", "cpp", "python", "shellscript", "
 // Built once per process: the Shiki highlighter is reused across renders.
 const processor = unified()
   .use(rehypeParse, { fragment: true })
+  .use(normalizeLegacy)
   .use(rehypeSanitize, schema)
   .use(rehypeSlug)
   .use(collectToc)

@@ -30,4 +30,14 @@ describe("renderWriteupHtml", () => {
     expect(html).toContain('href="https://x.dev" rel="noopener noreferrer" target="_blank"');
     expect(html).toContain('<a href="/writeups">y</a>');
   });
+  it("demotes in-article h1 to h2 so the page keeps one h1 and the TOC sees them", async () => {
+    const { html, toc } = await renderWriteupHtml("<h1>Overview</h1><h2>Exploit</h2>");
+    expect(html).not.toContain("<h1");
+    expect(toc.map((t) => t.text)).toEqual(["Overview", "Exploit"]);
+  });
+  it("highlights Notion-imported code blocks using data-notion-code-syntax", async () => {
+    const { html } = await renderWriteupHtml('<pre data-notion-code-syntax="python"><code>print(1)</code></pre>');
+    expect(html).toContain("shiki");
+    expect(html).toContain("language-python");
+  });
 });
