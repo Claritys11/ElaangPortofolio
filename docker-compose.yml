@@ -19,4 +19,4 @@ services:
     # cloudflared on the host forwards claritys.web.id -> http://localhost:3020.
     # Localhost-only so nobody can bypass the tunnel (the rate limiter trusts Cloudflare's headers).
     ports:
-      - "127.0.0.1:3020:3000"
+      - "3020:3000"
