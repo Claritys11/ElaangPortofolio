@@ -225,3 +225,43 @@ html.lenis body {
   padding: 0.5rem 0.75rem;
   text-align: left;
 }
+
+/* Code blocks: header bar with language + copy */
+.writeup-prose figure.code-block {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  overflow: hidden;
+}
+.writeup-prose figure.code-block > pre {
+  border: 0;
+  border-radius: 0;
+  margin: 0;
+}
+.writeup-prose .code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.4rem 0.75rem 0.4rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.writeup-prose .code-copy {
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  transition: color 0.2s, background-color 0.2s;
+}
+.writeup-prose .code-copy:hover {
+  color: var(--foreground);
+  background: var(--muted);
+}
+.writeup-prose .code-copy[data-state="copied"] {
+  color: var(--primary);
+}

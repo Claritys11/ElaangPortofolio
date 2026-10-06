@@ -8,9 +8,10 @@ import rehypeStringify from "rehype-stringify";
 import type { BundledLanguage } from "shiki";
 import { unified } from "unified";
 import { visit } from "unist-util-visit";
+import { guessLanguage } from "@/lib/lang-guess";
 import type { VFile } from "vfile";
 
-export type TocItem = { id: string; text: string; depth: 2 | 3 };
+export type TocItem = { id: string; text: string; depth: 2 | 3 | 4 };
 
 const schema: SanitizeSchema = {
   ...defaultSchema,
@@ -30,11 +31,12 @@ function normalizeLegacy() {
   return (tree: Root) =>
     visit(tree, "element", (node: Element) => {
       if (node.tagName === "h1") node.tagName = "h2";
-      const lang = node.tagName === "pre" ? String(node.properties?.dataNotionCodeSyntax ?? "").toLowerCase() : "";
-      if (lang && /^[\w+#-]+$/.test(lang)) {
-        const code = node.children.find((c): c is Element => c.type === "element" && c.tagName === "code");
-        if (code && !code.properties?.className) code.properties = { ...code.properties, className: [`language-${lang}`] };
-      }
+      if (node.tagName !== "pre") return;
+      const code = node.children.find((c): c is Element => c.type === "element" && c.tagName === "code");
+      if (!code || code.properties?.className) return;
+      const notion = String(node.properties?.dataNotionCodeSyntax ?? "").toLowerCase();
+      const lang = /^[\w+#-]+$/.test(notion) ? notion : guessLanguage(toString(code));
+      if (lang) code.properties = { ...code.properties, className: [`language-${lang}`] };
     });
 }
 
@@ -51,12 +53,44 @@ function collectToc() {
   return (tree: Root, file: VFile) => {
     const toc: TocItem[] = [];
     visit(tree, "element", (node: Element) => {
-      if ((node.tagName === "h2" || node.tagName === "h3") && node.properties?.id) {
-        toc.push({ id: String(node.properties.id), text: toString(node).trim(), depth: node.tagName === "h2" ? 2 : 3 });
+      if (/^h[234]$/.test(node.tagName) && node.properties?.id) {
+        toc.push({ id: String(node.properties.id), text: toString(node).trim(), depth: Number(node.tagName[1]) as 2 | 3 | 4 });
       }
     });
     file.data.toc = toc;
   };
+}
+
+// Header bar for every code block: language label + copy button (wired up client-side by CodeCopy).
+function codeChrome() {
+  return (tree: Root) =>
+    visit(tree, "element", (node: Element, index, parent) => {
+      if (node.tagName !== "pre" || !parent || index === undefined) return;
+      if (parent.type === "element" && parent.tagName === "figure") return;
+      const code = node.children.find((c): c is Element => c.type === "element" && c.tagName === "code");
+      // Shiki's generated nodes carry `class` as a string; parsed HTML uses a className array.
+      const raw = code?.properties?.className ?? code?.properties?.class ?? [];
+      const cls = ([] as unknown[]).concat(raw).flatMap((c) => String(c).split(/\s+/));
+      const lang = cls.find((c) => c.startsWith("language-"))?.slice(9) || "text";
+      const figure: Element = {
+        type: "element",
+        tagName: "figure",
+        properties: { className: ["code-block"] },
+        children: [
+          {
+            type: "element",
+            tagName: "div",
+            properties: { className: ["code-head"] },
+            children: [
+              { type: "element", tagName: "span", properties: { className: ["code-lang"] }, children: [{ type: "text", value: lang }] },
+              { type: "element", tagName: "button", properties: { type: "button", className: ["code-copy"], dataCopy: "" }, children: [{ type: "text", value: "copy" }] },
+            ],
+          },
+          node,
+        ],
+      };
+      parent.children[index] = figure;
+    });
 }
 
 function lazyImages() {
@@ -86,6 +120,7 @@ const processor = unified()
     langs: PRELOAD_LANGS,
     lazy: true,
   })
+  .use(codeChrome)
   .use(rehypeStringify);
 
 export async function renderWriteupHtml(input: string) {

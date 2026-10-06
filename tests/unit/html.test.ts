@@ -55,3 +55,23 @@ describe("normalizeLegacyHtml (editor input)", () => {
     expect(await normalizeLegacyHtml('<p><img src="/api/public/uploads/a.png"></p>')).toBe('<p><img src="/api/public/uploads/a.png"></p>');
   });
 });
+
+describe("code block chrome", () => {
+  it("wraps every pre in a figure with a language label and a copy button", async () => {
+    const { html } = await renderWriteupHtml('<pre><code class="language-python">print(1)</code></pre><pre><code>raw</code></pre>');
+    expect(html.match(/<figure class="code-block"/g)).toHaveLength(2);
+    expect(html).toContain('<span class="code-lang">python</span>');
+    expect(html).toContain('<span class="code-lang">text</span>');
+    expect(html.match(/<button type="button" class="code-copy" data-copy="">copy<\/button>/g)).toHaveLength(2);
+  });
+});
+
+describe("toc depth", () => {
+  it("includes h4 so writeups that only use h4 still get a table of contents", async () => {
+    const { toc } = await renderWriteupHtml("<h4>Recon</h4><h4>Exploit</h4>");
+    expect(toc).toEqual([
+      { id: "recon", text: "Recon", depth: 4 },
+      { id: "exploit", text: "Exploit", depth: 4 },
+    ]);
+  });
+});

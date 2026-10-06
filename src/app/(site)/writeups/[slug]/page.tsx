@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SplitHeading } from "@/components/motion/split-heading";
+import { ArticleBody } from "@/components/site/article-body";
+import { ArticleSidebar } from "@/components/site/article-sidebar";
 import { FlagReveal } from "@/components/site/flag-reveal";
-import { Toc } from "@/components/site/toc";
 import { getProfile } from "@/lib/data/profile";
 import { getAdjacentWriteups, getWriteup } from "@/lib/data/writeups";
-import { formatDate } from "@/lib/format";
+import { formatDate, readingMinutes } from "@/lib/format";
 import { renderWriteupHtml } from "@/lib/html";
 
 export const dynamic = "force-dynamic";
@@ -61,15 +62,26 @@ export default async function WriteupPage({ params }: Params) {
         )}
       </header>
 
-      <div className="mt-12 grid gap-12 lg:grid-cols-[1fr_16rem]">
-        <article className="writeup-prose min-w-0" dangerouslySetInnerHTML={{ __html: html }} />
-        <aside>
-          <Toc items={toc} />
-        </aside>
+      <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1fr)_17rem] xl:gap-20">
+        <ArticleBody html={html} />
+        <div>
+          <ArticleSidebar
+            toc={toc}
+            info={{
+              category: w.category,
+              difficulty: w.difficulty,
+              competition: w.competition,
+              date: formatDate(w.date),
+              minutes: readingMinutes(w.content),
+              hasAttachments: w.attachments.length > 0,
+              hasFlag: !!w.flag,
+            }}
+          />
+        </div>
       </div>
 
       {w.attachments.length > 0 && (
-        <section className="mt-16">
+        <section id="attachments" className="mt-16 scroll-mt-24">
           <p className="meta mb-4">attachments</p>
           <ul className="grid gap-2">
             {w.attachments.map((a) => (
