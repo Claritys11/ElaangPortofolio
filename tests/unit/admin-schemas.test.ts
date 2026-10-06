@@ -46,3 +46,32 @@ describe("WriteupSchema", () => {
     expect(WriteupSchema.safeParse({ title: "a", content: "", attachments: "not json" }).success).toBe(false);
   });
 });
+
+import { ProfileSchema } from "@/lib/admin/schemas";
+
+describe("ProfileSchema", () => {
+  it("parses JSON list fields", () => {
+    const r = ProfileSchema.parse({
+      displayName: "Elang Dimas Syadewa",
+      alias: "Claritys",
+      navbarBrandMode: "custom",
+      navbarBrandName: "Claritys",
+      technicalArsenal: '[{"name":"Binary Exploitation","level":85}]',
+      professionalJourney: "[]",
+      educationHistory: '[{"level":"SMK","school":"SMK Telkom Malang","period":"2025 - Now"}]',
+      seo: '{"keywords":["CTF"],"sameAs":["https://github.com/Claritys11"],"jobTitle":"Cybersecurity Specialist"}',
+    });
+    expect(r.technicalArsenal[0]).toEqual({ name: "Binary Exploitation", level: 85 });
+    expect(r.seo.keywords).toEqual(["CTF"]);
+  });
+  it("rejects level > 100 and bad brand mode", () => {
+    expect(ProfileSchema.safeParse({ technicalArsenal: '[{"name":"x","level":101}]' }).success).toBe(false);
+    expect(ProfileSchema.safeParse({ navbarBrandMode: "weird" }).success).toBe(false);
+  });
+  it("keeps unknown SEO keys and accepts the real-length description", () => {
+    const seo = { keywords: [], sameAs: [], siteName: "Elang", heroAnimatedTitles: ["CTF player"], description: "x".repeat(460) };
+    const r = ProfileSchema.parse({ seo: JSON.stringify(seo) });
+    expect(r.seo).toMatchObject({ siteName: "Elang", heroAnimatedTitles: ["CTF player"] });
+    expect(r.seo.description).toHaveLength(460);
+  });
+});

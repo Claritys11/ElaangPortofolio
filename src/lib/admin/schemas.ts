@@ -110,3 +110,45 @@ export const WriteupSchema = z.object({
     }
   }, z.array(attachment).max(50)),
 });
+
+const jsonField = <T extends z.ZodType>(inner: T, empty: unknown) =>
+  z.preprocess((v) => {
+    if (v === undefined || (typeof v === "string" && v.trim() === "")) return empty;
+    if (typeof v !== "string") return v;
+    try {
+      return JSON.parse(v);
+    } catch {
+      return "__invalid__";
+    }
+  }, inner);
+
+export const ProfileSchema = z.object({
+  displayName: optText(120),
+  alias: optText(60),
+  navbarBrandMode: z.preprocess((v) => v ?? "default", z.enum(["default", "custom"])),
+  navbarBrandName: optText(60),
+  email: z.preprocess(blankToNull, z.email().nullable()),
+  websiteUrl: linkUrl,
+  githubUrl: linkUrl,
+  instagramUrl: linkUrl,
+  profileImageUrl: mediaUrl,
+  aboutText: optText(5000),
+  philosophyText: optText(500),
+  technicalArsenal: jsonField(z.array(z.object({ name: z.string().trim().min(1).max(80), level: z.coerce.number().int().min(0).max(100) })).max(40), []),
+  professionalJourney: jsonField(
+    z.array(z.object({ role: z.string().max(120), company: z.string().max(120), period: z.string().max(60), desc: z.string().max(1000) })).max(40),
+    [],
+  ),
+  educationHistory: jsonField(z.array(z.object({ level: z.string().max(80), school: z.string().max(160), period: z.string().max(60) })).max(20), []),
+  // Loose: legacy rows carry extra keys (siteName, canonicalUrl, heroAnimatedTitles, …) that must survive a save.
+  seo: jsonField(
+    z.looseObject({
+      jobTitle: z.string().max(120).optional(),
+      locale: z.string().max(20).optional(),
+      description: z.string().max(1000).optional(),
+      keywords: z.array(z.string().max(60)).max(60).default([]),
+      sameAs: z.array(z.url()).max(20).default([]),
+    }),
+    {},
+  ),
+});
