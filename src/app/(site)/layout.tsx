@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
 import { ContactSection } from "@/components/site/contact-section";
 import { Nav } from "@/components/site/nav";
@@ -6,6 +7,15 @@ import { getProfile } from "@/lib/data/profile";
 import { getCategoryStats, getCompetitions } from "@/lib/data/writeups";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const p = await getProfile();
+  return {
+    keywords: p.seo.keywords,
+    description: p.seo.description ?? "Pwn-focused CTF player and builder from Malang, Indonesia.",
+    openGraph: { siteName: p.alias, locale: p.seo.locale },
+  };
+}
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const [profile, stats, competitions] = await Promise.all([getProfile(), getCategoryStats(), getCompetitions()]);
@@ -21,6 +31,21 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   return (
     <SmoothScroll>
       <Nav brand={profile.brand} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            name: profile.displayName,
+            alternateName: profile.alias,
+            jobTitle: profile.seo.jobTitle,
+            url: profile.websiteUrl,
+            sameAs: profile.seo.sameAs,
+            knowsAbout: profile.skills.map((s) => s.name),
+          }).replace(/</g, "\\u003c"),
+        }}
+      />
       <div id="content" className="relative z-10 bg-background">
         {children}
         <ContactSection />
