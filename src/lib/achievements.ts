@@ -2,7 +2,7 @@
 export const PROOF_SCORE_MAX = 10;
 
 // Titles that describe a ranked result rather than participation.
-const NOTABLE = /\b(finalist|winner|juara|champion|gold|silver|bronze|medal|rank\s*#?\d+|top\s*\d+|\d+(st|nd|rd|th)\s+place|place)\b/i;
+const NOTABLE = /\b(finalist|winner|juara\s+(\d+|umum|harapan)|champion|gold|silver|bronze|medal|rank\s*#?\d+|top\s*\d+|\d+(st|nd|rd|th)\s+place|place)\b/i;
 
 export function achievementWeight(a: { title: string; proofScore: number | null }): number {
   if (typeof a.proofScore === "number") return Math.max(0, Math.min(PROOF_SCORE_MAX, a.proofScore));

@@ -17,6 +17,12 @@ describe("achievement emphasis", () => {
       expect(achievementWeight(a(t, null))).toBe(0);
     }
   });
+  it("treats 'Juara' as a win only when it reads like a placing, not part of a name", () => {
+    expect(achievementWeight(a("Certified in Creative Writing – Juara Poet Academy (62 Hours)", null))).toBe(0);
+    expect(achievementWeight(a("Juara 1 LKS Cyber Security", null))).toBe(5);
+    expect(achievementWeight(a("Juara Umum Olimpiade", null))).toBe(5);
+    expect(achievementWeight(a("Juara Harapan 2", null))).toBe(5);
+  });
   it("maps weight to a size tier", () => {
     expect(emphasisFor(9)).toBe("xl");
     expect(emphasisFor(7)).toBe("xl");
