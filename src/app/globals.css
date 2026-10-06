@@ -111,3 +111,14 @@ html.lenis body {
 .meta {
   @apply font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase;
 }
+
+/* Shiki dual theme */
+.shiki,
+.shiki span {
+  color: var(--shiki-light);
+  background-color: transparent;
+}
+.dark .shiki,
+.dark .shiki span {
+  color: var(--shiki-dark);
+}
