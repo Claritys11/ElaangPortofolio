@@ -1,0 +1,13 @@
+node_modules/
+.next/
+out/
+.env*
+!.env.example
+*.dump
+*.tar.gz
+public/uploads/
+.remember/
+next-env.d.ts
+*.tsbuildinfo
+test-results/
+playwright-report/
