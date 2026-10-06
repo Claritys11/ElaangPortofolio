@@ -42,20 +42,29 @@ Use a user-defined Docker network (as above): on some hosts the default `docker0
 
 ## Deploy
 
-### Docker Compose
+### Docker Compose (Coolify)
 
-```bash
-cp .env.example .env.production   # fill ADMIN_*, NEXT_PUBLIC_SITE_URL=https://claritys.web.id
-export POSTGRES_PASSWORD=...      # or put it in a .env next to docker-compose.yml
-scripts/restore.sh portfolio-YYYY-MM-DD.dump uploads-YYYY-MM-DD.tar.gz   # first deploy only
-docker compose up -d --build
-```
+`docker-compose.yml` runs a single `portfolio` service against an **existing PostgreSQL** (no bundled database). Set these variables in Coolify → Environment Variables (or a `.env` next to the compose file):
 
-The app listens on `127.0.0.1:3020`. Put a reverse proxy in front of it. The container runs `prisma migrate deploy` on start.
+| Variable | Notes |
+| --- | --- |
+| `DATABASE_URL` | Your existing database, e.g. `postgresql://user:pass@host:5432/db` |
+| `ADMIN_USERNAME`, `ADMIN_PASSWORD` | Admin login |
+| `ADMIN_SESSION_SECRET` | 32+ characters: `openssl rand -base64 48` |
+| `SITE_URL` | Optional, defaults to `https://claritys.web.id` (read at runtime) |
+| `TRUSTED_PROXY_HOPS` | Optional, default `1` (Coolify's Traefik). Use `2` if Cloudflare is in front |
 
-### Coolify
+Uploads are bind-mounted from `./public/uploads`, the same path the previous version used, so existing files carry over. On start the container:
 
-Build from the `Dockerfile`, set the variables from `.env.example`, and mount a persistent volume at `/app/public/uploads`. Coolify's Traefik is one proxy hop, so keep `TRUSTED_PROXY_HOPS=1`.
+1. fixes ownership of `./public/uploads` (older deployments wrote it as root), then drops to an unprivileged user;
+2. runs `prisma migrate deploy`. Migrations are additive, so the database does not need a restart and the previous version keeps working against it;
+3. starts the server on port 3000. Traefik reaches it over the Docker network, and the host port is bound to `127.0.0.1:3015`.
+
+Restoring a backup into a fresh setup: `DATABASE_URL=... scripts/restore.sh portfolio-YYYY-MM-DD.dump uploads-YYYY-MM-DD.tar.gz`.
+
+### Rolling back
+
+The previous site lives on the `legacy-v1` branch. Point the deployment at it and redeploy. The database changes made by this version (one nullable column, one index) are compatible with it.
 
 ## Admin
 

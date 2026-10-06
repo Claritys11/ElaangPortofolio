@@ -1,32 +1,22 @@
+# Same shape as the previous deployment: one service, an existing PostgreSQL reached via DATABASE_URL,
+# and uploads bind-mounted from ./public/uploads so files from the old site carry over.
+# Set these variables in Coolify (Environment Variables) or a .env file next to this file.
 services:
-  app:
+  portfolio:
     build: .
     restart: unless-stopped
-    env_file: .env.production
     environment:
-      DATABASE_URL: postgresql://portfolio:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@db:5432/portfolio
-    # Bound to localhost: put a reverse proxy (Coolify/Traefik, Caddy, nginx) in front.
-    # The rate limiter trusts the X-Forwarded-For hop that proxy appends (TRUSTED_PROXY_HOPS).
+      DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:?set ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD}
+      # At least 32 characters: openssl rand -base64 48
+      ADMIN_SESSION_SECRET: ${ADMIN_SESSION_SECRET:?set ADMIN_SESSION_SECRET}
+      SITE_URL: ${SITE_URL:-https://claritys.web.id}
+      # Reverse proxies in front of the app (Coolify/Traefik = 1; add 1 for Cloudflare).
+      TRUSTED_PROXY_HOPS: ${TRUSTED_PROXY_HOPS:-1}
+    volumes:
+      - ./public/uploads:/app/public/uploads
+    # Traefik reaches the container over the Docker network; the host port is localhost-only so
+    # nobody can bypass the proxy (the rate limiter trusts the proxy's X-Forwarded-For hop).
     ports:
-      - "127.0.0.1:3020:3000"
-    volumes:
-      - uploads:/app/public/uploads
-    depends_on:
-      db:
-        condition: service_healthy
-  db:
-    image: postgres:18-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: portfolio
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
-      POSTGRES_DB: portfolio
-    volumes:
-      - pgdata:/var/lib/postgresql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U portfolio"]
-      interval: 5s
-      retries: 10
-volumes:
-  uploads:
-  pgdata:
+      - "127.0.0.1:3015:3000"

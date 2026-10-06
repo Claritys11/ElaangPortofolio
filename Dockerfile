@@ -31,13 +31,14 @@ RUN npm init -y >/dev/null && npm install --omit=dev --no-audit --no-fund @napi-
 FROM node:24-alpine AS run
 WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
-RUN addgroup -S app && adduser -S app -G app
+RUN apk add --no-cache su-exec && addgroup -S app && adduser -S app -G app
 COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/public ./public
 COPY --from=migrate /opt/migrate /opt/migrate
 COPY --from=native /opt/native/node_modules/@napi-rs ./node_modules/@napi-rs
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN mkdir -p public/uploads && chown -R app:app public/uploads
-USER app
+# Starts as root only to fix ownership of the bind-mounted uploads, then drops to `app` (see entrypoint).
 EXPOSE 3000
-CMD ["sh", "-c", "cd /opt/migrate && node node_modules/prisma/build/index.js migrate deploy && cd /app && exec node server.js"]
+ENTRYPOINT ["docker-entrypoint.sh"]
