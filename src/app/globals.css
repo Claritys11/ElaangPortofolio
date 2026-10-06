@@ -122,3 +122,27 @@ html.lenis body {
 .dark .shiki span {
   color: var(--shiki-dark);
 }
+
+/* Route enter wipe: pure CSS so it works without JS */
+@keyframes page-wipe {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(0);
+  }
+}
+.page-wipe {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: var(--foreground);
+  transform-origin: top;
+  pointer-events: none;
+  animation: page-wipe 0.7s cubic-bezier(0.76, 0, 0.24, 1) 0.05s both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-wipe {
+    display: none;
+  }
+}
