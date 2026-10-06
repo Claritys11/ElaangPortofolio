@@ -11,6 +11,8 @@ export async function POST(req: Request) {
     return Response.json(await writeUpload(file), { status: 201 });
   } catch (e) {
     if (e instanceof UploadError) return Response.json({ error: e.message }, { status: e.status });
-    return Response.json({ error: "Upload failed" }, { status: 500 });
+    console.error("upload failed:", e);
+    const code = (e as NodeJS.ErrnoException)?.code;
+    return Response.json({ error: code === "EACCES" || code === "EROFS" ? "Upload folder is not writable on the server" : "Upload failed" }, { status: 500 });
   }
 }
