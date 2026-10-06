@@ -49,4 +49,10 @@ describe("read / delete", () => {
     expect(await mod.deleteUpload(saved.name)).toBe(200);
     expect(await mod.deleteUpload(saved.name)).toBe(404);
   });
+  it("writeUploadBuffer stores import assets with sanitized names", async () => {
+    const saved = await mod.writeUploadBuffer("../../evil name.png", Buffer.from([1]));
+    expect(saved.name).toMatch(/^[0-9a-f-]{36}-evil-name\.png$/);
+    expect(saved.contentType).toBe("image/png");
+    expect(await mod.deleteUpload(saved.name)).toBe(200);
+  });
 });

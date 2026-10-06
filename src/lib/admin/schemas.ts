@@ -73,3 +73,40 @@ export const AchievementSchema = z.object({
   date: dateField,
   proofScore: z.preprocess(blankToNull, z.coerce.number().int().min(0).max(1000).nullable()),
 });
+
+const attachment = z.object({
+  url: z.string().regex(/^(\/(?!\/)|https?:\/\/)/),
+  name: z.string().max(300),
+  contentType: z.string().max(200),
+});
+
+export const WriteupSchema = z.object({
+  id,
+  title: z.string().trim().min(1, "Title is required").max(300),
+  slug: z.preprocess(
+    blankToNull,
+    z
+      .string()
+      .trim()
+      .max(80)
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "lowercase-with-dashes only")
+      .nullable(),
+  ),
+  competition: optText(200),
+  category: optText(60),
+  difficulty: optText(40),
+  date: dateField,
+  summary: optText(1000),
+  content: z.preprocess((v) => v ?? "", z.string().max(5_000_000)),
+  flag: optText(300),
+  tags: tagsField,
+  attachments: z.preprocess((v) => {
+    if (v === undefined || (typeof v === "string" && v.trim() === "")) return [];
+    if (typeof v !== "string") return v;
+    try {
+      return JSON.parse(v);
+    } catch {
+      return "__invalid__";
+    }
+  }, z.array(attachment).max(50)),
+});

@@ -101,3 +101,11 @@ export async function listUploads() {
   );
   return items.sort((a, b) => b.modified.localeCompare(a.modified));
 }
+
+/** For assets extracted from PDF/Notion imports (no MIME allow-list; name is still sanitized). */
+export async function writeUploadBuffer(originalName: string, buf: Buffer) {
+  const name = toStoredName(originalName);
+  await mkdir(UPLOADS_DIR, { recursive: true });
+  await writeFile(path.join(UPLOADS_DIR, name), buf);
+  return { name, url: publicUploadUrl(name), contentType: mimeFor(name) };
+}

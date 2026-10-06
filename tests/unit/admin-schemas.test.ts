@@ -27,3 +27,22 @@ describe("AchievementSchema", () => {
     expect(AchievementSchema.safeParse({ title: "x", date: "2026-13-45" }).success).toBe(false);
   });
 });
+
+import { WriteupSchema } from "@/lib/admin/schemas";
+
+describe("WriteupSchema", () => {
+  it("parses attachments JSON and rejects bad slugs", () => {
+    const r = WriteupSchema.parse({
+      title: "Truman",
+      slug: "",
+      content: "<p>x</p>",
+      attachments: '[{"url":"/api/public/uploads/a","name":"a","contentType":"application/octet-stream"}]',
+      tags: "PWN, heap",
+    });
+    expect(r.slug).toBeNull();
+    expect(r.attachments).toHaveLength(1);
+    expect(r.tags).toEqual(["PWN", "heap"]);
+    expect(WriteupSchema.safeParse({ title: "a", slug: "Bad Slug", content: "" }).success).toBe(false);
+    expect(WriteupSchema.safeParse({ title: "a", content: "", attachments: "not json" }).success).toBe(false);
+  });
+});
