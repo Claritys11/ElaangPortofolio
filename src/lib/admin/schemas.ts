@@ -1,11 +1,12 @@
 import { z } from "zod";
+import { normalizeMediaUrl } from "@/lib/json";
 
 const blankToNull = (v: unknown) => (v === undefined || (typeof v === "string" && v.trim() === "") ? null : v);
 
 export const optText = (max: number) => z.preprocess(blankToNull, z.string().trim().max(max).nullable());
 
 export const mediaUrl = z.preprocess(
-  blankToNull,
+  (v) => (typeof v === "string" ? normalizeMediaUrl(v) : blankToNull(v)),
   z
     .string()
     .trim()
@@ -152,3 +153,19 @@ export const ProfileSchema = z.object({
     {},
   ),
 });
+
+export const OrderSchema = z.object({
+  ids: jsonField(
+    z
+      .array(z.uuid())
+      .min(1)
+      .max(1000)
+      .refine((ids) => new Set(ids).size === ids.length, "Duplicate ids"),
+    [],
+  ),
+});
+
+/** New achievements go above everything once a manual order exists; otherwise they stay date-ordered. */
+export function sortOrderForNew(currentMin: number | null): number | null {
+  return currentMin === null ? null : currentMin - 1;
+}

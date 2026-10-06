@@ -1,13 +1,17 @@
 import Link from "next/link";
-import { DeleteButton } from "@/components/admin/delete-button";
+import { AchievementOrderList } from "@/components/admin/achievement-order-list";
 import { Button } from "@/components/ui/button";
-import { deleteAchievement } from "@/lib/admin/actions/achievements";
 import { requireAdmin } from "@/lib/admin/guard";
 import { prisma } from "@/lib/db";
+import { normalizeMediaUrl } from "@/lib/json";
 
 export default async function AchievementsAdmin() {
   await requireAdmin();
-  const rows = await prisma.achievement.findMany({ orderBy: [{ date: { sort: "desc", nulls: "last" } }, { createdAt: "desc" }] });
+  // Same order as the public /achievements page.
+  const rows = await prisma.achievement.findMany({
+    orderBy: [{ sortOrder: { sort: "asc", nulls: "last" } }, { date: { sort: "desc", nulls: "last" } }, { createdAt: "desc" }],
+    select: { id: true, title: true, date: true, imageUrl: true, sortOrder: true },
+  });
   return (
     <div className="grid gap-6">
       <div className="flex items-center justify-between">
@@ -18,19 +22,11 @@ export default async function AchievementsAdmin() {
           <Link href="/admin/achievements/new">New achievement</Link>
         </Button>
       </div>
-      <ul className="divide-y divide-border border-y border-border">
-        {rows.map((a) => (
-          <li key={a.id} className="flex items-center justify-between gap-4 py-3">
-            <Link href={`/admin/achievements/${a.id}`} className="font-medium hover:text-primary">
-              {a.title ?? "Untitled"}
-            </Link>
-            <div className="flex items-center gap-3">
-              <span className="meta">{a.date?.toISOString().slice(0, 10) ?? "undated"}</span>
-              <DeleteButton action={deleteAchievement.bind(null, a.id)} />
-            </div>
-          </li>
-        ))}
-      </ul>
+      <AchievementOrderList
+        key={rows.map((r) => `${r.id}:${r.sortOrder}`).join()}
+        hasCustomOrder={rows.some((r) => r.sortOrder !== null)}
+        initial={rows.map((r) => ({ id: r.id, title: r.title ?? "Untitled", date: r.date?.toISOString().slice(0, 10) ?? "undated", imageUrl: normalizeMediaUrl(r.imageUrl) }))}
+      />
     </div>
   );
 }

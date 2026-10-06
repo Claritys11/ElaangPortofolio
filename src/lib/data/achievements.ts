@@ -4,5 +4,5 @@ import { prisma } from "@/lib/db";
 import { toAchievement } from "./mappers";
 
 export const listAchievements = cache(async () =>
-  (await prisma.achievement.findMany({ orderBy: [{ date: { sort: "desc", nulls: "last" } }, { createdAt: "desc" }] })).map(toAchievement),
+  (await prisma.achievement.findMany({ orderBy: [{ sortOrder: { sort: "asc", nulls: "last" } }, { date: { sort: "desc", nulls: "last" } }, { createdAt: "desc" }] })).map(toAchievement),
 );

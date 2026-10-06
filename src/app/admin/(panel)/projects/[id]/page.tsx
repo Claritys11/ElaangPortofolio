@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { ProjectForm } from "@/components/admin/project-form";
 import { requireAdmin } from "@/lib/admin/guard";
 import { prisma } from "@/lib/db";
-import { parseStringArray } from "@/lib/json";
+import { normalizeMediaUrl, parseStringArray } from "@/lib/json";
 
 export default async function EditProject({ params }: { params: Promise<{ id: string }> }) {
   await requireAdmin();
@@ -11,7 +11,7 @@ export default async function EditProject({ params }: { params: Promise<{ id: st
   return (
     <div className="grid gap-8">
       <h1 className="font-display text-4xl font-bold tracking-tight">Edit project</h1>
-      <ProjectForm initial={{ ...p, tags: parseStringArray(p.tagsJson) }} />
+      <ProjectForm initial={{ ...p, imageUrl: normalizeMediaUrl(p.imageUrl), tags: parseStringArray(p.tagsJson) }} />
     </div>
   );
 }

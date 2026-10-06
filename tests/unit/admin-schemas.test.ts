@@ -75,3 +75,23 @@ describe("ProfileSchema", () => {
     expect(r.seo.description).toHaveLength(460);
   });
 });
+
+import { OrderSchema, sortOrderForNew } from "@/lib/admin/schemas";
+
+describe("achievement ordering", () => {
+  const a = "7c905e25-0bb4-48a1-a1a9-7dc8ec40f108";
+  const b = "9ec36416-aa99-4f0a-9460-67bbdfc8a93b";
+  it("accepts a JSON list of unique uuids", () => {
+    expect(OrderSchema.parse({ ids: JSON.stringify([a, b]) }).ids).toEqual([a, b]);
+  });
+  it("rejects duplicates, non-uuids and empty lists", () => {
+    expect(OrderSchema.safeParse({ ids: JSON.stringify([a, a]) }).success).toBe(false);
+    expect(OrderSchema.safeParse({ ids: JSON.stringify(["x"]) }).success).toBe(false);
+    expect(OrderSchema.safeParse({ ids: "[]" }).success).toBe(false);
+  });
+  it("puts new achievements on top once a manual order exists, else leaves them unordered", () => {
+    expect(sortOrderForNew(null)).toBeNull();
+    expect(sortOrderForNew(0)).toBe(-1);
+    expect(sortOrderForNew(-3)).toBe(-4);
+  });
+});

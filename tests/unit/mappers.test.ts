@@ -54,7 +54,7 @@ describe("helpers", () => {
 
 describe("achievement + profile", () => {
   it("computes year and proof score fallback", () => {
-    const a = toAchievement({ id: "a", title: "Top 20", issuer: "DCSC", platform: null, description: null, imageUrl: "/x.png", date: new Date("2026-05-01"), proofScore: null, createdAt: new Date(), updatedAt: new Date() });
+    const a = toAchievement({ id: "a", title: "Top 20", issuer: "DCSC", platform: null, description: null, imageUrl: "/x.png", date: new Date("2026-05-01"), proofScore: null, sortOrder: null, createdAt: new Date(), updatedAt: new Date() });
     expect(a.year).toBe(2026);
     expect(a.proofScore).toBeGreaterThan(0);
   });
@@ -63,5 +63,23 @@ describe("achievement + profile", () => {
     expect(p.displayName).toBe("Elang Dimas Syadewa");
     expect(p.alias).toBe("Claritys");
     expect(p.skills[0].name).toMatch(/pwn|binary/i);
+  });
+});
+
+import { normalizeMediaUrl } from "@/lib/json";
+import { AchievementSchema } from "@/lib/admin/schemas";
+
+describe("legacy relative upload paths", () => {
+  it("normalizeMediaUrl adds the missing leading slash to legacy upload paths only", () => {
+    expect(normalizeMediaUrl("api/public/uploads/a.jpg")).toBe("/api/public/uploads/a.jpg");
+    expect(normalizeMediaUrl("/api/public/uploads/a.jpg")).toBe("/api/public/uploads/a.jpg");
+    expect(normalizeMediaUrl("https://x.dev/a.png")).toBe("https://x.dev/a.png");
+    expect(normalizeMediaUrl(null)).toBeNull();
+    expect(normalizeMediaUrl("  ")).toBeNull();
+  });
+  it("mapper and admin schema accept the 18 legacy achievement rows", () => {
+    const a = toAchievement({ id: "a", title: "x", issuer: null, platform: null, description: null, imageUrl: "api/public/uploads/a.jpg", date: null, proofScore: null, sortOrder: null, createdAt: new Date(), updatedAt: new Date() });
+    expect(a.imageUrl).toBe("/api/public/uploads/a.jpg");
+    expect(AchievementSchema.parse({ title: "x", imageUrl: "api/public/uploads/a.jpg" }).imageUrl).toBe("/api/public/uploads/a.jpg");
   });
 });

@@ -33,3 +33,10 @@ export function parseRecord(value: unknown): Record<string, unknown> {
   const v = coerce(value);
   return v && typeof v === "object" && !Array.isArray(v) ? (v as Record<string, unknown>) : {};
 }
+
+/** Some legacy rows store uploads as "api/public/uploads/…" (no leading slash), which breaks under nested routes. */
+export function normalizeMediaUrl(v: string | null | undefined): string | null {
+  const s = v?.trim();
+  if (!s) return null;
+  return s.startsWith("api/public/uploads/") ? `/${s}` : s;
+}

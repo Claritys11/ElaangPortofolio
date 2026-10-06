@@ -1,7 +1,7 @@
 import { ProfileForm } from "@/components/admin/profile-form";
 import { requireAdmin } from "@/lib/admin/guard";
 import { prisma } from "@/lib/db";
-import { parseObjectArray, parseRecord, parseStringArray } from "@/lib/json";
+import { normalizeMediaUrl, parseObjectArray, parseRecord, parseStringArray } from "@/lib/json";
 
 export default async function ProfilePage() {
   await requireAdmin();
@@ -21,7 +21,7 @@ export default async function ProfilePage() {
           websiteUrl: s(r?.websiteUrl),
           githubUrl: s(r?.githubUrl),
           instagramUrl: s(r?.instagramUrl),
-          profileImageUrl: s(r?.profileImageUrl),
+          profileImageUrl: normalizeMediaUrl(r?.profileImageUrl) ?? "",
           aboutText: s(r?.aboutText),
           philosophyText: s(r?.philosophyText),
           technicalArsenal: parseObjectArray(r?.technicalArsenalJson, (x) => (typeof x.name === "string" ? { name: x.name, level: Number(x.level) || 0 } : null)),

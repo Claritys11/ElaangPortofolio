@@ -1,5 +1,5 @@
 import type { Achievement, ProfileSettings, Project, Writeup } from "@/generated/prisma/client";
-import { parseObjectArray, parseRecord, parseStringArray } from "@/lib/json";
+import { normalizeMediaUrl, parseObjectArray, parseRecord, parseStringArray } from "@/lib/json";
 import type { AchievementItem, Attachment, EducationItem, JourneyItem, Profile, ProjectItem, Skill, WriteupDetail, WriteupSummary } from "@/lib/types";
 
 const KNOWN_CATEGORIES = ["Pwn", "Reverse", "Forensics", "Crypto", "Web", "Misc", "OSINT"];
@@ -53,7 +53,7 @@ export function toProject(row: Project): ProjectItem {
     id: row.id,
     title: row.title?.trim() || "Untitled project",
     description: row.description?.trim() ?? "",
-    imageUrl: row.imageUrl?.trim() || null,
+    imageUrl: normalizeMediaUrl(row.imageUrl),
     projectUrl: row.projectUrl?.trim() || null,
     category: row.category?.trim() || "Project",
     tags: parseStringArray(row.tagsJson),
@@ -80,7 +80,7 @@ export function toAchievement(row: Achievement): AchievementItem {
     issuer: row.issuer?.trim() || null,
     platform: row.platform?.trim() || null,
     description: row.description?.trim() ?? "",
-    imageUrl: row.imageUrl?.trim() || null,
+    imageUrl: normalizeMediaUrl(row.imageUrl),
     date: iso(row.date),
     year: row.date ? row.date.getUTCFullYear() : null,
     proofScore: typeof row.proofScore === "number" ? row.proofScore : fallbackProofScore(row),
@@ -122,7 +122,7 @@ export function toProfile(row: ProfileSettings | null): Profile {
     websiteUrl: row.websiteUrl?.trim() || null,
     githubUrl: row.githubUrl?.trim() || null,
     instagramUrl: row.instagramUrl?.trim() || null,
-    profileImageUrl: row.profileImageUrl?.trim() || DEFAULT_PROFILE.profileImageUrl,
+    profileImageUrl: normalizeMediaUrl(row.profileImageUrl) ?? DEFAULT_PROFILE.profileImageUrl,
     aboutText: row.aboutText?.trim() ?? "",
     philosophyText: row.philosophyText?.trim() ?? "",
     skills: sortSkillsPwnFirst(
