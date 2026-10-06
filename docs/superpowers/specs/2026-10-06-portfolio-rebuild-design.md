@@ -51,6 +51,7 @@ Decisions already made by the user:
   2. Section indexes in hex (`0x01 / work`).
   3. The flag in a writeup is redacted (`█████`) until clicked.
   4. A mono address-style counter in the nav shows scroll progress as `0x0000 → 0xFFFF`.
+  5. **The only glitch on the site:** the footer's giant `ELANG` briefly glitches into `CLARITYS` (see §7). Its rarity is what makes it land.
 - **Motion rules:** every animation explains structure (reveal, pin, scrub). No ambient decoration except in the footer. Under `prefers-reduced-motion`, Lenis is disabled, SplitText reveals become instant fades, and pins become static sections.
 
 ## 5. Public Information Architecture
@@ -98,7 +99,15 @@ This is functional shadcn UI with no scroll theatrics. It uses the same theme to
 
 - The file is `components/ui/motion-footer.tsx`, keeping the structure from the user-provided component (curtain clip-path wrapper, fixed footer, GSAP parallax giant text, staggered reveal, MagneticButton, marquee, aurora, grid).
 - Hard-coded content is replaced with props/data:
-  - Giant text: `ELANG`.
+  - Giant text: `ELANG`, with a **glitch foreshadow to `CLARITYS`**:
+    - **Trigger:** once when the footer finishes its reveal (ScrollTrigger `onEnter` at the end of the parallax), then at random intervals of 7–12 s while the footer is in view. The timer pauses when the footer is offscreen or the tab is hidden.
+    - **Sequence (~450 ms, GSAP timeline):**
+      1. 2–3 horizontal slice offsets (clip-path `inset` bands shifting ±2–4vw).
+      2. An RGB split (two pseudo-layers in accent orange and foreground at low opacity, offset ±0.4vw).
+      3. The word swaps to `CLARITYS` for ~180 ms, then glitches back to `ELANG`.
+    - **Width:** `CLARITYS` is 8 characters against `ELANG`'s 5, so it renders on the Archivo `wdth` axis condensed (and `scaleX` fallback) to occupy the same box. There's no layout shift and no overflow.
+    - **Accessibility:** the giant text is `aria-hidden`, and the swap layer is decorative. Under `prefers-reduced-motion` there are no slices or RGB split; it does a single 300 ms crossfade ELANG→CLARITYS→ELANG once on enter.
+    - It's implemented as a small `GlitchSwap` component inside the footer file, so it's testable in isolation (props: `primary`, `secret`, `minDelay`, `maxDelay`).
   - Marquee: `PWN ✦ REVERSE ✦ FORENSICS ✦ CRYPTO ✦ WEB ✦ SCTF 2026 ✦ BeeCTF 2026 ✦ …` (categories + competitions from DB).
   - Heading: "Got a binary for me?"
   - Primary pills: **GitHub**, **Email**. Secondary pills: Instagram, Writeups, Back home.
