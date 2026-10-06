@@ -4,7 +4,7 @@ import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
 import { gsap, NO_REDUCED } from "@/lib/motion";
 
-export function CategoryStats({ stats }: { stats: { category: string; count: number }[] }) {
+export function CategoryStats({ stats, cols = 5 }: { stats: { category: string; count: number }[]; cols?: 4 | 5 }) {
   const ref = useRef<HTMLDListElement>(null);
   useGSAP(
     () => {
@@ -29,7 +29,7 @@ export function CategoryStats({ stats }: { stats: { category: string; count: num
     { scope: ref },
   );
   return (
-    <dl ref={ref} className="grid grid-cols-2 gap-px bg-border sm:grid-cols-3 lg:grid-cols-5">
+    <dl ref={ref} className={`grid grid-cols-2 gap-px bg-border ${cols === 4 ? "lg:grid-cols-4" : "sm:grid-cols-3 lg:grid-cols-5"}`}>
       {stats.map((s, i) => (
         <div key={s.category} className="bg-background p-5 md:p-6">
           <dt className="meta">{s.category}</dt>

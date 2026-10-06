@@ -78,3 +78,24 @@ test("footer shows ELANG and contact links", async ({ page }) => {
   await expect(page.locator("footer").getByText("ELANG").first()).toBeAttached();
   await expect(page.locator("footer").getByRole("link", { name: /GitHub/ })).toBeVisible();
 });
+
+test("writeup code blocks show a language and copy their contents", async ({ page, context, browserName }) => {
+  test.skip(browserName !== "chromium");
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto("/writeups/pwn-truman");
+  const block = page.locator("figure.code-block").filter({ has: page.locator(".code-lang", { hasText: /^c$/ }) }).first();
+  await block.scrollIntoViewIfNeeded();
+  await block.getByRole("button", { name: "copy" }).click();
+  await expect(block.getByRole("button", { name: "copied ✓" })).toBeVisible();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toContain("#include");
+});
+
+test("achievement title opens the certificate preview in place", async ({ page }) => {
+  await page.goto("/achievements");
+  await page.getByRole("button", { name: /^View certificate:/ }).first().click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible();
+  await expect(page).toHaveURL(/\/achievements$/);
+  await page.keyboard.press("Escape");
+  await expect(dialog).toHaveCount(0);
+});
