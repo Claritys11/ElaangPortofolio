@@ -22,6 +22,12 @@ RUN npm init -y >/dev/null && npm install --omit=dev --no-audit --no-fund prisma
 COPY prisma ./prisma
 COPY prisma.config.ts ./
 
+# pdf-parse requires @napi-rs/canvas (DOMMatrix polyfill) dynamically, so the tracer misses it.
+# Install it flat (musl binary on Alpine); keep the version in sync with pdf-parse's dependency.
+FROM node:24-alpine AS native
+WORKDIR /opt/native
+RUN npm init -y >/dev/null && npm install --omit=dev --no-audit --no-fund @napi-rs/canvas@0.1.80
+
 FROM node:24-alpine AS run
 WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
@@ -30,6 +36,7 @@ COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/public ./public
 COPY --from=migrate /opt/migrate /opt/migrate
+COPY --from=native /opt/native/node_modules/@napi-rs ./node_modules/@napi-rs
 RUN mkdir -p public/uploads && chown -R app:app public/uploads
 USER app
 EXPOSE 3000

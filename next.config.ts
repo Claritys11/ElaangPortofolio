@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
   outputFileTracingExcludes: {
     "*": ["*.dump", "*.tar.gz", "public/uploads/**", ".legacy/**", ".remember/**", ".superpowers/**", "docs/**", "tests/**", "e2e/**"],
   },
+  // pdfjs (via pdf-parse) imports its worker dynamically; the tracer can't see it.
+  outputFileTracingIncludes: {
+    "/api/admin/writeups/import-pdf": ["./node_modules/.pnpm/pdfjs-dist@*/node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs"],
+  },
   async redirects() {
     return [{ source: "/ctf", destination: "/writeups", permanent: true }];
   },
