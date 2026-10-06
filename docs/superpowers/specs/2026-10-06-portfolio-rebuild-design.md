@@ -35,7 +35,7 @@ Decisions already made by the user:
 ## 3. Data Compatibility (hard constraints)
 
 - The Prisma models keep exact table and column names: `writeups`, `projects`, `achievements`, `secure_messages`, `access_logs`, `profile_settings`, and fields like `tags_json`, `attachments_json`, `proof_score`.
-- Existing `_prisma_migrations` (`20260725150000_init_postgres`, `20260825083000_add_achievement_proof_score`) are carried over as baseline migrations, so `prisma migrate deploy` is a no-op on the restored DB. The extra index `idx_writeups_slug` is added to the schema as `@@index([slug], map: "idx_writeups_slug")`.
+- Existing `_prisma_migrations` (`20260725150000_init_postgres`, `20260825083000_add_achievement_proof_score`) are carried over as baseline migrations, so `prisma migrate deploy` is a no-op on the restored DB. The extra index `idx_writeups_slug` is a **partial unique index** (`UNIQUE (slug) WHERE slug IS NOT NULL`, created outside migrations in prod). It is declared in the schema via `@unique(map: "idx_writeups_slug", where: raw("(slug IS NOT NULL)"))` (preview feature `partialIndexes`) and added by a new idempotent migration `CREATE UNIQUE INDEX IF NOT EXISTS`.
 - Writeup `content` is HTML with `<img src="/api/public/uploads/...">`. The route **`/api/public/uploads/[name]`** is kept with identical semantics: it streams from `public/uploads`, guards against path traversal, and sets content-type from the extension, defaulting to `application/octet-stream` as a download.
 - Image fields can be `/api/public/uploads/...`, `/profile.jpg`, or `data:image/...;base64`. One shared `<Media>` component handles all three.
 - `attachments_json` items are `{url, name, contentType}`.
@@ -84,7 +84,7 @@ The about text, journey timeline (`professional_journey_json`), skills (rendered
 - Nav: brand (`navbar_brand_name` when mode=`custom`), links, theme toggle, scroll counter.
 - Page transitions: a short ink-panel wipe via GSAP.
 - `sitemap.ts`, `robots.ts`, OG images from SEO settings, and `seo_settings_json` used for metadata and Person JSON-LD.
-- Data is fetched in Server Components through Prisma (`lib/data/*`) with `revalidate` tags, and admin mutations call `revalidateTag`.
+- Data is fetched in Server Components through Prisma (`lib/data/*`), deduped per request with React `cache()`. DB-backed pages use `export const dynamic = "force-dynamic"`, so `next build` never needs a database (the Docker build has none) and admin edits show up immediately. The data set is tiny (<500 rows), so per-request queries are cheap.
 
 ## 6. Admin (`/admin`)
 
