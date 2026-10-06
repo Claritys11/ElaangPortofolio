@@ -38,8 +38,13 @@ export function AchievementForm({ initial = {} }: { initial?: Initial }) {
         <Field label="Date" name="date" error={f.date}>
           <Input id="date" name="date" type="date" defaultValue={initial.date ?? ""} />
         </Field>
-        <Field label="Proof score" name="proofScore" hint="Higher = shown larger. Empty = auto." error={f.proofScore}>
-          <Input id="proofScore" name="proofScore" type="number" min={0} max={1000} defaultValue={initial.proofScore ?? ""} />
+        <Field
+          label="Proof score (0–10)"
+          name="proofScore"
+          hint="7–10 = largest, 4–6 = large, 0–3 = normal. Empty = auto: titles with Finalist / Top N / Rank / Medal / Winner / Juara show large."
+          error={f.proofScore}
+        >
+          <Input id="proofScore" name="proofScore" type="number" min={0} max={10} defaultValue={initial.proofScore ?? ""} />
         </Field>
       </div>
       <Field label="Description" name="description" error={f.description}>

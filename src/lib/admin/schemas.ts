@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PROOF_SCORE_MAX } from "@/lib/achievements";
 import { normalizeMediaUrl } from "@/lib/json";
 
 const blankToNull = (v: unknown) => (v === undefined || (typeof v === "string" && v.trim() === "") ? null : v);
@@ -72,7 +73,7 @@ export const AchievementSchema = z.object({
   description: optText(5000),
   imageUrl: mediaUrl,
   date: dateField,
-  proofScore: z.preprocess(blankToNull, z.coerce.number().int().min(0).max(1000).nullable()),
+  proofScore: z.preprocess(blankToNull, z.coerce.number().int().min(0).max(PROOF_SCORE_MAX).nullable()),
 });
 
 const attachment = z.object({

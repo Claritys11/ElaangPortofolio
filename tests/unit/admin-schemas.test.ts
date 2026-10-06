@@ -16,9 +16,10 @@ describe("ProjectSchema", () => {
 
 describe("AchievementSchema", () => {
   it("parses date and proof score", () => {
-    const r = AchievementSchema.parse({ title: "Top 20", date: "2026-05-01", proofScore: "88" });
+    const r = AchievementSchema.parse({ title: "Top 20", date: "2026-05-01", proofScore: "8" });
     expect(r.date?.toISOString()).toBe("2026-05-01T00:00:00.000Z");
-    expect(r.proofScore).toBe(88);
+    expect(r.proofScore).toBe(8);
+    expect(AchievementSchema.safeParse({ title: "x", proofScore: "11" }).success).toBe(false);
   });
   it("empty proof score and date become null; bad date fails", () => {
     const r = AchievementSchema.parse({ title: "x", date: "", proofScore: "" });

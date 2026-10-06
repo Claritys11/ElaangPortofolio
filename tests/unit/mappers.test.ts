@@ -53,10 +53,11 @@ describe("helpers", () => {
 });
 
 describe("achievement + profile", () => {
-  it("computes year and proof score fallback", () => {
+  it("computes year; no inflated fallback score, ranked titles are notable", () => {
     const a = toAchievement({ id: "a", title: "Top 20", issuer: "DCSC", platform: null, description: null, imageUrl: "/x.png", date: new Date("2026-05-01"), proofScore: null, sortOrder: null, createdAt: new Date(), updatedAt: new Date() });
     expect(a.year).toBe(2026);
-    expect(a.proofScore).toBeGreaterThan(0);
+    expect(a.proofScore).toBeNull();
+    expect(a.weight).toBe(5);
   });
   it("returns defaults when the profile row is missing", () => {
     const p = toProfile(null);

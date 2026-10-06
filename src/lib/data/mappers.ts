@@ -1,4 +1,5 @@
 import type { Achievement, ProfileSettings, Project, Writeup } from "@/generated/prisma/client";
+import { achievementWeight } from "@/lib/achievements";
 import { normalizeMediaUrl, parseObjectArray, parseRecord, parseStringArray } from "@/lib/json";
 import type { AchievementItem, Attachment, EducationItem, JourneyItem, Profile, ProjectItem, Skill, WriteupDetail, WriteupSummary } from "@/lib/types";
 
@@ -60,19 +61,6 @@ export function toProject(row: Project): ProjectItem {
   };
 }
 
-// Ported from .legacy/src/lib/achievement-utils.ts getAchievementProofScore
-function fallbackProofScore(row: Achievement): number {
-  const signal = [row.title, row.issuer, row.platform, row.description].filter(Boolean).join(" ").toLowerCase();
-  const category =
-    row.imageUrl && row.issuer
-      ? "certification"
-      : row.platform || /\b(ctf|competition|rank|place|winner|final|qual|tournament)\b/.test(signal)
-        ? "competition"
-        : "milestone";
-  const base = category === "certification" ? 40 : category === "competition" ? 34 : 24;
-  return base + (row.imageUrl ? 24 : 0) + (row.issuer ? 10 : 0) + (row.platform ? 8 : 0) + (row.description ? 4 : 0);
-}
-
 export function toAchievement(row: Achievement): AchievementItem {
   return {
     id: row.id,
@@ -83,7 +71,8 @@ export function toAchievement(row: Achievement): AchievementItem {
     imageUrl: normalizeMediaUrl(row.imageUrl),
     date: iso(row.date),
     year: row.date ? row.date.getUTCFullYear() : null,
-    proofScore: typeof row.proofScore === "number" ? row.proofScore : fallbackProofScore(row),
+    proofScore: row.proofScore ?? null,
+    weight: achievementWeight({ title: row.title?.trim() || "", proofScore: row.proofScore ?? null }),
   };
 }
 

@@ -90,10 +90,19 @@ const STYLES = `
   background-clip: text;
 }
 .footer-giant-bg-text.is-rgb {
-  -webkit-text-stroke: 1px color-mix(in oklch, var(--primary) 70%, transparent);
+  -webkit-text-stroke: 2px color-mix(in oklch, var(--primary) 85%, transparent);
   background: none;
 }
-.footer-giant-bg-text.is-secret { font-stretch: 62%; font-variation-settings: "wdth" 62; }
+.footer-giant-bg-text.is-secret {
+  font-stretch: 62%;
+  font-variation-settings: "wdth" 62;
+  /* The reveal must read clearly against the ghosted ELANG: solid fill, accent outline + offset. */
+  background: none;
+  color: color-mix(in oklch, var(--foreground) 60%, transparent);
+  -webkit-text-fill-color: color-mix(in oklch, var(--foreground) 60%, transparent);
+  -webkit-text-stroke: 1px var(--primary);
+  text-shadow: 0.025em 0 0 color-mix(in oklch, var(--primary) 70%, transparent), -0.015em 0 0 color-mix(in oklch, var(--foreground) 25%, transparent);
+}
 .footer-text-glow {
   background: linear-gradient(180deg, var(--foreground) 0%, color-mix(in oklch, var(--foreground) 40%, transparent) 100%);
   -webkit-background-clip: text;

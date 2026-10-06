@@ -6,7 +6,7 @@ export const GLITCH_TIMING = {
   firstDelayMs: 700, // after the footer finishes revealing
   minDelayMs: 7000, // random gap between glitches while the footer is in view
   maxDelayMs: 12000,
-  secretHoldS: 0.18, // how long CLARITYS stays fully visible
+  secretHoldS: 0.45, // how long CLARITYS stays fully visible (long enough to read)
 };
 
 export function fitScaleX(primaryWidth: number, secretWidth: number): number {

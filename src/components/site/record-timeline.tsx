@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { HoverPreview } from "@/components/site/hover-preview";
+import { type Emphasis, emphasisFor } from "@/lib/achievements";
 import { formatDate } from "@/lib/format";
 import type { AchievementItem } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -11,18 +12,18 @@ type Props = { items: AchievementItem[]; limit?: number; onOpen?: (id: string) =
 
 export function RecordTimeline({ items, limit, onOpen }: Props) {
   const [hover, setHover] = useState<string | null>(null);
+  // With a limit (home page), keep the most notable entries, then show them newest first.
   const shown = limit
     ? [...items]
-        .sort((a, b) => b.proofScore - a.proofScore)
+        .sort((a, b) => b.weight - a.weight || (b.date ?? "").localeCompare(a.date ?? ""))
         .slice(0, limit)
         .sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""))
     : items;
-  const top = new Set(
-    [...shown]
-      .sort((a, b) => b.proofScore - a.proofScore)
-      .slice(0, 3)
-      .map((a) => a.id),
-  );
+  const TITLE: Record<Emphasis, string> = {
+    xl: "font-display text-3xl font-bold tracking-tight md:text-4xl",
+    lg: "font-display text-2xl font-semibold tracking-tight md:text-3xl",
+    base: "text-lg",
+  };
   // Groups keep first-appearance order, so a custom admin order carries through.
   const groups = new Map<string, AchievementItem[]>();
   for (const a of shown) {
@@ -37,7 +38,7 @@ export function RecordTimeline({ items, limit, onOpen }: Props) {
           <h3 className="font-display text-6xl font-black tracking-tight text-muted-foreground/40 md:sticky md:top-24 md:col-span-3 md:self-start md:text-8xl">{year}</h3>
           <Reveal as="ul" stagger y={16} className="md:col-span-9">
             {list.map((a) => {
-              const title = <span className={top.has(a.id) ? "font-display text-2xl font-semibold tracking-tight md:text-3xl" : "text-lg"}>{a.title}</span>;
+              const title = <span className={TITLE[emphasisFor(a.weight)]}>{a.title}</span>;
               return (
                 <li
                   key={a.id}
