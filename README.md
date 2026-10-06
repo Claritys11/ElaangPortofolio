@@ -52,11 +52,12 @@ Use a user-defined Docker network (as above): on some hosts the default `docker0
 | `ADMIN_USERNAME`, `ADMIN_PASSWORD` | Admin login |
 | `ADMIN_SESSION_SECRET` | 32+ characters: `openssl rand -base64 48` |
 | `SITE_URL` | Optional, defaults to `https://claritys.web.id` (read at runtime) |
+| `ALLOW_ROOT_FALLBACK` | Optional, default `0`. Set `1` only if the logs say uploads aren't writable and you can't fix host ownership (Docker inside systemd-nspawn). Runs the app as root |
 | `TRUSTED_PROXY_HOPS` | Optional, default `1`. Ignored behind Cloudflare, where `CF-Connecting-IP` is used |
 
 Uploads are bind-mounted from `./public/uploads`, the same path the previous version used, so existing files carry over. On start the container:
 
-1. fixes ownership of `./public/uploads` (older deployments wrote it as root), then drops to an unprivileged user;
+1. fixes ownership of `./public/uploads` (older deployments wrote it as root), then drops to an unprivileged user. If the host forbids that (e.g. Docker inside systemd-nspawn), it stays unprivileged and logs an error, unless `ALLOW_ROOT_FALLBACK=1`;
 2. runs `prisma migrate deploy`. Migrations are additive, so the database does not need a restart and the previous version keeps working against it;
 3. starts the server on port 3000, published only on `127.0.0.1:3020`.
 
