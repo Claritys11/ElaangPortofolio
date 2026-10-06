@@ -6,10 +6,13 @@ import { Field } from "@/components/admin/field";
 import { useFormAction } from "@/components/admin/use-form-action";
 import { PdfImport } from "@/components/admin/pdf-import";
 import { RichEditor } from "@/components/admin/rich-editor";
+import { TagInput } from "@/components/admin/tag-input";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { saveWriteup } from "@/lib/admin/actions/writeups";
+import { normalizeCategory } from "@/lib/data/mappers";
+import type { TagStat } from "@/lib/tags";
 import type { Attachment } from "@/lib/types";
 
 export type WriteupInitial = {
@@ -29,10 +32,11 @@ export type WriteupInitial = {
 
 const CATEGORIES = ["Pwn", "Reverse", "Forensics", "Crypto", "Web", "Misc", "OSINT"];
 
-export function WriteupForm({ initial = {} }: { initial?: WriteupInitial }) {
+export function WriteupForm({ initial = {}, tagIndex = [] }: { initial?: WriteupInitial; tagIndex?: TagStat[] }) {
   const [state, action, pending] = useFormAction(saveWriteup);
   const [title, setTitle] = useState(initial.title ?? "");
   const [summary, setSummary] = useState(initial.summary ?? "");
+  const [category, setCategory] = useState(initial.category ?? "Pwn");
   const [imported, setImported] = useState<{ html: string; nonce: number }>();
   const f = state.fields ?? {};
   return (
@@ -55,7 +59,7 @@ export function WriteupForm({ initial = {} }: { initial?: WriteupInitial }) {
           <Input id="slug" name="slug" defaultValue={initial.slug ?? ""} />
         </Field>
         <Field label="Category" name="category" error={f.category}>
-          <Input id="category" name="category" list="categories" defaultValue={initial.category ?? "Pwn"} />
+          <Input id="category" name="category" list="categories" value={category} onChange={(e) => setCategory(e.target.value)} />
           <datalist id="categories">
             {CATEGORIES.map((c) => (
               <option key={c} value={c} />
@@ -80,8 +84,8 @@ export function WriteupForm({ initial = {} }: { initial?: WriteupInitial }) {
       <Field label="Summary" name="summary" error={f.summary}>
         <Textarea id="summary" name="summary" rows={2} value={summary} onChange={(e) => setSummary(e.target.value)} />
       </Field>
-      <Field label="Tags" name="tags" hint="Comma separated" error={f.tags}>
-        <Input id="tags" name="tags" defaultValue={(initial.tags ?? []).join(", ")} />
+      <Field label="Tags" name="tags" hint="Enter or comma adds a tag; suggestions come from your existing writeups. Technique tags power related-writeup recommendations." error={f.tags}>
+        <TagInput name="tags" defaultValue={initial.tags} index={tagIndex} category={normalizeCategory(category)} />
       </Field>
       <Field label="Content" name="content" error={f.content}>
         <RichEditor name="content" defaultValue={initial.content ?? ""} externalValue={imported} />

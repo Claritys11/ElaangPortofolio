@@ -5,8 +5,10 @@ import { SplitHeading } from "@/components/motion/split-heading";
 import { ArticleBody } from "@/components/site/article-body";
 import { ArticleSidebar } from "@/components/site/article-sidebar";
 import { FlagReveal } from "@/components/site/flag-reveal";
+import { RelatedWriteups } from "@/components/site/related-writeups";
 import { getProfile } from "@/lib/data/profile";
-import { getAdjacentWriteups, getWriteup } from "@/lib/data/writeups";
+import { getAdjacentWriteups, getWriteup, listWriteups } from "@/lib/data/writeups";
+import { relatedWriteups } from "@/lib/related";
 import { formatDate, readingMinutes } from "@/lib/format";
 import { renderWriteupHtml } from "@/lib/html";
 
@@ -27,7 +29,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 export default async function WriteupPage({ params }: Params) {
   const w = await getWriteup((await params).slug);
   if (!w) notFound();
-  const [{ html, toc }, adjacent, profile] = await Promise.all([renderWriteupHtml(w.content), getAdjacentWriteups(w), getProfile()]);
+  const [{ html, toc }, adjacent, profile, all] = await Promise.all([renderWriteupHtml(w.content), getAdjacentWriteups(w), getProfile(), listWriteups()]);
+  const related = relatedWriteups(w, all, 3);
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "TechArticle",
@@ -96,6 +99,8 @@ export default async function WriteupPage({ params }: Params) {
       )}
 
       {w.flag && <FlagReveal flag={w.flag} />}
+
+      <RelatedWriteups items={related} />
 
       <nav className="mt-16 grid gap-6 border-t border-border pt-8 md:grid-cols-2" aria-label="More writeups">
         {adjacent.prev ? (

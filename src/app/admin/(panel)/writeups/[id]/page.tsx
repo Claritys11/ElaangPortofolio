@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { WriteupForm } from "@/components/admin/writeup-form";
 import { requireAdmin } from "@/lib/admin/guard";
+import { listWriteups } from "@/lib/data/writeups";
+import { buildTagIndex } from "@/lib/tags";
 import { toWriteupDetail } from "@/lib/data/mappers";
 import { prisma } from "@/lib/db";
 import { normalizeLegacyHtml } from "@/lib/html";
@@ -15,6 +17,7 @@ export default async function EditWriteup({ params }: { params: Promise<{ id: st
     <div className="grid gap-8">
       <h1 className="font-display text-4xl font-bold tracking-tight">Edit writeup</h1>
       <WriteupForm
+        tagIndex={buildTagIndex(await listWriteups())}
         initial={{
           id: row.id,
           title: row.title,

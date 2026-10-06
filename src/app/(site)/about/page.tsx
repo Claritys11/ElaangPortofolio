@@ -11,6 +11,7 @@ import { listAchievements } from "@/lib/data/achievements";
 import { getProfile } from "@/lib/data/profile";
 import { getCategoryStats, getCompetitions, listWriteups } from "@/lib/data/writeups";
 import { formatDate } from "@/lib/format";
+import { isGenericTag } from "@/lib/tags";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "About" };
@@ -21,10 +22,9 @@ export default async function AboutPage() {
   const pwn = writeups.filter((w) => w.category === "Pwn").slice(0, 4);
   const [focus, ...rest] = p.skills;
   const latest = writeups.find((w) => w.competition);
-  // Most common technique tags across pwn writeups (skip generic labels).
-  const GENERIC = /^(pwn|binary exploitation|easy|medium|hard|insane|x64|x86|amd64|linux|shell|ctf|hands-on|beginner|exercise)$/i;
+  // Most common technique tags across pwn writeups (generic labels skipped).
   const tagCounts = new Map<string, number>();
-  for (const w of writeups.filter((x) => x.category === "Pwn")) for (const t of w.tags) if (!GENERIC.test(t)) tagCounts.set(t.toLowerCase(), (tagCounts.get(t.toLowerCase()) ?? 0) + 1);
+  for (const w of writeups.filter((x) => x.category === "Pwn")) for (const t of w.tags) if (!isGenericTag(t)) tagCounts.set(t.toLowerCase(), (tagCounts.get(t.toLowerCase()) ?? 0) + 1);
   const topTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4).map(([t]) => t);
 
   return (
