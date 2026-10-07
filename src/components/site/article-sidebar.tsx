@@ -59,20 +59,16 @@ export function ArticleSidebar({ info, toc }: { info: Info; toc: TocItem[] }) {
             <dd className={cn("text-right text-sm", k === "category" && "text-primary")}>{v}</dd>
           </div>
         ))}
-        {(info.hasAttachments || info.hasFlag) && (
-          <div className="col-span-2 mt-3 flex gap-4">
-            {info.hasAttachments && (
-              <a href="#attachments" className="meta border-b border-border pb-0.5 hover:text-foreground">
-                files ↓
-              </a>
-            )}
-            {info.hasFlag && (
-              <a href="#flag" className="meta border-b border-border pb-0.5 hover:text-foreground">
-                flag ↓
-              </a>
-            )}
-          </div>
-        )}
+        <div className="col-span-2 mt-3 flex gap-4">
+          <a href="#attachments" className="meta border-b border-border pb-0.5 hover:text-foreground">
+            {info.hasAttachments ? "files & export ↓" : "export ↓"}
+          </a>
+          {info.hasFlag && (
+            <a href="#flag" className="meta border-b border-border pb-0.5 hover:text-foreground">
+              flag ↓
+            </a>
+          )}
+        </div>
       </dl>
       {toc.length > 1 && (
         <nav aria-label="On this page">

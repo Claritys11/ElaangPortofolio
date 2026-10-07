@@ -6,6 +6,7 @@ import { ArticleBody } from "@/components/site/article-body";
 import { ArticleSidebar } from "@/components/site/article-sidebar";
 import { FlagReveal } from "@/components/site/flag-reveal";
 import { RelatedWriteups } from "@/components/site/related-writeups";
+import { WriteupExport } from "@/components/site/writeup-export";
 import { getProfile } from "@/lib/data/profile";
 import { getAdjacentWriteups, getWriteup, listWriteups } from "@/lib/data/writeups";
 import { relatedWriteups } from "@/lib/related";
@@ -123,22 +124,9 @@ export default async function WriteupPage({ params }: Params) {
         </div>
       </div>
 
-      {w.attachments.length > 0 && (
-        <section id="attachments" className="mt-16 scroll-mt-24">
-          <p className="meta mb-4">attachments</p>
-          <ul className="grid gap-2">
-            {w.attachments.map((a) => (
-              <li key={a.url}>
-                <a href={a.url} download className="font-mono text-sm underline decoration-primary underline-offset-4">
-                  {a.name.replace(/^[0-9a-f-]{36}-/, "")}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
       {w.flag && <FlagReveal flag={w.flag} />}
+
+      <WriteupExport href={w.href} attachments={w.attachments} />
 
       <RelatedWriteups items={related} />
 
