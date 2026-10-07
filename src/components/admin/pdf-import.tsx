@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
-export type ImportedDoc = { title: string; summary: string; content: string };
+export type ImportedDoc = { title: string; summary: string; content: string; competition?: string; category?: string; difficulty?: string; date?: string; tags?: string[]; assetCount?: number; pageCount?: number };
 
 export function PdfImport({ onImported }: { onImported: (d: ImportedDoc) => void }) {
   const [busy, setBusy] = useState(false);
@@ -30,7 +30,8 @@ export function PdfImport({ onImported }: { onImported: (d: ImportedDoc) => void
               return;
             }
             onImported(json);
-            toast.success("Imported — review before saving");
+            const extras = [json.pageCount && `${json.pageCount} pages`, json.assetCount && `${json.assetCount} images`].filter(Boolean).join(", ");
+            toast.success(`Imported${extras ? ` (${extras})` : ""} — review before saving`);
           }}
         />
       </label>

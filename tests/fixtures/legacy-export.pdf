@@ -1,0 +1,73 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R 4 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 5 0 R /Resources << /Font << /F1 7 0 R /F2 8 0 R /F3 9 0 R >> >> >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 6 0 R /Resources << /Font << /F1 7 0 R /F2 8 0 R /F3 9 0 R >> >> >>
+endobj
+5 0 obj
+<< /Length 945 >>
+stream
+BT /F1 8 Tf 40 810 Td (10/7/26, 1:48 PM   Evaporated) Tj ET
+BT /F1 8 Tf 40 20 Td (https://claritys.web.id/writeups/forensics-evaporated   1/2) Tj ET
+BT /F2 26 Tf 40 760 Td (Evaporated) Tj ET
+BT /F1 11 Tf 40 735 Td (Competition: FGTE) Tj ET
+BT /F1 11 Tf 40 720 Td (Category: Forensics) Tj ET
+BT /F1 11 Tf 40 705 Td (Difficulty: Medium) Tj ET
+BT /F1 11 Tf 40 690 Td (Date: 2026-02-09) Tj ET
+BT /F2 18 Tf 40 655 Td (Overview) Tj ET
+BT /F1 11 Tf 40 630 Td (Challenge ini tentang forensik filesystem NTFS.) Tj ET
+BT /F2 18 Tf 40 595 Td (Documentation) Tj ET
+BT /F2 14 Tf 40 565 Td (?? Tahap 1 ? Identifikasi File) Tj ET
+BT /F1 11 Tf 40 540 Td (Diberikan sebuah file ) Tj ET
+BT /F3 11 Tf 152 540 Td (evaporated.zip) Tj ET
+BT /F1 11 Tf 245 540 Td ( yang berisi) Tj ET
+BT /F1 11 Tf 40 526 Td (dua file image forensik untuk dianalisis.) Tj ET
+BT /F3 10 Tf 50 495 Td ($ unzip evaporated.zip) Tj ET
+BT /F3 10 Tf 50 482 Td (inflating: evaporated.001) Tj ET
+
+endstream
+endobj
+6 0 obj
+<< /Length 311 >>
+stream
+BT /F1 8 Tf 40 810 Td (10/7/26, 1:48 PM   Evaporated) Tj ET
+BT /F1 8 Tf 40 20 Td (https://claritys.web.id/writeups/forensics-evaporated   2/2) Tj ET
+BT /F1 11 Tf 40 760 Td (Langkah berikutnya:) Tj ET
+BT /F1 11 Tf 40 740 Td (• mount image read-only) Tj ET
+BT /F1 11 Tf 40 725 Td (• cari file yang dihapus) Tj ET
+
+endstream
+endobj
+7 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+8 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+9 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >>
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000121 00000 n 
+0000000267 00000 n 
+0000000413 00000 n 
+0000001409 00000 n 
+0000001771 00000 n 
+0000001868 00000 n 
+0000001970 00000 n 
+trailer
+<< /Size 10 /Root 1 0 R >>
+startxref
+2065
+%%EOF

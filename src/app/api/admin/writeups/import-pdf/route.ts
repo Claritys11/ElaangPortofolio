@@ -2,9 +2,10 @@ import path from 'path';
 import { NextRequest, NextResponse } from 'next/server';
 import JSZip from 'jszip';
 import { marked } from 'marked';
-import { PDFParse } from 'pdf-parse';
 import { COOKIE_NAME, verifySessionToken } from '@/lib/session';
 import { normalizeLegacyHtml } from '@/lib/html';
+import { prepareNotionMarkdown } from '@/lib/notion-import';
+import { importPdfDocument } from '@/lib/pdf-import';
 import { writeUploadBuffer } from '@/lib/uploads';
 
 export const runtime = 'nodejs';
@@ -16,6 +17,11 @@ interface ImportedDocument {
   title: string;
   summary: string;
   content: string;
+  competition?: string;
+  category?: string;
+  difficulty?: string;
+  date?: string;
+  tags?: string[];
   pageCount?: number;
   assetCount?: number;
   sourceType: 'pdf' | 'notion';
@@ -24,24 +30,6 @@ interface ImportedDocument {
 interface ZipAsset {
   name: string;
   buffer: Buffer;
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
-function normalizePdfText(value: string): string {
-  return value
-    .replace(/\r\n/g, '\n')
-    .replace(/\r/g, '\n')
-    .replace(/[ \t]+\n/g, '\n')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
 }
 
 function stripHtml(value: string): string {
@@ -59,41 +47,11 @@ function stripHtml(value: string): string {
     .trim();
 }
 
-function getTitleFromText(text: string, fallback: string): string {
-  const firstUsefulLine = text
-    .split('\n')
-    .map((line) => line.trim().replace(/^#+\s*/, ''))
-    .find((line) => line.length >= 4 && line.length <= 120);
-
-  return firstUsefulLine || fallback.replace(/\.[^.]+$/i, '').replace(/[-_]+/g, ' ').trim() || 'Imported Writeup';
-}
-
 function getSummaryFromText(text: string): string {
   return text
     .replace(/\s+/g, ' ')
     .trim()
     .slice(0, 260);
-}
-
-function textToHtml(text: string): string {
-  const blocks = text
-    .split(/\n{2,}/)
-    .map((block) => block.trim())
-    .filter(Boolean);
-
-  return blocks
-    .map((block) => {
-      const lines = block.split('\n').map((line) => line.trim()).filter(Boolean);
-      const joined = lines.join(' ');
-      const looksLikeHeading = lines.length === 1 && joined.length <= 90 && !/[.!?]$/.test(joined);
-
-      if (looksLikeHeading) {
-        return `<h2>${escapeHtml(joined)}</h2>`;
-      }
-
-      return `<p>${escapeHtml(joined)}</p>`;
-    })
-    .join('\n');
 }
 
 function isImagePath(filePath: string): boolean {
@@ -216,20 +174,19 @@ function replaceHtmlImageLinks(html: string, assetUrls: Map<string, string>): st
   });
 }
 
-async function importPdf(file: File, buffer: Buffer): Promise<ImportedDocument> {
-  const parser = new PDFParse({ data: buffer });
-  const result = await parser.getText();
-  const text = normalizePdfText(result.text || '');
-
-  if (!text) {
-    throw new Error('No readable text was found in this PDF.');
-  }
-
+async function importPdf(_file: File, buffer: Buffer): Promise<ImportedDocument> {
+  const doc = await importPdfDocument(buffer, { storeImage: async (name, png) => (await writeUploadBuffer(name, png)).url });
+  const date = doc.date && !Number.isNaN(Date.parse(doc.date)) ? new Date(doc.date).toISOString().slice(0, 10) : undefined;
   return {
-    title: getTitleFromText(text, file.name),
-    summary: getSummaryFromText(text),
-    content: textToHtml(text),
-    pageCount: result.total,
+    title: doc.title,
+    summary: doc.summary,
+    content: doc.html,
+    competition: doc.competition,
+    category: doc.category,
+    difficulty: doc.difficulty,
+    date,
+    pageCount: doc.pageCount,
+    assetCount: doc.imageCount,
     sourceType: 'pdf',
   };
 }
@@ -248,17 +205,18 @@ async function importNotionZip(file: File, buffer: Buffer): Promise<ImportedDocu
   const isMarkdown = /\.(md|markdown)$/i.test(contentFile.name);
 
   if (isMarkdown) {
-    const markdown = replaceMarkdownImageLinks(cleanNotionMarkdown(rawContent), assetUrls);
+    const page = prepareNotionMarkdown(cleanNotionMarkdown(rawContent), contentFile.name.split('/').pop() ?? file.name);
+    const markdown = replaceMarkdownImageLinks(page.body, assetUrls);
     const html = String(await marked.parse(markdown, { gfm: true, breaks: false }));
-    const plainText = markdown
-      .replace(/!\[[^\]]*]\([^)]+\)/g, ' ')
-      .replace(/`{1,3}/g, '')
-      .replace(/[#>*_\-[\]()]/g, ' ');
-
     return {
-      title: getTitleFromText(markdown, file.name),
-      summary: getSummaryFromText(plainText),
+      title: page.title,
+      summary: page.summary,
       content: html,
+      competition: page.competition,
+      category: page.category,
+      difficulty: page.difficulty,
+      date: page.date,
+      tags: page.tags,
       assetCount: uploadedAssets.count,
       sourceType: 'notion',
     };

@@ -37,6 +37,10 @@ export function WriteupForm({ initial = {}, tagIndex = [] }: { initial?: Writeup
   const [title, setTitle] = useState(initial.title ?? "");
   const [summary, setSummary] = useState(initial.summary ?? "");
   const [category, setCategory] = useState(initial.category ?? "Pwn");
+  const [competition, setCompetition] = useState(initial.competition ?? "");
+  const [difficulty, setDifficulty] = useState(initial.difficulty ?? "");
+  const [date, setDate] = useState(initial.date ?? "");
+  const [tags, setTags] = useState({ list: initial.tags ?? [], key: 0 });
   const [imported, setImported] = useState<{ html: string; nonce: number }>();
   const f = state.fields ?? {};
   return (
@@ -47,6 +51,11 @@ export function WriteupForm({ initial = {}, tagIndex = [] }: { initial?: Writeup
           onImported={(d) => {
             if (d.title) setTitle(d.title);
             if (d.summary) setSummary(d.summary);
+            if (d.competition) setCompetition(d.competition);
+            if (d.category) setCategory(d.category);
+            if (d.difficulty) setDifficulty(d.difficulty);
+            if (d.date) setDate(d.date);
+            if (d.tags?.length) setTags((t) => ({ list: [...new Set([...t.list, ...d.tags!])], key: t.key + 1 }));
             setImported({ html: d.content, nonce: Date.now() });
           }}
         />
@@ -67,10 +76,10 @@ export function WriteupForm({ initial = {}, tagIndex = [] }: { initial?: Writeup
           </datalist>
         </Field>
         <Field label="Competition" name="competition" error={f.competition}>
-          <Input id="competition" name="competition" defaultValue={initial.competition ?? ""} />
+          <Input id="competition" name="competition" value={competition} onChange={(e) => setCompetition(e.target.value)} />
         </Field>
         <Field label="Difficulty" name="difficulty" error={f.difficulty}>
-          <Input id="difficulty" name="difficulty" list="difficulties" defaultValue={initial.difficulty ?? ""} />
+          <Input id="difficulty" name="difficulty" list="difficulties" value={difficulty} onChange={(e) => setDifficulty(e.target.value)} />
           <datalist id="difficulties">
             {["Easy", "Medium", "Hard", "Insane"].map((d) => (
               <option key={d} value={d} />
@@ -78,14 +87,14 @@ export function WriteupForm({ initial = {}, tagIndex = [] }: { initial?: Writeup
           </datalist>
         </Field>
         <Field label="Date" name="date" error={f.date}>
-          <Input id="date" name="date" type="date" defaultValue={initial.date ?? ""} />
+          <Input id="date" name="date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
         </Field>
       </div>
       <Field label="Summary" name="summary" error={f.summary}>
         <Textarea id="summary" name="summary" rows={2} value={summary} onChange={(e) => setSummary(e.target.value)} />
       </Field>
       <Field label="Tags" name="tags" hint="Enter or comma adds a tag; suggestions come from your existing writeups. Technique tags power related-writeup recommendations." error={f.tags}>
-        <TagInput name="tags" defaultValue={initial.tags} index={tagIndex} category={normalizeCategory(category)} />
+        <TagInput key={tags.key} name="tags" defaultValue={tags.list} index={tagIndex} category={normalizeCategory(category)} />
       </Field>
       <Field label="Content" name="content" error={f.content}>
         <RichEditor name="content" defaultValue={initial.content ?? ""} externalValue={imported} />
