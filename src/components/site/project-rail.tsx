@@ -1,58 +1,53 @@
 "use client";
 
-import { useGSAP } from "@gsap/react";
-import { useRef } from "react";
-import { Media } from "@/components/site/media";
+import Link from "next/link";
 import { SectionLabel } from "@/components/site/section-label";
-import { gsap, NO_REDUCED } from "@/lib/motion";
+import { SqueezeCarousel, type SqueezeSlide } from "@/components/ui/carousel-squeeze";
 import type { ProjectItem } from "@/lib/types";
 
+/** Corner caption on the open panel: the project's number and category. */
+const mark = (i: number, category: string) => (
+  <span className="flex items-baseline gap-3 font-mono text-[11px] tracking-[0.14em] text-white uppercase">
+    <span className="text-white/60">{String(i + 1).padStart(2, "0")}</span>
+    {category}
+  </span>
+);
+
 export function ProjectRail({ projects }: { projects: ProjectItem[] }) {
-  const section = useRef<HTMLElement>(null);
-  const track = useRef<HTMLDivElement>(null);
-  useGSAP(
-    () => {
-      const mm = gsap.matchMedia();
-      mm.add(`${NO_REDUCED} and (min-width: 768px)`, () => {
-        const distance = () => Math.max(0, track.current!.scrollWidth - window.innerWidth);
-        gsap.to(track.current, {
-          x: () => -distance(),
-          ease: "none",
-          scrollTrigger: { trigger: section.current, pin: true, scrub: 1, end: () => `+=${distance()}`, invalidateOnRefresh: true },
-        });
-      });
-      return () => mm.revert();
-    },
-    { scope: section },
-  );
+  const slides: SqueezeSlide[] = projects.map((p, i) => {
+    const external = !!p.projectUrl?.startsWith("http");
+    return {
+      id: p.id,
+      title: p.title,
+      description: p.description,
+      image: p.imageUrl ?? undefined,
+      imageAlt: `${p.title} screenshot`,
+      background: "linear-gradient(135deg, var(--muted), var(--background))",
+      overlay: mark(i, p.category),
+      action: external ? "Visit project" : "View project",
+      href: p.projectUrl ?? "/projects",
+      target: external ? "_blank" : undefined,
+    };
+  });
+
   return (
-    <section ref={section} className="overflow-hidden py-24 md:flex md:h-svh md:flex-col md:justify-center md:py-0">
-      <div className="mx-auto mb-10 flex w-full max-w-[1600px] items-end justify-between px-4 md:px-8">
-        <SectionLabel index={3} name="projects" />
-        <span className="meta">{String(projects.length).padStart(2, "0")} selected</span>
-      </div>
-      <div ref={track} className="flex flex-col gap-10 px-4 md:w-max md:flex-row md:gap-8 md:px-8">
-        {projects.map((p, i) => (
-          <a
-            key={p.id}
-            href={p.projectUrl ?? "/projects"}
-            {...(p.projectUrl?.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-            className="group block md:w-[56vw] lg:w-[44vw]"
-          >
-            <div className="overflow-hidden">
-              <Media src={p.imageUrl} alt={p.title} className="aspect-[16/10] w-full transition-transform duration-700 group-hover:scale-[1.03]" />
-            </div>
-            <div className="mt-4 flex items-baseline justify-between gap-6">
-              <h3 className="font-display text-2xl font-semibold tracking-tight md:text-3xl">
-                <span className="mr-3 font-mono text-xs text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
-                {p.title}
-              </h3>
-              <span className="meta shrink-0">{p.category}</span>
-            </div>
-            <p className="mt-2 line-clamp-2 max-w-xl text-sm text-muted-foreground">{p.description}</p>
-          </a>
-        ))}
-      </div>
+    <section className="mx-auto max-w-[1600px] px-4 py-24 md:px-8 md:py-32">
+      <SqueezeCarousel
+        slides={slides}
+        label="Selected projects"
+        height="clamp(200px, 34cqi, 520px)"
+        autoplay
+        interval={7000}
+        className="[&>div:first-child]:mb-8"
+        toolbar={
+          <div className="flex items-baseline gap-6">
+            <SectionLabel index={3} name="projects" />
+            <Link href="/projects" className="meta border-b border-border pb-0.5 hover:text-foreground">
+              all {String(projects.length).padStart(2, "0")} →
+            </Link>
+          </div>
+        }
+      />
     </section>
   );
 }

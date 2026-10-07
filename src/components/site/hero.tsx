@@ -6,8 +6,8 @@ type Props = { name: string; alias: string; role: string; location: string; scho
 export function Hero({ name, alias, role, location, school }: Props) {
   const [first, ...rest] = name.toUpperCase().split(" ");
   return (
-    <section className="relative mx-auto flex max-w-[1600px] flex-col px-4 pt-28 pb-10 md:min-h-svh md:justify-between md:px-8 md:pt-24 md:pb-14">
-      <div className="mb-10 flex flex-col justify-between gap-6 md:mb-16 md:flex-row md:items-end">
+    <section className="relative mx-auto flex max-w-[1600px] flex-col px-4 pt-28 pb-10 md:px-8 md:pt-28 md:pb-14">
+      <div className="mb-8 flex flex-col justify-between gap-6 md:mb-10 md:flex-row md:items-end">
         <p className="meta">
           aka <span className="text-foreground">{alias}</span>
         </p>

@@ -31,7 +31,7 @@ export function AboutShort({ text, imageUrl }: { text: string; imageUrl: string 
     { scope: ref },
   );
   return (
-    <section ref={ref} className="mx-auto grid max-w-[1600px] gap-10 px-4 py-24 md:grid-cols-12 md:px-8 md:py-40">
+    <section ref={ref} className="mx-auto grid max-w-[1600px] gap-10 px-4 pt-16 pb-24 md:grid-cols-12 md:px-8 md:pt-20 md:pb-40">
       <SectionLabel index={1} name="about" className="md:col-span-12" />
       <p className="about-copy font-display text-3xl leading-[1.12] font-medium tracking-tight md:col-span-8 md:text-5xl">{text}</p>
       <div className="flex flex-col gap-4 md:col-span-3 md:col-start-10">
