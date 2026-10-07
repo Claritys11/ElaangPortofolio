@@ -26,5 +26,6 @@ export function toMediaItems(items: AchievementItem[]) {
       desc: [a.issuer ?? a.platform, monthYear(a.date)].filter(Boolean).join(" · "),
       url: a.imageUrl!,
       span: bentoSpan(i),
+      ...(a.documentUrl ? { link: a.documentUrl } : {}),
     }));
 }

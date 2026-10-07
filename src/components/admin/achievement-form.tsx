@@ -2,7 +2,8 @@
 
 import { Field } from "@/components/admin/field";
 import { useFormAction } from "@/components/admin/use-form-action";
-import { ImageField } from "@/components/admin/image-field";
+import { CertificateField } from "@/components/admin/certificate-field";
+import { ProofScoreField } from "@/components/admin/proof-score-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,6 +18,7 @@ type Initial = {
   imageUrl?: string | null;
   date?: string | null;
   proofScore?: number | null;
+  documentUrl?: string | null;
 };
 
 export function AchievementForm({ initial = {} }: { initial?: Initial }) {
@@ -38,20 +40,15 @@ export function AchievementForm({ initial = {} }: { initial?: Initial }) {
         <Field label="Date" name="date" error={f.date}>
           <Input id="date" name="date" type="date" defaultValue={initial.date ?? ""} />
         </Field>
-        <Field
-          label="Proof score (0–10)"
-          name="proofScore"
-          hint="7–10 = largest, 4–6 = large, 0–3 = normal. Empty = auto: titles with Finalist / Top N / Rank / Medal / Winner / Juara show large."
-          error={f.proofScore}
-        >
-          <Input id="proofScore" name="proofScore" type="number" min={0} max={10} defaultValue={initial.proofScore ?? ""} />
+        <Field label="Proof score (0–10)" name="proofScore" hint="7+ shows largest, 4–6 large, 0–3 normal." error={f.proofScore}>
+          <ProofScoreField defaultValue={initial.proofScore} />
         </Field>
       </div>
       <Field label="Description" name="description" error={f.description}>
         <Textarea id="description" name="description" rows={4} defaultValue={initial.description ?? ""} />
       </Field>
-      <Field label="Certificate image" name="imageUrl" error={f.imageUrl}>
-        <ImageField name="imageUrl" defaultValue={initial.imageUrl} />
+      <Field label="Certificate (image or PDF)" name="imageUrl" hint="A PDF keeps the original and shows a preview rendered from page 1." error={f.imageUrl}>
+        <CertificateField defaultImage={initial.imageUrl} defaultDocument={initial.documentUrl} />
       </Field>
       {state.message && <p className="text-sm text-destructive">{state.message}</p>}
       <Button type="submit" disabled={pending} className="w-fit">

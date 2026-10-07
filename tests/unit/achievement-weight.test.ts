@@ -32,3 +32,29 @@ describe("achievement emphasis", () => {
     expect(emphasisFor(0)).toBe("base");
   });
 });
+
+import { suggestProofScore } from "@/lib/achievements";
+
+describe("suggestProofScore (admin guide)", () => {
+  it.each([
+    ["Juara 1 LKS Cyber Security Provinsi", 9],
+    ["Awarded Gold Medal in Mathematics with A+ Distinction", 9],
+    ["1st Place National CTF", 9],
+    ["Juara 3 Hackathon", 7],
+    ["Silver Medal Olympiad", 7],
+    ["Top 10 Cyber Jawara", 7],
+    ["Finalist Jatim Cybersecurity Competition (JCC)", 6],
+    ["Juara Harapan 2", 5],
+    ["SCTF National Level – Top 20 Achievement", 5],
+    ["Junior Crypt CTF 2026 – Rank #75 (International)", 5],
+    ["IELTS Try Out – Listening & Reading (Score: 6)", 4],
+    ["HackAstra CTF Qualifiers 2026 – Top 69 of 455 Teams", 5],
+    ["VishwaCTF 2026 Participant", 2],
+    ["Introduction to Amazon EC2 (AWS Training & Certification)", 2],
+  ])("%s → %i", (title, score) => {
+    expect(suggestProofScore(title).score).toBe(score);
+  });
+  it("explains its choice", () => {
+    expect(suggestProofScore("Finalist JCC").reason).toMatch(/finalist/i);
+  });
+});

@@ -74,6 +74,7 @@ export const AchievementSchema = z.object({
   imageUrl: mediaUrl,
   date: dateField,
   proofScore: z.preprocess(blankToNull, z.coerce.number().int().min(0).max(PROOF_SCORE_MAX).nullable()),
+  documentUrl: linkUrl,
 });
 
 const attachment = z.object({

@@ -73,6 +73,7 @@ export function toAchievement(row: Achievement): AchievementItem {
     date: iso(row.date),
     year: row.date ? row.date.getUTCFullYear() : null,
     proofScore: row.proofScore ?? null,
+    documentUrl: normalizeMediaUrl(row.documentUrl),
     weight: achievementWeight({ title: row.title?.trim() || "", proofScore: row.proofScore ?? null }),
   };
 }

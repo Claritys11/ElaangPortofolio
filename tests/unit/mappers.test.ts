@@ -54,7 +54,7 @@ describe("helpers", () => {
 
 describe("achievement + profile", () => {
   it("computes year; no inflated fallback score, ranked titles are notable", () => {
-    const a = toAchievement({ id: "a", title: "Top 20", issuer: "DCSC", platform: null, description: null, imageUrl: "/x.png", date: new Date("2026-05-01"), proofScore: null, sortOrder: null, createdAt: new Date(), updatedAt: new Date() });
+    const a = toAchievement({ id: "a", title: "Top 20", issuer: "DCSC", platform: null, description: null, imageUrl: "/x.png", date: new Date("2026-05-01"), proofScore: null, sortOrder: null, documentUrl: null, createdAt: new Date(), updatedAt: new Date() });
     expect(a.year).toBe(2026);
     expect(a.proofScore).toBeNull();
     expect(a.weight).toBe(5);
@@ -79,7 +79,7 @@ describe("legacy relative upload paths", () => {
     expect(normalizeMediaUrl("  ")).toBeNull();
   });
   it("mapper and admin schema accept the 18 legacy achievement rows", () => {
-    const a = toAchievement({ id: "a", title: "x", issuer: null, platform: null, description: null, imageUrl: "api/public/uploads/a.jpg", date: null, proofScore: null, sortOrder: null, createdAt: new Date(), updatedAt: new Date() });
+    const a = toAchievement({ id: "a", title: "x", issuer: null, platform: null, description: null, imageUrl: "api/public/uploads/a.jpg", date: null, proofScore: null, sortOrder: null, documentUrl: null, createdAt: new Date(), updatedAt: new Date() });
     expect(a.imageUrl).toBe("/api/public/uploads/a.jpg");
     expect(AchievementSchema.parse({ title: "x", imageUrl: "api/public/uploads/a.jpg" }).imageUrl).toBe("/api/public/uploads/a.jpg");
   });

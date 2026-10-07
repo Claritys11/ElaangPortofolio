@@ -53,6 +53,7 @@ model Achievement {
   date        DateTime? @db.Timestamptz(3)
   proofScore  Int?      @map("proof_score")
   sortOrder   Int?      @map("sort_order")
+  documentUrl String?   @map("document_url")
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
 

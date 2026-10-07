@@ -15,6 +15,8 @@ export interface MediaItemType {
   desc: string;
   url: string;
   span: string;
+  /** Optional original document (e.g. a PDF certificate) shown as "Open PDF" in the preview. */
+  link?: string;
 }
 
 // MediaItem renders either a video or an image based on item.type
@@ -145,6 +147,17 @@ export const GalleryModal = ({ selectedItem, onClose, setSelectedItem, mediaItem
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-3 md:p-5">
                   <h3 className="font-display text-base font-semibold text-white sm:text-lg md:text-xl">{selectedItem.title}</h3>
                   {selectedItem.desc && <p className="mt-1 font-mono text-[11px] tracking-[0.14em] text-white/70 uppercase">{selectedItem.desc}</p>}
+                  {selectedItem.link && (
+                    <a
+                      href={selectedItem.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="pointer-events-auto mt-3 inline-block rounded-full bg-primary px-4 py-1.5 font-mono text-[11px] tracking-[0.14em] text-primary-foreground uppercase"
+                    >
+                      Open PDF ↗
+                    </a>
+                  )}
                 </div>
               </motion.div>
             </AnimatePresence>
