@@ -109,7 +109,7 @@ export type SqueezeCarouselProps = {
   duration?: number;
   /** Widen the panel under the pointer. Default `true`. */
   hoverGrow?: boolean;
-  /** Step on by itself. Default `false`. */
+  /** Step on by itself, with a progress line showing the time left. Default `false`. */
   autoplay?: boolean;
   /** Milliseconds a panel stays open under autoplay. Default `6000`. */
   interval?: number;
@@ -267,11 +267,9 @@ export function SqueezeCarousel({
 
   const [paused, setPaused] = useState(false);
 
-  useEffect(() => {
-    if (!autoplay || paused || reduced || count < 2) return;
-    const timer = window.setTimeout(() => step(1), interval);
-    return () => clearTimeout(timer);
-  }, [autoplay, paused, reduced, count, open, interval, step]);
+  // The progress line under the panels is the clock: when its fill finishes, the
+  // row steps on. Pausing the line pauses the clock, so the two never drift.
+  const ticking = autoplay && !reduced && count > 1;
 
   /* --- keyboard --------------------------------------------------------- */
 
@@ -344,12 +342,10 @@ export function SqueezeCarousel({
       // The breakpoints and widths below read the width this carousel is
       // given, not the width of the window.
       style={{ containerType: "inline-size", ...vars, ...style }}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => {
-        setPaused(false);
-        setHover(-1);
-      }}
-      onFocusCapture={() => setPaused(true)}
+      onMouseLeave={() => setHover(-1)}
+      // Hold still while someone is working through it with the keyboard; a
+      // mouse click focuses an arrow too, but that should not stop the show.
+      onFocusCapture={(event) => setPaused((event.target as HTMLElement).matches(":focus-visible"))}
       onBlurCapture={() => setPaused(false)}
       {...props}
     >
@@ -431,7 +427,20 @@ export function SqueezeCarousel({
         </div>
       </div>
 
-      <div id={`${ids}-panel`} role="tabpanel" aria-live="polite" className="mt-6 grid @xl:mt-7">
+      {ticking && (
+        <div aria-hidden="true" className="mt-4 h-px w-full overflow-hidden bg-border">
+          <style>{"@keyframes sq-progress{from{transform:scaleX(0)}to{transform:scaleX(1)}}"}</style>
+          <div
+            key={open}
+            className="h-full origin-left bg-[var(--sq-fill)]"
+            style={{ animation: `sq-progress ${interval}ms linear forwards`, animationPlayState: paused ? "paused" : "running" }}
+            onAnimationEnd={() => step(1)}
+          />
+        </div>
+      )}
+
+      {/* Announcing every automatic step would talk over the reader, so only manual ones are live. */}
+      <div id={`${ids}-panel`} role="tabpanel" aria-live={ticking ? "off" : "polite"} className="mt-6 grid @xl:mt-7">
         {slides.map((slide, i) => {
           const shown = i === open;
 

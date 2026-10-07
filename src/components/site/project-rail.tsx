@@ -37,7 +37,7 @@ export function ProjectRail({ projects }: { projects: ProjectItem[] }) {
         label="Selected projects"
         height="clamp(200px, 34cqi, 520px)"
         autoplay
-        interval={7000}
+        interval={5000}
         className="[&>div:first-child]:mb-8"
         toolbar={
           <div className="flex items-baseline gap-6">
