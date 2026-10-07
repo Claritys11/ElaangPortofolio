@@ -17,6 +17,8 @@ const nextConfig: NextConfig = {
   },
   // pdfjs (via pdf-parse) imports its worker dynamically; the tracer can't see it.
   outputFileTracingIncludes: {
+    // Fonts read at runtime by the generated preview cards (src/lib/og-fonts.ts).
+    "/**/*": ["./src/assets/fonts/*.woff"],
     "/api/admin/writeups/import-pdf": ["./node_modules/.pnpm/pdfjs-dist@*/node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs"],
   },
   async redirects() {

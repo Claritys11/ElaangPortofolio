@@ -1,13 +1,14 @@
 import { ImageResponse } from "next/og";
+import { ogFonts } from "@/lib/og-fonts";
 
 export const alt = "Elang Dimas Syadewa (Claritys) — pwn-focused CTF writeups and projects";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function Image() {
+export default async function Image() {
   return new ImageResponse(
     (
-      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: 72, background: "#0E0E0C", color: "#EDEBE6" }}>
+      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: 72, background: "#0E0E0C", color: "#EDEBE6", fontFamily: "Archivo" }}>
         <div style={{ display: "flex", fontSize: 26, letterSpacing: 6, color: "#9a978f" }}>
           <span style={{ color: "#FF5B1F" }}>0x00</span>&nbsp;/ CLARITYS
         </div>
@@ -21,6 +22,6 @@ export default function Image() {
         </div>
       </div>
     ),
-    size,
+    { ...size, fonts: await ogFonts() },
   );
 }
