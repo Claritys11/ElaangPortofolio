@@ -9,108 +9,11 @@ import { GithubIcon, InstagramIcon } from "@/components/site/brand-icons";
 import { fitScaleX, GLITCH_TIMING, nextGlitchDelay, sliceInset } from "@/lib/glitch";
 import { gsap, NO_REDUCED, prefersReducedMotion, ScrollTrigger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import "./motion-footer.css";
 
 // -------------------------------------------------------------------------
-// 1. THEME-ADAPTIVE INLINE STYLES (font import removed, glitch layers added)
+// 1. THEME-ADAPTIVE STYLES live in ./motion-footer.css (served once, cached)
 // -------------------------------------------------------------------------
-const STYLES = `
-.cinematic-footer-wrapper {
-  -webkit-font-smoothing: antialiased;
-  --pill-bg-1: color-mix(in oklch, var(--foreground) 3%, transparent);
-  --pill-bg-2: color-mix(in oklch, var(--foreground) 1%, transparent);
-  --pill-shadow: color-mix(in oklch, var(--background) 50%, transparent);
-  --pill-highlight: color-mix(in oklch, var(--foreground) 10%, transparent);
-  --pill-inset-shadow: color-mix(in oklch, var(--background) 80%, transparent);
-  --pill-border: color-mix(in oklch, var(--foreground) 8%, transparent);
-  --pill-bg-1-hover: color-mix(in oklch, var(--foreground) 8%, transparent);
-  --pill-bg-2-hover: color-mix(in oklch, var(--foreground) 2%, transparent);
-  --pill-border-hover: color-mix(in oklch, var(--foreground) 20%, transparent);
-  --pill-shadow-hover: color-mix(in oklch, var(--background) 70%, transparent);
-  --pill-highlight-hover: color-mix(in oklch, var(--foreground) 20%, transparent);
-}
-@keyframes footer-breathe {
-  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
-  100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
-}
-@keyframes footer-scroll-marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-@keyframes footer-heartbeat {
-  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 5px color-mix(in oklch, var(--destructive) 50%, transparent)); }
-  15%, 45% { transform: scale(1.2); filter: drop-shadow(0 0 10px color-mix(in oklch, var(--destructive) 80%, transparent)); }
-  30% { transform: scale(1); }
-}
-.animate-footer-breathe { animation: footer-breathe 8s ease-in-out infinite alternate; }
-.animate-footer-scroll-marquee { animation: footer-scroll-marquee 40s linear infinite; }
-.animate-footer-heartbeat { animation: footer-heartbeat 2s cubic-bezier(0.25, 1, 0.5, 1) infinite; }
-@media (prefers-reduced-motion: reduce) {
-  .animate-footer-breathe, .animate-footer-scroll-marquee, .animate-footer-heartbeat { animation: none; }
-}
-.footer-bg-grid {
-  background-size: 60px 60px;
-  background-image:
-    linear-gradient(to right, color-mix(in oklch, var(--foreground) 3%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in oklch, var(--foreground) 3%, transparent) 1px, transparent 1px);
-  mask-image: linear-gradient(to bottom, transparent, black 30%, black 70%, transparent);
-  -webkit-mask-image: linear-gradient(to bottom, transparent, black 30%, black 70%, transparent);
-}
-.footer-aurora {
-  background: radial-gradient(
-    circle at 50% 50%,
-    color-mix(in oklch, var(--primary) 15%, transparent) 0%,
-    color-mix(in oklch, var(--secondary) 15%, transparent) 40%,
-    transparent 70%
-  );
-}
-.footer-glass-pill {
-  background: linear-gradient(145deg, var(--pill-bg-1) 0%, var(--pill-bg-2) 100%);
-  box-shadow: 0 10px 30px -10px var(--pill-shadow), inset 0 1px 1px var(--pill-highlight), inset 0 -1px 2px var(--pill-inset-shadow);
-  border: 1px solid var(--pill-border);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.footer-glass-pill:hover {
-  background: linear-gradient(145deg, var(--pill-bg-1-hover) 0%, var(--pill-bg-2-hover) 100%);
-  border-color: var(--pill-border-hover);
-  box-shadow: 0 20px 40px -10px var(--pill-shadow-hover), inset 0 1px 1px var(--pill-highlight-hover);
-  color: var(--foreground);
-}
-.footer-giant-bg-text {
-  font-family: var(--font-display);
-  font-size: 26vw;
-  line-height: 0.75;
-  font-weight: 900;
-  letter-spacing: -0.05em;
-  color: transparent;
-  -webkit-text-stroke: 1px color-mix(in oklch, var(--foreground) 5%, transparent);
-  background: linear-gradient(180deg, color-mix(in oklch, var(--foreground) 10%, transparent) 0%, transparent 60%);
-  -webkit-background-clip: text;
-  background-clip: text;
-}
-.footer-giant-bg-text.is-rgb {
-  -webkit-text-stroke: 2px color-mix(in oklch, var(--primary) 85%, transparent);
-  background: none;
-}
-.footer-giant-bg-text.is-secret {
-  font-stretch: 62%;
-  font-variation-settings: "wdth" 62;
-  /* The reveal must read clearly against the ghosted ELANG: solid fill, accent outline + offset. */
-  background: none;
-  color: color-mix(in oklch, var(--foreground) 60%, transparent);
-  -webkit-text-fill-color: color-mix(in oklch, var(--foreground) 60%, transparent);
-  -webkit-text-stroke: 1px var(--primary);
-  text-shadow: 0.025em 0 0 color-mix(in oklch, var(--primary) 70%, transparent), -0.015em 0 0 color-mix(in oklch, var(--foreground) 25%, transparent);
-}
-.footer-text-glow {
-  background: linear-gradient(180deg, var(--foreground) 0%, color-mix(in oklch, var(--foreground) 40%, transparent) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0px 0px 20px color-mix(in oklch, var(--foreground) 15%, transparent));
-}
-`;
 
 // -------------------------------------------------------------------------
 // 2. MAGNETIC BUTTON PRIMITIVE (Zero Dependency)
@@ -355,7 +258,6 @@ export function CinematicFooter(props: CinematicFooterProps) {
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{ __html: STYLES }} />
 
       {/* Curtain reveal: the fixed footer is only visible inside this clipped box. */}
       <div ref={wrapperRef} className="relative h-svh min-h-[640px] w-full" style={{ clipPath: "polygon(0% 0, 100% 0%, 100% 100%, 0 100%)" }}>

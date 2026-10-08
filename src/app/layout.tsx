@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Archivo, Geist_Mono, Inter_Tight } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { siteUrl } from "@/lib/site";
 import "./globals.css";
@@ -25,7 +24,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
           <TooltipProvider>
             {children}
-            <Toaster />
           </TooltipProvider>
         </ThemeProvider>
       </body>

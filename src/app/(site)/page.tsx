@@ -8,6 +8,7 @@ import { Quote } from "@/components/site/quote";
 import { RecordTimeline } from "@/components/site/record-timeline";
 import { SectionLabel } from "@/components/site/section-label";
 import { WriteupIndex } from "@/components/site/writeup-index";
+import { mostNotable } from "@/lib/achievements";
 import { listAchievements } from "@/lib/data/achievements";
 import { getProfile } from "@/lib/data/profile";
 import { listProjects } from "@/lib/data/projects";
@@ -60,7 +61,8 @@ export default async function Home() {
             full record →
           </Link>
         </div>
-        <RecordTimeline items={achievements} limit={10} />
+        {/* Only the ten that are shown cross to the client, not the whole record. */}
+        <RecordTimeline items={mostNotable(achievements, 10)} />
       </section>
 
       <Quote text={profile.philosophyText} />

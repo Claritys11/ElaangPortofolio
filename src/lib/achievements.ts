@@ -36,3 +36,11 @@ export function suggestProofScore(title: string): { score: number; reason: strin
   for (const [re, score, reason] of RULES) if (re.test(title)) return { score, reason };
   return { score: 2, reason: "participation / course" };
 }
+
+/** The `limit` most notable entries (heaviest first, ties to the newest), listed newest first. */
+export function mostNotable<T extends { weight: number; date: string | null }>(items: T[], limit: number): T[] {
+  return [...items]
+    .sort((a, b) => b.weight - a.weight || (b.date ?? "").localeCompare(a.date ?? ""))
+    .slice(0, limit)
+    .sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
+}

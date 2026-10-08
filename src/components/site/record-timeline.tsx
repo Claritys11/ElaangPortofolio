@@ -8,17 +8,10 @@ import { formatDate } from "@/lib/format";
 import type { AchievementItem } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-type Props = { items: AchievementItem[]; limit?: number; onOpen?: (id: string) => void };
+type Props = { items: AchievementItem[]; onOpen?: (id: string) => void };
 
-export function RecordTimeline({ items, limit, onOpen }: Props) {
+export function RecordTimeline({ items, onOpen }: Props) {
   const [hover, setHover] = useState<string | null>(null);
-  // With a limit (home page), keep the most notable entries, then show them newest first.
-  const shown = limit
-    ? [...items]
-        .sort((a, b) => b.weight - a.weight || (b.date ?? "").localeCompare(a.date ?? ""))
-        .slice(0, limit)
-        .sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""))
-    : items;
   const TITLE: Record<Emphasis, string> = {
     xl: "font-display text-3xl font-bold tracking-tight md:text-4xl",
     lg: "font-display text-2xl font-semibold tracking-tight md:text-3xl",
@@ -26,7 +19,7 @@ export function RecordTimeline({ items, limit, onOpen }: Props) {
   };
   // Groups keep first-appearance order, so a custom admin order carries through.
   const groups = new Map<string, AchievementItem[]>();
-  for (const a of shown) {
+  for (const a of items) {
     const k = a.year ? String(a.year) : "Undated";
     groups.set(k, [...(groups.get(k) ?? []), a]);
   }

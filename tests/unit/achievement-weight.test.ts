@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { achievementWeight, emphasisFor } from "@/lib/achievements";
+import { achievementWeight, emphasisFor, mostNotable } from "@/lib/achievements";
 
 const a = (title: string, proofScore: number | null) => ({ title, proofScore });
 
@@ -56,5 +56,16 @@ describe("suggestProofScore (admin guide)", () => {
   });
   it("explains its choice", () => {
     expect(suggestProofScore("Finalist JCC").reason).toMatch(/finalist/i);
+  });
+});
+
+describe("mostNotable", () => {
+  const item = (id: string, weight: number, date: string) => ({ id, weight, date });
+  const items = [item("a", 0, "2026-09-01"), item("b", 6, "2025-01-01"), item("c", 5, "2026-03-01"), item("d", 6, "2026-02-01"), item("e", 2, "2026-05-01")];
+  it("keeps the heaviest entries, ties broken by recency, then lists them newest first", () => {
+    expect(mostNotable(items, 3).map((i) => i.id)).toEqual(["c", "d", "b"]);
+  });
+  it("returns everything when the limit is larger than the list", () => {
+    expect(mostNotable(items, 10)).toHaveLength(5);
   });
 });

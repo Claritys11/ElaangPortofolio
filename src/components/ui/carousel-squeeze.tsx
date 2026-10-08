@@ -489,6 +489,9 @@ function Picture({ slide }: { slide: SqueezeSlide }) {
       <img
         src={slide.image}
         alt={slide.imageAlt ?? ""}
+        // Lazy: otherwise React preloads every panel's picture in <head>, ahead of the page itself.
+        loading="lazy"
+        decoding="async"
         draggable={false}
         className="absolute inset-y-0 left-1/2 h-full max-w-none -translate-x-1/2 object-cover"
         style={box}
