@@ -17,7 +17,7 @@ export default async function Image() {
           <div style={{ fontSize: 84, fontWeight: 300, letterSpacing: -2, lineHeight: 1 }}>DIMAS SYADEWA</div>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 30, borderTop: "2px solid #2a2925", paddingTop: 28 }}>
-          <span style={{ letterSpacing: 4 }}>pwn · rev · forensics</span>
+          <span style={{ letterSpacing: 4 }}>pwn · rev · webexploit</span>
           <span style={{ color: "#FF5B1F" }}>claritys.web.id</span>
         </div>
       </div>
