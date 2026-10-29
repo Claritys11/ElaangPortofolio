@@ -4,6 +4,7 @@ import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
 import { SplitHeading } from "@/components/motion/split-heading";
 import { Media } from "@/components/site/media";
+import { RichText } from "@/components/site/rich-text";
 import { SectionLabel } from "@/components/site/section-label";
 import { gsap, NO_REDUCED, SplitText } from "@/lib/motion";
 
@@ -15,6 +16,9 @@ export function AboutIntro({ alias, name, text, imageUrl, location }: { alias: s
       mm.add(NO_REDUCED, () => {
         const split = SplitText.create(".about-lines", { type: "lines", mask: "lines", autoSplit: true });
         gsap.from(split.lines, { yPercent: 100, duration: 1, ease: "expo.out", stagger: 0.08, delay: 0.3 });
+        // Once the lines are up: chips pop in and the highlighter strokes across the main focus.
+        gsap.from(".rt-chip", { scale: 0, rotate: -25, duration: 0.7, ease: "back.out(2.2)", stagger: 0.12, delay: 0.9 });
+        gsap.fromTo(".rt-mark", { backgroundSize: "0% 0.32em" }, { backgroundSize: "100% 0.32em", duration: 0.9, ease: "power2.inOut", stagger: 0.25, delay: 1.1 });
         gsap.fromTo(".about-portrait", { clipPath: "inset(100% 0 0 0)", scale: 1.15 }, { clipPath: "inset(0% 0 0 0)", scale: 1, duration: 1.6, ease: "expo.out" });
         gsap.to(".about-portrait img", { yPercent: 8, ease: "none", scrollTrigger: { trigger: ref.current, start: "top top", end: "bottom top", scrub: true } });
         return () => split.revert();
@@ -31,7 +35,9 @@ export function AboutIntro({ alias, name, text, imageUrl, location }: { alias: s
         <p className="meta mt-6">
           {name} · {location}
         </p>
-        <p className="about-lines mt-10 max-w-2xl font-display text-2xl leading-snug tracking-tight md:text-[2.1rem]">{text}</p>
+        <p className="about-lines mt-10 max-w-2xl font-display text-2xl leading-snug tracking-tight md:text-[2.1rem]">
+          <RichText text={text} />
+        </p>
       </div>
       <div className="about-portrait overflow-hidden md:col-span-4 md:col-start-9">
         <Media src={imageUrl} alt={name} className="aspect-[3/4] w-full scale-110 grayscale" eager />

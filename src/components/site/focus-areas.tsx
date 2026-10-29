@@ -60,6 +60,27 @@ function WebArt() {
   );
 }
 
+const ART = { pwn: PwnArt, sysadmin: RackArt, web: WebArt };
+
+/** One focus drawing on its own, looping while it is on screen (static under reduced motion). */
+export function FocusIcon({ kind, className }: { kind: keyof typeof ART; className?: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.6 });
+    if (ref.current) io.observe(ref.current);
+    return () => io.disconnect();
+  }, []);
+  const Art = ART[kind];
+  return (
+    <span ref={ref} data-on={inView || undefined} className={cn("inline-block", className)}>
+      <svg viewBox="0 0 64 40" aria-hidden className="focus-art size-full">
+        <Art />
+      </svg>
+    </span>
+  );
+}
+
 const AREAS = [
   { title: "Cybersecurity", sub: "pwn · web exploitation", Art: PwnArt, main: true },
   { title: "System Administration", sub: "linux · infrastructure", Art: RackArt, main: false },

@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/motion/reveal";
+import { AboutFocus } from "@/components/site/about-focus";
 import { AboutIntro } from "@/components/site/about-intro";
 import { CategoryStats } from "@/components/site/category-stats";
 import { JourneyLine } from "@/components/site/journey-line";
 import { Quote } from "@/components/site/quote";
 import { SectionLabel } from "@/components/site/section-label";
-import { SkillBars } from "@/components/site/skill-bars";
 import { listAchievements } from "@/lib/data/achievements";
 import { getProfile } from "@/lib/data/profile";
+import { listProjects } from "@/lib/data/projects";
 import { getCategoryStats, getCompetitions, listWriteups } from "@/lib/data/writeups";
+import { evidenceFor, SYSADMIN, WEBDEV } from "@/lib/focus";
 import { formatDate } from "@/lib/format";
 import { breadcrumbJsonLd, jsonLdScript, pageOpenGraph, truncate } from "@/lib/seo";
 import { ids } from "@/lib/seo-graph";
@@ -28,9 +30,18 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const [p, writeups, stats, competitions, achievements] = await Promise.all([getProfile(), listWriteups(), getCategoryStats(), getCompetitions(), listAchievements()]);
+  const [p, writeups, stats, competitions, achievements, projects] = await Promise.all([
+    getProfile(),
+    listWriteups(),
+    getCategoryStats(),
+    getCompetitions(),
+    listAchievements(),
+    listProjects(),
+  ]);
   const pwnCount = stats.find((s) => s.category === "Pwn")?.count ?? 0;
+  const webCount = stats.find((s) => s.category === "Web")?.count ?? 0;
   const pwn = writeups.filter((w) => w.category === "Pwn").slice(0, 4);
+  const web = writeups.filter((w) => w.category === "Web").slice(0, 2);
   const [focus, ...rest] = p.skills;
   const latest = writeups.find((w) => w.competition);
   const base = siteUrl();
@@ -75,39 +86,18 @@ export default async function AboutPage() {
       </section>
 
       {focus && (
-        <section className="mt-32 grid gap-16 md:mt-44 md:grid-cols-12">
-          <div className="md:col-span-6">
-            <SectionLabel index={3} name="focus" />
-            <h2 className="mt-6 font-display text-6xl leading-[0.9] font-black tracking-[-0.04em] md:text-8xl">
-              {focus.name.split(" ").map((word, i) => (
-                <span key={word} className={i === 0 ? "block text-primary" : "block"}>
-                  {word}
-                </span>
-              ))}
-            </h2>
-            <p className="mt-8 max-w-md text-muted-foreground">
-              {pwnCount} of {writeups.length} writeups are pwn{topTags.length > 0 ? ` — mostly ${topTags.join(", ")}` : ""}.
-            </p>
-            {pwn.length > 0 && (
-              <ul className="mt-10 border-t border-border">
-                {pwn.map((w) => (
-                  <li key={w.id} className="border-b border-border">
-                    <Link href={w.href} className="group flex items-baseline justify-between gap-6 py-4">
-                      <span className="font-display text-2xl font-semibold tracking-tight transition-transform duration-500 group-hover:translate-x-2 group-hover:text-primary">
-                        {w.title}
-                      </span>
-                      <span className="meta shrink-0">{w.competition || w.difficulty}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-          <div className="md:col-span-5 md:col-start-8 md:pt-16">
-            <p className="meta mb-6">also</p>
-            <SkillBars skills={rest} />
-          </div>
-        </section>
+        <AboutFocus
+          focusName={focus.name}
+          pwnCount={pwnCount}
+          webCount={webCount}
+          total={writeups.length}
+          topTags={topTags}
+          pwn={pwn}
+          web={web}
+          sysadmin={evidenceFor(projects, SYSADMIN)}
+          webdev={evidenceFor(projects, WEBDEV)}
+          skills={rest}
+        />
       )}
 
       {p.journey.length > 0 && (
