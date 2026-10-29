@@ -1,9 +1,10 @@
 "use client";
 
 import { useGSAP } from "@gsap/react";
-import { Binary, CodeXml, Compass, Globe, Hammer, type LucideIcon, ShieldHalf } from "lucide-react";
+import { Binary, CodeXml, Flag, type LucideIcon, Server, ShieldHalf, SquareTerminal } from "lucide-react";
 import Link from "next/link";
 import { Fragment, useRef } from "react";
+import { FocusAreas } from "@/components/site/focus-areas";
 import { Media } from "@/components/site/media";
 import { SectionLabel } from "@/components/site/section-label";
 import { gsap, NO_REDUCED, SplitText } from "@/lib/motion";
@@ -11,16 +12,16 @@ import { cn } from "@/lib/utils";
 
 /** Words that earn an inline icon chip. The text comes from the admin, so these are matched, not placed. */
 const CHIPS: [RegExp, LucideIcon][] = [
-  [/cybersecurity|security/i, ShieldHalf],
-  [/pwn|binary exploitation/i, Binary],
-  [/software/i, CodeXml],
-  [/web development|web/i, Globe],
-  [/building/i, Hammer],
-  [/exploring/i, Compass],
+  [/cybersecurity/i, ShieldHalf],
+  [/linux( systems)?/i, SquareTerminal],
+  [/server infrastructure|infrastructure/i, Server],
+  [/web development/i, CodeXml],
+  [/\bpwn\b/i, Binary],
+  [/CTF competitions/i, Flag],
 ];
 const MAX_CHIPS = 4;
-/** The first of these found in the text gets the highlighter stroke. */
-const HIGHLIGHTS = [/solving complex problems/i, /binary exploitation/i, /breaking things/i];
+/** The first of these found in the text gets the highlighter stroke: the main focus. */
+const HIGHLIGHTS = [/binary and web exploitation/i, /binary exploitation/i, /exploitation/i];
 
 const OUTER = ["pwntools", "gdb", "ghidra", "ida", "python", "c / asm"];
 const INNER = ["linux", "docker", "burp"];
@@ -144,6 +145,8 @@ export function AboutShort({ text, imageUrl }: { text: string; imageUrl: string 
           more about me →
         </Link>
       </div>
+      {/* Runs edge to edge of the section, like a ruled strip under the statement. */}
+      <FocusAreas className="-mx-4 mt-4 md:col-span-12 md:-mx-8 md:mt-8" />
     </section>
   );
 }

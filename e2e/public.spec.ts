@@ -77,6 +77,19 @@ test("contact honeypot is accepted but silent", async ({ request }) => {
   expect(res.status()).toBe(201);
 });
 
+test("about strip opens on cybersecurity and follows the pointer", async ({ page }, info) => {
+  test.skip(info.project.name === "mobile", "hover");
+  await page.addInitScript(() => sessionStorage.setItem("intro-seen", "1"));
+  await page.goto("/");
+  const strip = page.getByRole("list", { name: "Focus areas" });
+  await strip.scrollIntoViewIfNeeded();
+  const cell = (name: string) => strip.locator("li").filter({ hasText: name });
+  await expect(cell("Cybersecurity")).toHaveAttribute("data-on", "true");
+  await cell("Web Development").hover();
+  await expect(cell("Web Development")).toHaveAttribute("data-on", "true");
+  await expect(cell("Cybersecurity")).not.toHaveAttribute("data-on");
+});
+
 test("contact chat greets, then answers a sent message", async ({ page }) => {
   await page.route("**/api/contact", (route) => route.fulfill({ status: 201, json: { ok: true } }));
   await page.goto("/about");

@@ -28,12 +28,17 @@ export function ProjectStack({ projects }: { projects: ProjectItem[] }) {
           const next = cards[i + 1];
           if (!next) return;
           // As the next card slides up over this one, this one sinks back into the stack.
-          gsap.to(card.querySelector(".stack-inner"), {
-            scale: 0.92,
-            filter: "brightness(0.55)",
-            ease: "none",
-            scrollTrigger: { trigger: next, start: "top bottom", end: `top ${96 + (i + 1) * STEP}px`, scrub: true },
-          });
+          // fromTo, not to: GSAP reads the computed `filter: none` as brightness(0), which flashed the card black.
+          gsap.fromTo(
+            card.querySelector(".stack-inner"),
+            { scale: 1, filter: "brightness(1)" },
+            {
+              scale: 0.92,
+              filter: "brightness(0.55)",
+              ease: "none",
+              scrollTrigger: { trigger: next, start: "top bottom", end: `top ${96 + (i + 1) * STEP}px`, scrub: true },
+            },
+          );
         });
       });
       return () => mm.revert();
