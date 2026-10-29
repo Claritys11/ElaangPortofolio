@@ -9,7 +9,19 @@ test("home renders real content without horizontal overflow", async ({ page }) =
   expect(overflow).toBeLessThanOrEqual(0);
 });
 
+test("first visit to home opens behind the preloader, which then lifts", async ({ page }, info) => {
+  test.skip(info.project.name === "reduced-motion", "no preloader when motion is reduced");
+  await page.goto("/");
+  const loader = page.getByRole("status", { name: "Loading" });
+  await expect(loader).toBeVisible();
+  await expect(loader).toHaveCount(0, { timeout: 8000 });
+  expect(await page.evaluate(() => sessionStorage.getItem("intro-seen"))).toBe("1");
+  await page.reload();
+  await expect(page.getByRole("status", { name: "Loading" })).toBeHidden();
+});
+
 test("all sections become visible after scrolling (nothing stuck at opacity 0)", async ({ page }) => {
+  await page.addInitScript(() => sessionStorage.setItem("intro-seen", "1"));
   await page.goto("/");
   const height = await page.evaluate(() => document.body.scrollHeight);
   for (let y = 0; y < height; y += 700) {
@@ -63,6 +75,19 @@ test("contact honeypot is accepted but silent", async ({ request }) => {
     headers: { "x-forwarded-for": "203.0.113.9" },
   });
   expect(res.status()).toBe(201);
+});
+
+test("contact chat greets, then answers a sent message", async ({ page }) => {
+  await page.route("**/api/contact", (route) => route.fulfill({ status: 201, json: { ok: true } }));
+  await page.goto("/about");
+  await page.locator("#contact").scrollIntoViewIfNeeded();
+  await expect(page.getByText("Got a binary for me?")).toBeVisible({ timeout: 8000 });
+  await page.getByPlaceholder("Name").fill("Ada Lovelace");
+  await page.getByPlaceholder("Email / handle").fill("ada@example.com");
+  await page.getByPlaceholder("Write me a message…").fill("Want to join our CTF team?");
+  await page.getByRole("button", { name: "Send message" }).click();
+  await expect(page.getByText("Want to join our CTF team?")).toBeVisible();
+  await expect(page.getByText("Received, Ada. I'll get back to you soon.")).toBeVisible({ timeout: 5000 });
 });
 
 test("404 page", async ({ page }) => {

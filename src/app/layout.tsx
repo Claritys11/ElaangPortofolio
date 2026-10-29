@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Archivo, Geist_Mono, Inter_Tight } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { INTRO_SCRIPT } from "@/lib/intro";
 import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
@@ -20,6 +21,10 @@ export function generateMetadata(): Metadata {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className={`${archivo.variable} ${interTight.variable} ${geistMono.variable}`}>
+      <head>
+        {/* Flags a first visit to "/" before paint, so the preloader shows without a flash (lib/intro.ts). */}
+        <script dangerouslySetInnerHTML={{ __html: INTRO_SCRIPT }} />
+      </head>
       <body>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
           <TooltipProvider>

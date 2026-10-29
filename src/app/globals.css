@@ -147,6 +147,66 @@ html.lenis body {
   }
 }
 
+/* First-visit preloader (see lib/intro.ts) */
+html[data-intro] {
+  overflow: hidden;
+}
+@keyframes pl-in {
+  from {
+    opacity: 0;
+    transform: translateY(40%);
+  }
+}
+.pl-word {
+  animation: pl-in 0.22s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Slow orbit for the about portrait; chips counter-rotate to stay upright. */
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.orbit-ring {
+  animation: orbit var(--orbit-speed, 48s) linear infinite;
+}
+.orbit-ring > * {
+  animation: orbit var(--orbit-speed, 48s) linear infinite reverse;
+}
+.orbit:hover .orbit-ring,
+.orbit:hover .orbit-ring > * {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .orbit-ring,
+  .orbit-ring > * {
+    animation: none;
+  }
+}
+
+/* Typing indicator in the contact chat */
+@keyframes typing {
+  0%,
+  60%,
+  100% {
+    opacity: 0.25;
+    transform: none;
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+.typing-dot {
+  animation: typing 1.1s ease-in-out infinite;
+}
+.typing-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.typing-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
 /* Writeup article */
 .writeup-prose {
   max-width: 72ch;

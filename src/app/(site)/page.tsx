@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { AboutShort } from "@/components/site/about-short";
+import { ActivitySection } from "@/components/site/activity-section";
 import { CategoryStats } from "@/components/site/category-stats";
 import { Hero } from "@/components/site/hero";
-import { ProjectRail } from "@/components/site/project-rail";
+import { ProjectStack } from "@/components/site/project-stack";
 import { Quote } from "@/components/site/quote";
 import { RecordTimeline } from "@/components/site/record-timeline";
 import { SectionLabel } from "@/components/site/section-label";
@@ -52,7 +54,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {projects.length > 0 && <ProjectRail projects={projects} />}
+      {projects.length > 0 && <ProjectStack projects={projects} />}
 
       <section className="mx-auto max-w-[1600px] px-4 py-24 md:px-8 md:py-36">
         <div className="mb-16 flex items-end justify-between">
@@ -64,6 +66,10 @@ export default async function Home() {
         {/* Only the ten that are shown cross to the client, not the whole record. */}
         <RecordTimeline items={mostNotable(achievements, 10)} />
       </section>
+
+      <Suspense>
+        <ActivitySection writeupDates={writeups.map((w) => w.date)} achievementDates={achievements.map((a) => a.date)} githubUrl={profile.githubUrl} />
+      </Suspense>
 
       <Quote text={profile.philosophyText} />
     </main>
