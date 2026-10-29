@@ -77,7 +77,7 @@ export default async function LinksPage() {
         </div>
         <h1 className="mt-2 font-display text-7xl leading-[0.8] font-black tracking-[-0.05em]">ELANG</h1>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-border pt-3">
-          <p className="font-mono text-xs tracking-[0.2em]">pwn · rev · forensics</p>
+          <p className="font-mono text-xs tracking-[0.2em]">pwn · rev · web exploit</p>
           <p className="meta flex items-center gap-2 text-foreground">
             <span aria-hidden className="size-1.5 rounded-full bg-primary" />
             open to CTF teams
