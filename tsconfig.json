@@ -30,5 +30,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", ".legacy", ".remember", ".superpowers"]
+  "exclude": ["node_modules", ".remember", ".superpowers"]
 }

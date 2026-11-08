@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["pdf-parse"],
   // Runtime fs access to public/uploads makes the tracer include the whole project; keep backups and dev-only trees out.
   outputFileTracingExcludes: {
-    "*": ["*.dump", "*.tar.gz", "public/uploads/**", ".legacy/**", ".remember/**", ".superpowers/**", "docs/**", "tests/**", "e2e/**"],
+    "*": ["*.dump", "*.tar.gz", "public/uploads/**", ".remember/**", ".superpowers/**", "docs/**", "tests/**", "e2e/**"],
   },
   // pdfjs (via pdf-parse) imports its worker dynamically; the tracer can't see it.
   outputFileTracingIncludes: {
