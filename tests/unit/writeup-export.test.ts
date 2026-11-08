@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildExportHtml, toMarkdown } from "@/lib/writeup-export";
+import { buildExportHtml, buildPrintHtml, toMarkdown } from "@/lib/writeup-export";
 
 const w = {
   title: "Truman",
@@ -61,5 +61,47 @@ describe("dead relative links (Notion leftovers)", () => {
     const doc = await buildExportHtml(w, notion, async () => null, "https://claritys.web.id");
     expect(doc).not.toContain("image%209.png");
     expect(doc).toContain('href="#recon"');
+  });
+});
+
+describe("buildPrintHtml", () => {
+  const toc = [
+    { id: "recon", text: "Recon", depth: 2 as const },
+    { id: "leak", text: "Leak", depth: 3 as const },
+    { id: "exploit", text: "Exploit", depth: 2 as const },
+  ];
+  const code = (lines: number) => `<figure class="code-block"><div class="code-head"><span class="code-lang">c</span><button data-copy="">copy</button></div><pre>${"x\n".repeat(lines)}</pre></figure>`;
+  const doc = (html: string, over = {}) => buildPrintHtml({ ...w, ...over }, html, toc, "https://claritys.web.id");
+
+  it("waits for every image: nothing stays lazy, which would block the print dialog", () => {
+    expect(doc('<p><img src="/api/public/uploads/x.png" loading="lazy"></p>')).not.toContain('loading="lazy"');
+  });
+  it("is A4 with page numbers, and carries the facts and flag", () => {
+    const d = doc("<p>hi</p>");
+    expect(d).toContain("size: A4");
+    expect(d).toContain("counter(pages)");
+    expect(d).toContain("<dd>BeeCTF 2026</dd>");
+    expect(d).toContain("<code>BeeCTF{x}</code>");
+  });
+  it("lists the headings as contents, only when there are enough to need it", () => {
+    expect(doc("<p>hi</p>")).toContain('<a href="#leak">Leak</a>');
+    expect(buildPrintHtml(w, "<p>hi</p>", toc.slice(0, 2), "https://x.y")).not.toContain('class="toc"');
+  });
+  it("keeps short code on one page and lets long code split", () => {
+    expect(doc(code(5))).toContain('class="code-block keep"');
+    expect(doc(code(60))).not.toContain('class="code-block keep"');
+  });
+  it("drops copy buttons and nerd-font glyphs", () => {
+    const d = doc(`${code(1)}<p>a\uF0E7b \u{F0954}c</p>`);
+    expect(d).not.toContain("data-copy");
+    expect(d).toContain("<p>ab c</p>");
+  });
+  it("skips the summary when a TL;DR section already says it", () => {
+    expect(doc("<p>hi</p>")).toContain('class="summary"');
+    expect(doc('<h2 id="tldr">TL;DR</h2><p>hi</p>')).not.toContain('class="summary"');
+  });
+  it("can't break out of the footer's CSS string with a title", () => {
+    const d = doc("<p>hi</p>", { title: 'a"</style><script>x' });
+    expect(d).not.toContain("</style><script>x");
   });
 });

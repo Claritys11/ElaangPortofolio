@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 test("home renders real content without horizontal overflow", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("ELANG");
-  await expect(page.getByText("pwn · rev · forensics")).toBeVisible();
+  await expect(page.getByText("pwn · rev · web exploit")).toBeVisible();
   await expect(page.locator(`a[href="/writeups/pwn-truman"]`).first()).toBeAttached();
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   expect(overflow).toBeLessThanOrEqual(0);
@@ -126,6 +126,17 @@ test("writeup code blocks show a language and copy their contents", async ({ pag
   await block.getByRole("button", { name: "copy" }).click();
   await expect(block.getByRole("button", { name: "copied ✓" })).toBeVisible();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toContain("#include");
+});
+
+test("PDF export loads every image and opens the print dialog", async ({ page }) => {
+  await page.addInitScript(() => {
+    (window as unknown as { printed: number }).printed = 0;
+    window.print = () => void (window as unknown as { printed: number }).printed++;
+  });
+  await page.goto("/writeups/pwn-truman/print");
+  await expect.poll(() => page.evaluate(() => (window as unknown as { printed: number }).printed), { timeout: 20000 }).toBe(1);
+  const unloaded = await page.$$eval("img", (imgs) => imgs.filter((i) => !i.complete || !i.naturalWidth).length);
+  expect(unloaded).toBe(0);
 });
 
 test("achievement title opens the certificate preview in place", async ({ page }) => {

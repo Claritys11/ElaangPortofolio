@@ -22,6 +22,7 @@ interface ImportedDocument {
   difficulty?: string;
   date?: string;
   tags?: string[];
+  flag?: string;
   pageCount?: number;
   assetCount?: number;
   sourceType: 'pdf' | 'notion';
@@ -191,6 +192,25 @@ async function importPdf(_file: File, buffer: Buffer): Promise<ImportedDocument>
   };
 }
 
+async function importNotionMarkdown(rawContent: string, fileName: string, assetUrls: Map<string, string>, assetCount: number): Promise<ImportedDocument> {
+  const page = prepareNotionMarkdown(cleanNotionMarkdown(rawContent), fileName);
+  const markdown = replaceMarkdownImageLinks(page.body, assetUrls);
+  const html = String(await marked.parse(markdown, { gfm: true, breaks: false }));
+  return {
+    title: page.title,
+    summary: page.summary,
+    content: html,
+    competition: page.competition,
+    category: page.category,
+    difficulty: page.difficulty,
+    date: page.date,
+    tags: page.tags,
+    flag: page.flag,
+    assetCount,
+    sourceType: 'notion',
+  };
+}
+
 async function importNotionZip(file: File, buffer: Buffer): Promise<ImportedDocument> {
   const files = await collectZipFiles(buffer);
   const contentFile = chooseContentFile(files);
@@ -205,21 +225,7 @@ async function importNotionZip(file: File, buffer: Buffer): Promise<ImportedDocu
   const isMarkdown = /\.(md|markdown)$/i.test(contentFile.name);
 
   if (isMarkdown) {
-    const page = prepareNotionMarkdown(cleanNotionMarkdown(rawContent), contentFile.name.split('/').pop() ?? file.name);
-    const markdown = replaceMarkdownImageLinks(page.body, assetUrls);
-    const html = String(await marked.parse(markdown, { gfm: true, breaks: false }));
-    return {
-      title: page.title,
-      summary: page.summary,
-      content: html,
-      competition: page.competition,
-      category: page.category,
-      difficulty: page.difficulty,
-      date: page.date,
-      tags: page.tags,
-      assetCount: uploadedAssets.count,
-      sourceType: 'notion',
-    };
+    return importNotionMarkdown(rawContent, contentFile.name.split('/').pop() ?? file.name, assetUrls, uploadedAssets.count);
   }
 
   const body = replaceHtmlImageLinks(extractHtmlBody(rawContent), assetUrls);
@@ -243,7 +249,7 @@ export async function POST(req: NextRequest) {
   const file = formData.get('file');
 
   if (!(file instanceof File)) {
-    return NextResponse.json({ error: 'PDF or Notion ZIP file is required.' }, { status: 400 });
+    return NextResponse.json({ error: 'PDF, Notion ZIP or Markdown file is required.' }, { status: 400 });
   }
 
   if (file.size > MAX_IMPORT_SIZE) {
@@ -257,13 +263,19 @@ export async function POST(req: NextRequest) {
     file.type === 'application/x-zip-compressed' ||
     fileName.endsWith('.zip');
 
-  if (!isPdf && !isZip) {
-    return NextResponse.json({ error: 'Only PDF files or Notion ZIP exports can be imported.' }, { status: 400 });
+  const isMarkdown = /\.(md|markdown)$/.test(fileName);
+
+  if (!isPdf && !isZip && !isMarkdown) {
+    return NextResponse.json({ error: 'Only PDF files, Notion ZIP exports or Markdown files can be imported.' }, { status: 400 });
   }
 
   try {
     const buffer = Buffer.from(await file.arrayBuffer());
-    const imported = isZip ? await importNotionZip(file, buffer) : await importPdf(file, buffer);
+    const imported = isMarkdown
+      ? await importNotionMarkdown(buffer.toString('utf8'), file.name, new Map(), 0)
+      : isZip
+        ? await importNotionZip(file, buffer)
+        : await importPdf(file, buffer);
     return NextResponse.json({ ...imported, content: await normalizeLegacyHtml(imported.content) });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to import this file.';

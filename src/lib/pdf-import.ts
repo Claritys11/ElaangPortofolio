@@ -1,11 +1,12 @@
 import { PDFParse } from "pdf-parse";
 import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs";
+import { readProperty } from "@/lib/notion-import";
 
 /**
  * PDF → writeup HTML that survives a round trip: lines are rebuilt from text positions (not the
  * PDF's arbitrary text segments), monospace becomes code, larger text becomes headings, browser
  * print headers/footers are dropped, images are put back where they sit on the page, and the old
- * site's export layout (Competition/Category/… + Overview/Documentation) fills the form fields.
+ * site's export layout (Competition/Category/… + Overview/Documentation) and a Notion page's properties fill the form fields.
  */
 
 export type ImportedPdf = {
@@ -179,7 +180,6 @@ function dropPageFurniture(lines: Line[], pageHeights: number[], pageCount: numb
   });
 }
 
-const META = /^(Competition|Category|Difficulty|Date|Tags?|Updated)\s*:\s*(.+)$/i;
 // Lost-emoji markers ("??") started new sections in the original writeups; flattened exports keep them inline.
 const SECTION = "\u0001";
 
@@ -219,10 +219,9 @@ export async function importPdfDocument(buffer: Buffer, opts: { storeImage?: Sto
   meta.title = cleanLostGlyphs(titleLine.text, false);
   const consumed = new Set<Line>([titleLine]);
   for (; i < Math.min(lines.length, 12); i++) {
-    const m = META.exec(lines[i].text.trim());
-    if (m) {
-      const key = m[1].toLowerCase().replace(/s$/, "") as "competition" | "category" | "difficulty" | "date" | "tag" | "updated";
-      if (key !== "tag" && key !== "updated") meta[key] = m[2].trim();
+    const prop = readProperty(lines[i].text.trim(), { colonOptional: true });
+    if (prop) {
+      if (prop.value && prop.field !== "tags" && prop.field !== "ignored") meta[prop.field] = prop.value;
       consumed.add(lines[i]);
     }
   }

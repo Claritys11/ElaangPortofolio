@@ -40,6 +40,8 @@ export function WriteupForm({ initial = {}, tagIndex = [] }: { initial?: Writeup
   const [competition, setCompetition] = useState(initial.competition ?? "");
   const [difficulty, setDifficulty] = useState(initial.difficulty ?? "");
   const [date, setDate] = useState(initial.date ?? "");
+  const [flag, setFlag] = useState(initial.flag ?? "");
+  const [uploading, setUploading] = useState(false);
   const [tags, setTags] = useState({ list: initial.tags ?? [], key: 0 });
   const [imported, setImported] = useState<{ html: string; nonce: number }>();
   const f = state.fields ?? {};
@@ -55,6 +57,7 @@ export function WriteupForm({ initial = {}, tagIndex = [] }: { initial?: Writeup
             if (d.category) setCategory(d.category);
             if (d.difficulty) setDifficulty(d.difficulty);
             if (d.date) setDate(d.date);
+            if (d.flag) setFlag(d.flag);
             if (d.tags?.length) setTags((t) => ({ list: [...new Set([...t.list, ...d.tags!])], key: t.key + 1 }));
             setImported({ html: d.content, nonce: Date.now() });
           }}
@@ -97,19 +100,19 @@ export function WriteupForm({ initial = {}, tagIndex = [] }: { initial?: Writeup
         <TagInput key={tags.key} name="tags" defaultValue={tags.list} index={tagIndex} category={normalizeCategory(category)} />
       </Field>
       <Field label="Content" name="content" error={f.content}>
-        <RichEditor name="content" defaultValue={initial.content ?? ""} externalValue={imported} />
+        <RichEditor name="content" defaultValue={initial.content ?? ""} externalValue={imported} onUploadingChange={setUploading} />
       </Field>
       <div className="grid gap-6 md:grid-cols-2">
         <Field label="Flag" name="flag" error={f.flag}>
-          <Input id="flag" name="flag" defaultValue={initial.flag ?? ""} className="font-mono" />
+          <Input id="flag" name="flag" value={flag} onChange={(e) => setFlag(e.target.value)} className="font-mono" />
         </Field>
         <Field label="Attachments" name="attachments" error={f.attachments}>
           <AttachmentsField name="attachments" defaultValue={initial.attachments} />
         </Field>
       </div>
       {state.message && <p className="text-sm text-destructive">{state.message}</p>}
-      <Button type="submit" disabled={pending} className="w-fit">
-        {pending ? "Saving…" : "Save writeup"}
+      <Button type="submit" disabled={pending || uploading} className="w-fit">
+        {uploading ? "Uploading images…" : pending ? "Saving…" : "Save writeup"}
       </Button>
     </form>
   );

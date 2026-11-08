@@ -4,20 +4,21 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
-export type ImportedDoc = { title: string; summary: string; content: string; competition?: string; category?: string; difficulty?: string; date?: string; tags?: string[]; assetCount?: number; pageCount?: number };
+export type ImportedDoc = { title: string; summary: string; content: string; competition?: string; category?: string; difficulty?: string; date?: string; tags?: string[]; flag?: string; assetCount?: number; pageCount?: number };
 
 export function PdfImport({ onImported }: { onImported: (d: ImportedDoc) => void }) {
   const [busy, setBusy] = useState(false);
   return (
     <Button type="button" variant="outline" disabled={busy} asChild>
       <label className="cursor-pointer">
-        {busy ? "Importing…" : "Import PDF / Notion ZIP"}
+        {busy ? "Importing…" : "Import PDF / Notion ZIP / MD"}
         <input
           type="file"
-          accept=".pdf,.zip,application/pdf,application/zip"
+          accept=".pdf,.zip,.md,.markdown,application/pdf,application/zip,text/markdown"
           className="sr-only"
           onChange={async (e) => {
             const f = e.target.files?.[0];
+            e.target.value = "";
             if (!f) return;
             setBusy(true);
             const fd = new FormData();
