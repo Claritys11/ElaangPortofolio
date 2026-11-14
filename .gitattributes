@@ -1,0 +1,13 @@
+content/writeups/*.md whitespace=-blank-at-eol,-blank-at-eof
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.avif binary
+*.zip binary
+*.mp4 binary
+*.mp3 binary

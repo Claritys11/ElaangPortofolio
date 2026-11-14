@@ -7,6 +7,7 @@ import { useEffect, useRef } from "react";
 import { scrollToTop } from "@/components/motion/smooth-scroll";
 import { GithubIcon, InstagramIcon } from "@/components/site/brand-icons";
 import { fitScaleX, GLITCH_TIMING, nextGlitchDelay, sliceInset } from "@/lib/glitch";
+import { withBasePath } from "@/lib/base-path";
 import { gsap, NO_REDUCED, prefersReducedMotion, ScrollTrigger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import "./motion-footer.css";
@@ -213,7 +214,7 @@ function MarqueeItem({ items }: { items: string[] }) {
   );
 }
 
-const linkProps = (l: FooterLink) => (l.external ? { href: l.href, target: "_blank", rel: "noopener noreferrer" } : { href: l.href });
+const linkProps = (l: FooterLink) => (l.external ? { href: l.href, target: "_blank", rel: "noopener noreferrer" } : { href: withBasePath(l.href) ?? l.href });
 
 export function CinematicFooter(props: CinematicFooterProps) {
   const { giantText, secretText, marquee, heading, primaryLinks, secondaryLinks, copyright, creditName } = props;

@@ -1,7 +1,21 @@
-import type { Achievement, ProfileSettings, Project, Writeup } from "@/generated/prisma/client";
 import { achievementWeight } from "@/lib/achievements";
 import { normalizeMediaUrl, parseObjectArray, parseRecord, parseStringArray } from "@/lib/json";
 import type { AchievementItem, Attachment, EducationItem, JourneyItem, Profile, ProjectItem, Skill, WriteupDetail, WriteupSummary } from "@/lib/types";
+
+// Structural legacy row types keep the migration helpers independent from Prisma.
+type Writeup = {
+  id: string; slug: string | null; title: string | null; competition: string | null; category: string | null;
+  difficulty: string | null; date: Date | null; summary: string | null; content: string | null; flag?: string | null;
+  tagsJson: unknown; attachmentsJson?: unknown; createdAt: Date; updatedAt: Date;
+};
+type Project = { id: string; title: string | null; description: string | null; imageUrl: string | null; projectUrl: string | null; category: string | null; tagsJson: unknown };
+type Achievement = { id: string; title: string | null; issuer: string | null; platform: string | null; description: string | null; imageUrl: string | null; date: Date | null; proofScore: number | null; documentUrl: string | null };
+type ProfileSettings = {
+  displayName: string | null; alias: string | null; navbarBrandMode: string; navbarBrandName: string | null;
+  email: string | null; websiteUrl: string | null; githubUrl: string | null; instagramUrl: string | null;
+  profileImageUrl: string | null; aboutText: string | null; philosophyText: string | null;
+  technicalArsenalJson: unknown; professionalJourneyJson: unknown; educationHistoryJson: unknown; seoSettingsJson: unknown;
+};
 
 const KNOWN_CATEGORIES = ["Pwn", "Reverse", "Forensics", "Crypto", "Web", "Misc", "OSINT"];
 

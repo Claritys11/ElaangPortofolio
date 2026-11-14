@@ -1,0 +1,185 @@
+[
+  {
+    "id": "das-badung-interactive-flood-story-idn-times",
+    "title": "DAS Badung — Interactive Flood Story (IDN Times)",
+    "description": "",
+    "imageUrl": "/assets/uploads/ccbc94ee-841d-4069-843d-9bb74fd71464-das-peta.jpg",
+    "projectUrl": "https://github.com/Claritys11/das-badung-interaktif",
+    "category": "Interactive Journalism",
+    "tags": [
+      "React",
+      "TypeScript",
+      "MapLibre",
+      "Scrollytelling",
+      "Data Journalism",
+      "Framer"
+    ]
+  },
+  {
+    "id": "cachyos-niri-daily-driver-linux-desktop",
+    "title": "CachyOS + niri — Daily-Driver Linux Desktop",
+    "description": "",
+    "imageUrl": "/assets/uploads/24b996d4-126f-4ff6-b8df-2cba42072f27-desktop-safe.jpg",
+    "projectUrl": null,
+    "category": "Linux Setup",
+    "tags": [
+      "CachyOS",
+      "Arch Linux",
+      "niri",
+      "Wayland",
+      "Quickshell",
+      "fish"
+    ]
+  },
+  {
+    "id": "mic-bot-class-accountability-bot",
+    "title": "MIC Bot — Class Accountability Bot",
+    "description": "",
+    "imageUrl": "/assets/uploads/333986bf-39b0-4294-87a2-c9a635d3c7ed-mic-repo.jpg",
+    "projectUrl": "https://github.com/Claritys11/mic-bot-akuntabilitas",
+    "category": "Competition Prototype",
+    "tags": [
+      "Bun",
+      "TypeScript",
+      "discord.js",
+      "MongoDB",
+      "OpenRouter",
+      "LLM"
+    ]
+  },
+  {
+    "id": "islet-dynamic-island-for-linux",
+    "title": "Islet — Dynamic Island for Linux",
+    "description": "",
+    "imageUrl": "/assets/uploads/3729f439-1222-4c84-90db-3afe330fc41e-project-islet.png",
+    "projectUrl": "https://github.com/Claritys11/islet",
+    "category": "Open Source",
+    "tags": [
+      "Quickshell",
+      "QML",
+      "Wayland",
+      "niri",
+      "Hyprland",
+      "Linux"
+    ]
+  },
+  {
+    "id": "homelab-self-hosted-deployment-platform",
+    "title": "Homelab — Self-Hosted Deployment Platform",
+    "description": "",
+    "imageUrl": "/assets/uploads/72ea6e9e-57cf-4eac-91e2-d563d862c4ea-coolify.jpg",
+    "projectUrl": null,
+    "category": "Infrastructure",
+    "tags": [
+      "Coolify",
+      "Docker",
+      "Traefik",
+      "Cloudflare Tunnel",
+      "systemd-nspawn",
+      "CachyOS"
+    ]
+  },
+  {
+    "id": "orbit-bioenergy-impact-tracker",
+    "title": "ORBIT — Bioenergy Impact Tracker",
+    "description": "Organic Recycling & Bioenergy Impact Tracker, built for JA WE Challenge 2026 (\"Reimagine Energy: Powering Our Future from Waste\"). Reusable QR containers trace school canteen waste through pickup, calibrated weighing and contamination checks at a community biodigester; verified biogas output is then allocated back to contributors and published as public impact reports. Role-based workflows for canteen staff, school admins, logistics, facility partners and students.",
+    "imageUrl": "/assets/uploads/356ae9a0-77b5-4f39-8ed0-f5a0d1d98a85-project-orbit.png",
+    "projectUrl": "https://github.com/Claritys11/orbit-bioenergy-tracker",
+    "category": "Competition Prototype",
+    "tags": [
+      "Next.js 16",
+      "Auth.js",
+      "Prisma",
+      "QR Traceability",
+      "Recharts",
+      "Sustainability"
+    ]
+  },
+  {
+    "id": "internext-xi-international-class-hub",
+    "title": "Internext — XI International Class Hub",
+    "description": "Digital home of the XI International class at SMK Telkom Malang (25 students): member directory, project showcase, news, agenda, a 360° dome photo gallery and a live guestbook chat with public channels, all managed from an admin CMS. Built with Next.js 16, Tailwind v4, GSAP and Framer Motion on Prisma + PostgreSQL, deployed with Coolify.",
+    "imageUrl": "/assets/uploads/f2b1155c-2ffc-4249-b6c3-fca2ffa463ec-project-internext.png",
+    "projectUrl": "https://internext.web.id/",
+    "category": "Web Platform",
+    "tags": [
+      "Next.js 16",
+      "GSAP",
+      "Framer Motion",
+      "Prisma",
+      "PostgreSQL",
+      "CMS"
+    ]
+  },
+  {
+    "id": "e-pilketos-school-council-e-voting",
+    "title": "E-Pilketos — School Council E-Voting",
+    "description": "Token-based e-voting system for the SMK Telkom Malang student council (OSIS) election. Students vote with one-time tokens; admins manage elections and candidates, generate per-student tokens with email delivery, follow a live results dashboard and review an audit log. Hardened with rate limiting, upload signature checks and secure sessions, and self-hosted with Docker behind a Cloudflare Tunnel.",
+    "imageUrl": "/assets/uploads/31a722d6-5c82-40c4-acea-dae8d61fc5c3-project-pilketos.png",
+    "projectUrl": "https://pilketos.clarityz.my.id/",
+    "category": "Web Application",
+    "tags": [
+      "Next.js 16",
+      "Auth.js",
+      "Prisma",
+      "PostgreSQL",
+      "Docker",
+      "E-Voting"
+    ]
+  },
+  {
+    "id": "panduan-kuliah-luar-negeri-beasiswa-fully-funded-untuk-siswa-indonesia",
+    "title": "Panduan Kuliah Luar Negeri & Beasiswa Fully Funded untuk Siswa Indonesia",
+    "description": "Research hub untuk siswa Indonesia yang ingin melanjutkan S1 ke luar negeri, khususnya di bidang Computer Science, Software Engineering, dan Cybersecurity. Berisi perbandingan universitas, peluang beasiswa, admission requirements, SAT/IELTS, estimasi biaya, timeline persiapan, serta catatan verifikasi dari sumber resmi. Informasi diperbarui secara bertahap dan beberapa ketentuan dapat berubah setiap tahun—selalu cek situs resmi universitas dan penyedia beasiswa sebelum mengambil keputusan.",
+    "imageUrl": "/assets/uploads/a26a0f2b-54c7-4485-bf9e-78715069ab12-screenshot_2026-08-03_15-35-00.png",
+    "projectUrl": "https://app.notion.com/p/University-Options-Balanced-Shortlist-Intake-2028-3b0d29486a2c812ab0a8e0dd9e34137f?source=copy_link",
+    "category": "Planning",
+    "tags": [
+      "Beasiswa",
+      "Abroad",
+      "University",
+      "Planning"
+    ]
+  },
+  {
+    "id": "devsecops-dashboard",
+    "title": "DevSecOps Dashboard",
+    "description": "Self-hosted DevSecOps homelab dashboard for monitoring Linux servers, Docker containers, HTTP endpoints, SSL certificates, metrics, alerts, and audit logs with Next.js, Prisma, PostgreSQL, Docker Compose, and a Go agent.",
+    "imageUrl": "/assets/uploads/37ff6d0c-fbe7-49e1-8761-beff99f2438f-overview.png",
+    "projectUrl": "https://github.com/Claritys11/DevSecOps-Dashboard",
+    "category": "Security Tooling",
+    "tags": [
+      "DevSecOps",
+      "Dashboard",
+      "Monitoring",
+      "Homelab"
+    ]
+  },
+  {
+    "id": "challenge-ctf-forensic-quasso-tv",
+    "title": "Challenge CTF Forensic (QuaSSo TV)",
+    "description": "Created and structured forensics challenges for CTF events, showcasing expertise in digital analysis, investigation techniques, and problem-solving.",
+    "imageUrl": "/assets/uploads/c54f50d3-083d-4bf5-9f78-44a92abfe6d5-quasso-tv.jpg",
+    "projectUrl": "https://github.com/Claritys11/Chall-QuaSSo-TV-by-Elaang",
+    "category": "Capture The Flag (CTF)",
+    "tags": [
+      "Forensic",
+      "Stegano",
+      "Homemade",
+      "Easy"
+    ]
+  },
+  {
+    "id": "personal-portfolio-website-development",
+    "title": "Personal Portfolio Website Development",
+    "description": "Created a personal portfolio website to highlight projects, achievements, and technical skills, reflecting both creativity and development expertise.",
+    "imageUrl": "/assets/uploads/c136083a-8cef-4fad-be79-17bcef3ef302.png",
+    "projectUrl": "https://github.com/Claritys11/RevisionedPortfolio",
+    "category": "Coding Project",
+    "tags": [
+      "Next.js",
+      "Tailwind CSS",
+      "Web Development"
+    ]
+  }
+]

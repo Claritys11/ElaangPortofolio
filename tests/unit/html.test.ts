@@ -30,6 +30,14 @@ describe("renderWriteupHtml", () => {
     expect(html).toContain('href="https://x.dev" rel="noopener noreferrer" target="_blank"');
     expect(html).toContain('<a href="/writeups">y</a>');
   });
+  it("prefixes local image and attachment URLs in the RSC-rendered HTML payload", async () => {
+    const { html } = await renderWriteupHtml('<img src="/assets/uploads/figure.png"><a href="/assets/uploads/evidence.pdf">evidence</a>');
+    expect(html).toContain('src="/assets/uploads/figure.png"');
+    expect(html).toContain('href="/assets/uploads/evidence.pdf"');
+    expect(html).toContain('loading="lazy"');
+    expect(html).toContain('fetchpriority="low"');
+    expect(html).toContain('decoding="async"');
+  });
   it("demotes in-article h1 to h2 so the page keeps one h1 and the TOC sees them", async () => {
     const { html, toc } = await renderWriteupHtml("<h1>Overview</h1><h2>Exploit</h2>");
     expect(html).not.toContain("<h1");

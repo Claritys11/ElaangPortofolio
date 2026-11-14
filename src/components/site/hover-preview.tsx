@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { gsap, prefersReducedMotion } from "@/lib/motion";
+import { withBasePath } from "@/lib/base-path";
 
 export function HoverPreview({ src }: { src: string | null }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -27,7 +28,7 @@ export function HoverPreview({ src }: { src: string | null }) {
       aria-hidden
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      {src && <img src={src} alt="" className="h-full w-full object-cover" />}
+      {src && <img src={withBasePath(src) ?? src} alt="" className="h-full w-full object-cover" loading="lazy" fetchPriority="low" decoding="async" />}
     </div>
   );
 }
