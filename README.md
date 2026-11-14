@@ -40,14 +40,14 @@ The GitHub contribution heatmap is fetched during the static build and refreshed
 
 `content/site.json` is the deployment source of truth:
 
-- `url`: canonical HTTP(S) origin only, e.g. `https://dfbro.my.id` (no repository path).
+- `url`: canonical HTTP(S) origin only, e.g. `https://claritys.web.id` (no repository path).
 - `basePath`: `/` for a custom domain or GitHub Pages user site; `/repository-name` for a project site.
 - `outputDirectory`: fixed to `dist`.
 - `trailingSlash`, `title`, `description`, and `language`: canonical route and metadata settings.
 
 Next.js `basePath`, public-asset prefixes, metadata, JSON-LD, robots, sitemap, static export scripts, preview server, and GitHub Actions artifact all consume this same configuration. The sitemap includes the six canonical section pages, every published writeup, and each individual project page. Changing `url` does not change DNS or GitHub Pages settings automatically.
 
-The active deployment is `https://dfbro.my.id/` with root base path `/`. `CNAME` is emitted into the static artifact for the custom hostname; GitHub Pages' actual custom-domain setting remains a repository setting and DNS must point to GitHub Pages independently.
+The target deployment is `https://claritys.web.id/` with root base path `/`. `CNAME` is emitted into the static artifact for the custom hostname; GitHub Pages' actual custom-domain setting remains a repository setting and DNS must point to GitHub Pages independently.
 
 ### Editing content
 
