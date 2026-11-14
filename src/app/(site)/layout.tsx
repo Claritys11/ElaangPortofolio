@@ -10,8 +10,6 @@ import { jsonLdScript, pageOpenGraph, truncate } from "@/lib/seo";
 import { siteGraph } from "@/lib/seo-graph";
 import { siteUrl } from "@/lib/site";
 
-export const dynamic = "force-dynamic";
-
 export async function generateMetadata(): Promise<Metadata> {
   const p = await getProfile();
   const siteName = p.seo.siteName ?? `${p.displayName} Portfolio`;
@@ -53,7 +51,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(siteGraph(profile, siteUrl())) }} />
       <div id="content" className="relative z-10 bg-background">
         {children}
-        <ContactSection name={profile.displayName} imageUrl={profile.profileImageUrl} />
+        <ContactSection name={profile.displayName} imageUrl={profile.profileImageUrl} email={profile.email} githubUrl={profile.githubUrl} />
       </div>
       <CinematicFooter
         giantText="ELANG"

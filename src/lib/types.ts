@@ -7,4 +7,4 @@ export type Skill = { name: string; level: number };
 export type JourneyItem = { role: string; company: string; period: string; desc: string };
 export type EducationItem = { level: string; school: string; period: string };
 export type SeoSettings = { jobTitle?: string; keywords: string[]; sameAs: string[]; locale?: string; description?: string; siteName?: string; defaultTitle?: string; titleTemplate?: string };
-export type Profile = { displayName: string; alias: string; brand: string; email: string | null; websiteUrl: string | null; githubUrl: string | null; instagramUrl: string | null; profileImageUrl: string; aboutText: string; philosophyText: string; skills: Skill[]; journey: JourneyItem[]; education: EducationItem[]; seo: SeoSettings };
+export type Profile = { displayName: string; alias: string; brand: string; email: string | null; websiteUrl: string | null; githubUrl: string | null; githubActivityUsername?: string | null; heroNameLines?: string[]; instagramUrl: string | null; profileImageUrl: string; aboutText: string; philosophyText: string; skills: Skill[]; journey: JourneyItem[]; education: EducationItem[]; seo: SeoSettings };

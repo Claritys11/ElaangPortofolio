@@ -1,0 +1,29 @@
+{
+  "defaultTheme": "dark",
+  "typography": {
+    "display": "Archivo",
+    "body": "Inter Tight",
+    "mono": "Geist Mono"
+  },
+  "radius": 6,
+  "colors": {
+    "light": {
+      "background": "#EDEBE6",
+      "foreground": "#0E0E0C",
+      "card": "#F3F1EB",
+      "primary": "#FF5B1F",
+      "secondary": "#E0DED8",
+      "muted": "#E6E3DC",
+      "mutedForeground": "#73716A"
+    },
+    "dark": {
+      "background": "#0E0E0C",
+      "foreground": "#EDEBE6",
+      "card": "#141412",
+      "primary": "#FF5B1F",
+      "secondary": "#222220",
+      "muted": "#1D1D1B",
+      "mutedForeground": "#A8A59E"
+    }
+  }
+}

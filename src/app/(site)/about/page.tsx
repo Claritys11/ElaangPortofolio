@@ -18,7 +18,6 @@ import { ids } from "@/lib/seo-graph";
 import { siteUrl } from "@/lib/site";
 import { isGenericTag } from "@/lib/tags";
 
-export const dynamic = "force-dynamic";
 export async function generateMetadata(): Promise<Metadata> {
   const p = await getProfile();
   return {

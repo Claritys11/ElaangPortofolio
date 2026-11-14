@@ -1,0 +1,122 @@
+{
+  "displayName": "Elang Dimas Syadewa",
+  "heroNameLines": [
+    "Elang",
+    "Dimas",
+    "Syadewa"
+  ],
+  "alias": "Claritys",
+  "brand": "Claritys",
+  "email": "elangdimassyadewa@gmail.com",
+  "websiteUrl": "https://dfbro.my.id",
+  "githubUrl": "https://github.com/Claritys11/DevSecOps-Dashboard",
+  "githubActivityUsername": "Claritys11",
+  "instagramUrl": "https://www.instagram.com/elanggslibaw",
+  "profileImageUrl": "/profile.jpg",
+  "aboutText": "I'm an IT student passionate about cybersecurity, with a focus on binary and web exploitation. I also work with Linux systems, server infrastructure, and web development, learning through hands-on projects, CTF competitions, and experimentation.",
+  "philosophyText": "“somewhere i have never travelled, gladly beyond.”",
+  "skills": [
+    {
+      "name": "Web Exploitation",
+      "level": 75
+    },
+    {
+      "name": "Public Speaking",
+      "level": 73
+    },
+    {
+      "name": "Web Application Security",
+      "level": 71
+    },
+    {
+      "name": "Reverse Engineering",
+      "level": 71
+    },
+    {
+      "name": "Programming",
+      "level": 71
+    },
+    {
+      "name": "Digital Forensic",
+      "level": 70
+    }
+  ],
+  "journey": [
+    {
+      "role": "Early Interest in Technology",
+      "company": "Junior High School",
+      "period": "2024",
+      "desc": "I started my journey with a strong curiosity about computers and how digital systems work. This curiosity led me to explore programming and technology more deeply."
+    },
+    {
+      "role": "Discovering Cybersecurity & CTF",
+      "company": "Vocational High School",
+      "period": "2025",
+      "desc": "I found cybersecurity through Capture The Flag (CTF) challenges. I started with digital forensics, then moved into binary exploitation (pwn), which is now most of my writeups, and I'm expanding into web exploitation."
+    },
+    {
+      "role": "Linux & Infrastructure",
+      "company": "Homelab",
+      "period": "2025 - Now",
+      "desc": "I run Linux (CachyOS) as my daily driver and self-host my own services on a homelab: Docker and Coolify behind a Cloudflare Tunnel, with a DevSecOps dashboard monitoring the servers and containers."
+    },
+    {
+      "role": "Building for the Web",
+      "company": "Personal & School Projects",
+      "period": "2025 - Now",
+      "desc": "I build full-stack web apps with Next.js, Prisma and PostgreSQL, from a class hub and a school e-voting system to this portfolio, and deploy them on my own infrastructure."
+    },
+    {
+      "role": "Future Goals",
+      "company": "Vocational High School",
+      "period": "Now - Future",
+      "desc": "My goal is to grow as a cybersecurity professional specializing in binary and web exploitation, with Linux administration and web development as my foundation, while I keep learning, building, and competing in CTFs."
+    }
+  ],
+  "education": [
+    {
+      "level": "SMPN 11 Malang",
+      "school": "education",
+      "period": ""
+    },
+    {
+      "level": "Junior High School",
+      "school": "SMPN 11 Malang",
+      "period": ""
+    },
+    {
+      "level": "Junior High School",
+      "school": "SMPN 11 Malang",
+      "period": ""
+    },
+    {
+      "level": "Vocational High School",
+      "school": "SMK Telkom Malang",
+      "period": ""
+    },
+    {
+      "level": "Vocational High School",
+      "school": "SMK Telkom Malang",
+      "period": ""
+    }
+  ],
+  "seo": {
+    "jobTitle": "Cybersecurity Student",
+    "locale": "id_ID",
+    "description": "Elang Dimas Syadewa (Claritys) — Cybersecurity Specialist from Malang, Indonesia. I'm an IT student passionate about cybersecurity, with a focus on binary…",
+    "keywords": [
+      "CTF",
+      "Pwn",
+      "Binary Exploitation",
+      "Web Exploitation",
+      "Cybersecurity"
+    ],
+    "sameAs": [
+      "https://github.com/Claritys11/DevSecOps-Dashboard",
+      "https://github.com/Claritys11/orbit-bioenergy-tracker",
+      "https://github.com/Claritys11",
+      "https://www.instagram.com/elanggslibaw"
+    ],
+    "siteName": "Elang Dimas Syadewa Portfolio"
+  }
+}

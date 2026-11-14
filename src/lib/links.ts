@@ -7,7 +7,7 @@ export type BioLink = { label: string; href: string; hint: string; external?: bo
 export const BIO_LINKS: BioLink[] = [
   { label: "All writeups", href: "/writeups", hint: "CTF solutions" },
   { label: "Projects", href: "/projects", hint: "web apps & tooling" },
-  { label: "Portfolio", href: "/", hint: "claritys.web.id" },
+  { label: "Portfolio", href: "/", hint: "dfbro.github.io" },
   { label: "GitHub", href: "https://github.com/claritys11", hint: "@claritys11", external: true },
   { label: "Instagram", href: "https://instagram.com/elanggslibaw", hint: "@elanggslibaw", external: true },
   // TODO: confirm the Threads handle.

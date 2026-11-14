@@ -1,11 +1,12 @@
 import { ScrambleLine } from "@/components/motion/scramble-line";
 import { SplitHeading } from "@/components/motion/split-heading";
 import { Greeting, LiveDot, LocalClock } from "@/components/site/hero-live";
+import { resolveHeroNameLines } from "@/lib/hero-name";
 
-type Props = { name: string; alias: string; role: string; location: string; school: string };
+type Props = { name: string; nameLines?: string[] | null; alias: string; role: string; location: string; school: string };
 
-export function Hero({ name, alias, role, location, school }: Props) {
-  const [first, ...rest] = name.toUpperCase().split(" ");
+export function Hero({ name, nameLines, alias, role, location, school }: Props) {
+  const lines = resolveHeroNameLines(name, nameLines).map((line) => line.toUpperCase());
   return (
     <section className="relative mx-auto flex min-h-svh max-w-[1600px] flex-col px-4 pt-28 pb-10 md:px-8 md:pt-28 md:pb-14">
       <div className="mb-8 flex flex-col justify-between gap-6 md:mb-10 md:flex-row md:items-end">
@@ -34,16 +35,20 @@ export function Hero({ name, alias, role, location, school }: Props) {
       <div className="flex flex-1 flex-col">
         {/* One h1 carrying the full name (search engines read it as the page's main subject). */}
         <h1 className="mb-10">
-          <SplitHeading as="span" text={first} waitIntro className="block font-display text-[22vw] leading-[0.8] font-black tracking-[-0.05em] md:text-[17vw]" />
-          {rest.length > 0 && (
+          {lines.map((line, index) => (
             <SplitHeading
+              key={`${index}-${line}`}
               as="span"
-              text={rest.join(" ")}
-              delay={0.15}
+              text={line}
+              delay={index * 0.15}
               waitIntro
-              className="block font-display text-[11vw] leading-[0.9] font-light tracking-[-0.04em] [font-stretch:125%] md:text-[8.5vw]"
+              deferUntilIdle
+              keepWordsTogether
+              className={index === 0
+                ? "hero-name-line block font-display text-[22vw] leading-[0.8] font-black tracking-[-0.05em] md:text-[17vw]"
+                : "hero-name-line block font-display text-[11vw] leading-[0.9] font-light tracking-[-0.04em] [font-stretch:125%] md:text-[8.5vw]"}
             />
-          )}
+          ))}
         </h1>
         {/* Pinned to the bottom of the first screen, so the page opens on the hero alone. */}
         <div className="mt-auto flex items-center justify-between border-t border-border pt-5">
