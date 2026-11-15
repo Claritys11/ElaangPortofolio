@@ -39,7 +39,7 @@ export function AchievementList({ items }: { items: AchievementItem[] }) {
           <InteractiveBentoGallery
             mediaItems={media}
             title="Certificates"
-            description={`${media.length} proofs · click to view · drag to rearrange`}
+            description={`${media.length} proofs · click to view · drag horizontally to rearrange`}
             selectedId={openId}
             onSelectedIdChange={setOpenId}
           />

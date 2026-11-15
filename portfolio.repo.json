@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "role": "production",
+  "instanceName": "Claritys Portfolio",
+  "templateName": "RevisionedPortfolioTemplate",
+  "templateContractVersion": 1
+}

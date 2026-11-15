@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Reveal } from "@/components/motion/reveal";
 import { SplitHeading } from "@/components/motion/split-heading";
 import { Media } from "@/components/site/media";
@@ -8,7 +9,6 @@ import { breadcrumbJsonLd, jsonLdScript, pageOpenGraph, truncate } from "@/lib/s
 import { ids } from "@/lib/seo-graph";
 import { siteUrl } from "@/lib/site";
 
-export const dynamic = "force-dynamic";
 export async function generateMetadata(): Promise<Metadata> {
   const projects = await listProjects();
   return {
@@ -41,7 +41,8 @@ export default async function ProjectsPage() {
               "@type": "CreativeWork",
               name: p.title,
               description: p.description,
-              url: p.projectUrl ?? undefined,
+              url: `${base}/projects/${encodeURIComponent(p.id)}`,
+              sameAs: p.projectUrl ?? undefined,
               image: abs(p.imageUrl)?.startsWith("data:") ? undefined : abs(p.imageUrl),
               genre: p.category,
               keywords: p.tags.join(", "),
@@ -60,22 +61,27 @@ export default async function ProjectsPage() {
     <main className="mx-auto max-w-[1600px] px-4 pt-32 pb-24 md:px-8 md:pt-44">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
       <SectionLabel index={3} name="projects" />
-      <SplitHeading as="h1" text="Projects" className="mt-4 mb-20 font-display text-[18vw] leading-[0.8] font-black tracking-[-0.05em] md:text-[12vw]" />
+      <SplitHeading as="h1" text="Projects" deferUntilIdle className="mt-4 mb-20 font-display text-[18vw] leading-[0.8] font-black tracking-[-0.05em] md:text-[12vw]" />
       <Reveal stagger className="grid gap-x-8 gap-y-20 md:grid-cols-2">
         {projects.map((p, i) => (
           <article key={p.id} className={i % 2 ? "md:mt-32" : ""}>
-            <Media src={p.imageUrl} alt={p.title} className="aspect-[4/3] w-full" />
+            <Media src={p.imageUrl} alt={p.title} eager={i === 0} className="aspect-[4/3] w-full" />
             <div className="mt-5 flex items-baseline justify-between gap-6">
-              <h2 className="font-display text-3xl font-semibold tracking-tight">{p.title}</h2>
+              <h2 className="font-display text-3xl font-semibold tracking-tight"><Link href={`/projects/${encodeURIComponent(p.id)}`} className="hover:text-primary">{p.title}</Link></h2>
               <span className="meta shrink-0">{p.category}</span>
             </div>
             <p className="mt-3 text-muted-foreground">{p.description}</p>
             {p.tags.length > 0 && <p className="meta mt-4">{p.tags.join(" · ")}</p>}
-            {p.projectUrl && (
-              <a href={p.projectUrl} target="_blank" rel="noopener noreferrer" className="meta mt-5 inline-block border-b border-primary pb-1 text-foreground">
-                visit ↗
-              </a>
-            )}
+            <div data-project-actions className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3">
+              <Link href={`/projects/${encodeURIComponent(p.id)}`} className="meta inline-flex whitespace-nowrap border-b border-primary pb-1 text-foreground">
+                project details ↗
+              </Link>
+              {p.projectUrl && (
+                <a href={p.projectUrl} target="_blank" rel="noopener noreferrer" className="meta inline-flex whitespace-nowrap border-b border-primary pb-1 text-foreground">
+                  visit ↗
+                </a>
+              )}
+            </div>
           </article>
         ))}
       </Reveal>

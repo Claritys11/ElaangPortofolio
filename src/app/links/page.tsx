@@ -8,7 +8,6 @@ import type { WriteupSummary } from "@/lib/types";
 
 // Lives outside the (site) group on purpose: most visits come from Instagram's in-app browser,
 // so this page skips the nav, smooth scroll and footer animation and ships almost no JS.
-export const dynamic = "force-dynamic";
 
 const description = "Links from Elang (Claritys): the latest CTF writeup, projects, GitHub, Instagram and contact.";
 

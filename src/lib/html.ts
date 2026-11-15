@@ -6,9 +6,11 @@ import rehypeSanitize, { defaultSchema, type Options as SanitizeSchema } from "r
 import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
 import type { BundledLanguage } from "shiki";
+import { marked } from "marked";
 import { unified } from "unified";
 import { visit } from "unist-util-visit";
 import { guessLanguage } from "@/lib/lang-guess";
+import { withBasePath } from "@/lib/base-path";
 import type { VFile } from "vfile";
 
 export type TocItem = { id: string; text: string; depth: 2 | 3 | 4 };
@@ -46,6 +48,19 @@ function externalLinks() {
       if (node.tagName !== "a") return;
       const href = String(node.properties?.href ?? "");
       if (/^https?:\/\//i.test(href)) node.properties = { ...node.properties, rel: ["noopener", "noreferrer"], target: "_blank" };
+    });
+}
+
+function basePathUrls() {
+  return (tree: Root) =>
+    visit(tree, "element", (node: Element) => {
+      for (const key of ["src", "href", "poster"] as const) {
+        const value = node.properties?.[key];
+        if (typeof value === "string") {
+          const prefixed = withBasePath(value);
+          if (prefixed) node.properties = { ...node.properties, [key]: prefixed };
+        }
+      }
     });
 }
 
@@ -102,7 +117,13 @@ function lazyImages() {
       if (node.tagName !== "img") return;
       n++;
       const alt = String(node.properties?.alt ?? "").trim();
-      node.properties = { ...node.properties, loading: "lazy", decoding: "async", ...(!alt && prefix ? { alt: `${prefix} — figure ${n}` } : {}) };
+      node.properties = {
+        ...node.properties,
+        loading: "lazy",
+        fetchPriority: "low",
+        decoding: "async",
+        ...(!alt && prefix ? { alt: `${prefix} — figure ${n}` } : {}),
+      };
     });
   };
 }
@@ -118,6 +139,7 @@ const processor = unified()
   .use(rehypeSlug)
   .use(collectToc)
   .use(externalLinks)
+  .use(basePathUrls)
   .use(lazyImages)
   .use(rehypeShiki, {
     themes: { light: "github-light", dark: "vesper" },
@@ -131,7 +153,9 @@ const processor = unified()
   .use(rehypeStringify);
 
 export async function renderWriteupHtml(input: string, opts: { altPrefix?: string } = {}) {
-  const file = await processor.process({ value: input, data: { altPrefix: opts.altPrefix } });
+  // File-backed writeups are Markdown; raw legacy HTML remains valid Markdown input too.
+  const source = marked.parse(input, { async: false, gfm: true });
+  const file = await processor.process({ value: source, data: { altPrefix: opts.altPrefix } });
   return { html: String(file), toc: (file.data.toc as TocItem[] | undefined) ?? [] };
 }
 

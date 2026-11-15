@@ -31,7 +31,7 @@ export function AboutIntro({ alias, name, text, imageUrl, location }: { alias: s
     <section ref={ref} className="grid gap-12 md:grid-cols-12 md:items-end">
       <div className="md:col-span-7">
         <SectionLabel index={1} name="about" />
-        <SplitHeading as="h1" text={alias} className="mt-4 font-display text-[20vw] leading-[0.98] font-black tracking-[-0.05em] md:text-[11vw]" />
+        <SplitHeading as="h1" text={alias} deferUntilIdle className="mt-4 font-display text-[20vw] leading-[0.98] font-black tracking-[-0.05em] md:text-[11vw]" />
         <p className="meta mt-6">
           {name} · {location}
         </p>

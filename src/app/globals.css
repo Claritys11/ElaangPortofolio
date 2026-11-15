@@ -112,6 +112,82 @@ html.lenis body {
   @apply font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase;
 }
 
+/* Keep descenders inside SplitText's reveal masks without compressing wrapped lines. */
+.split-heading .split-heading-char-mask {
+  padding-bottom: 0.2em;
+}
+
+.hm-glow {
+  background: radial-gradient(circle, color-mix(in oklch, var(--primary) 16%, transparent) 0%, transparent 72%);
+}
+.hm-grid-visual {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 500ms ease, transform 500ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.hm-card.is-visible .hm-grid-visual {
+  opacity: 1;
+  transform: translateY(0);
+}
+.hm-canvas {
+  visibility: hidden;
+}
+.hm-card.is-animating .hm-cell {
+  visibility: hidden;
+}
+.hm-card.is-animating .hm-canvas {
+  visibility: visible;
+}
+.hm-card.is-complete .hm-canvas {
+  visibility: hidden;
+}
+.tl-item {
+  opacity: 0.3;
+  transition: opacity 420ms ease;
+}
+.tl-item.is-on {
+  opacity: 1;
+}
+.tl-fill {
+  transform: scaleY(0);
+  transition: transform 650ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.tl-group.is-on .tl-fill {
+  transform: scaleY(1);
+}
+.stack-inner {
+  transition: transform 460ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.stack-inner::after {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: rgb(0 0 0 / 24%);
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 460ms ease;
+}
+.stack-inner.is-stacked {
+  transform: scale(0.92);
+}
+.stack-inner.is-stacked::after {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hm-grid-visual,
+  .tl-item,
+  .tl-fill,
+  .stack-inner {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .stack-inner::after {
+    transition: none;
+  }
+}
+
 /* Shiki dual theme */
 .shiki,
 .shiki span {

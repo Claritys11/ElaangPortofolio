@@ -1,0 +1,4480 @@
+{
+  "source": "https://claritys.web.id",
+  "capturedAt": "2026-11-11T15:50:40.199Z",
+  "acquisition": "Playwright DOM route inventory + public per-writeup Markdown export",
+  "sourceWriteups": 59,
+  "localWriteupsBefore": 56,
+  "newWriteups": [
+    "pwn-kodama",
+    "pwn-kukyo",
+    "web-shirogane"
+  ],
+  "updatedWriteups": [
+    "crypto-locked-desk-drawer",
+    "forensics-cms-persistence-via-custom-c2",
+    "forensics-evaporated",
+    "forensics-frequency-trap",
+    "forensics-ghost-typist",
+    "forensics-invisible-ink",
+    "forensics-jindal",
+    "forensics-redaction-fail",
+    "forensics-sepuh-forensik",
+    "forensics-sudah-lama",
+    "forensics-sunset",
+    "forensics-the-silent-echo",
+    "pwn-abbys",
+    "pwn-alloc-101",
+    "pwn-baby-stack",
+    "pwn-banned-bytes",
+    "pwn-combination-32",
+    "pwn-combination-64",
+    "pwn-daily-32",
+    "pwn-daily-64",
+    "pwn-format-string-2",
+    "pwn-format-string-3",
+    "pwn-full-writeup-with-teams-15-place-top-20",
+    "pwn-hsr-32",
+    "pwn-hsr-64",
+    "pwn-integer-writer",
+    "pwn-koperasi",
+    "pwn-lion-parcel",
+    "pwn-login-bonus",
+    "pwn-nash-jail",
+    "pwn-ret2csu",
+    "pwn-ret2param",
+    "pwn-ret2param-2",
+    "pwn-ret2shellcode",
+    "pwn-ret2shellcode-2",
+    "pwn-ret2syscall",
+    "pwn-ret2syscall-2",
+    "pwn-rotten-beef",
+    "pwn-round-robin",
+    "pwn-saya-akan-lawan",
+    "pwn-shellcode-reworked-using-pwndbg",
+    "pwn-truman",
+    "pwn-useless",
+    "reverse-bank-vault",
+    "reverse-flux-capacitor",
+    "reverse-wrongkube",
+    "web-alpaca-certification",
+    "web-animal-viewer",
+    "web-emojify",
+    "web-fushigi-crawler",
+    "web-math6025-discrete-mathematics",
+    "web-secret-table-2",
+    "web-simple-login",
+    "web-skills-assessment-sql-injection-fundamentals",
+    "web-two-million",
+    "web-xmas-login"
+  ],
+  "unchangedWriteups": 0,
+  "uploadObjects": 243,
+  "uploadObjectsAlreadyPresentAndHashMatched": 220,
+  "uploadObjectsToAdd": 23,
+  "totalUploadBytes": 49039515,
+  "attachments": 6,
+  "externalImagesLeftAsExternalReferences": [
+    "https://media1.tenor.com/m/JKpw7pszaqsAAAAd/tendou-alice-blue-archive.gif"
+  ],
+  "articles": [
+    {
+      "slug": "crypto-locked-desk-drawer",
+      "source": "https://claritys.web.id/writeups/crypto-locked-desk-drawer",
+      "title": "Locked Desk Drawer",
+      "competition": "FGTE",
+      "category": "Crypto",
+      "difficulty": "Medium",
+      "date": "2026-03-24",
+      "updated": "2026-07-06",
+      "summary": "🔚 Kesimpulan: Challenge ini menggabungkan Forensik (metadata & steganografi) Encoding (Base64) Kriptografi (AES + MD5)",
+      "tags": [
+        "MISC",
+        "MEDIUM",
+        "AES"
+      ],
+      "status": 200,
+      "markdownBytes": 9928,
+      "flag": "FGTE{MISC_MASTERED}",
+      "attachments": [],
+      "assetNames": [],
+      "domImageNames": [],
+      "externalImages": [],
+      "domArticleHtmlBytes": 65943,
+      "bodyBytes": 9700,
+      "flagPresent": true
+    },
+    {
+      "slug": "forensics-cms-persistence-via-custom-c2",
+      "source": "https://claritys.web.id/writeups/forensics-cms-persistence-via-custom-c2",
+      "title": "CMS - Persistence via Custom C2",
+      "competition": "FGTE 0",
+      "category": "Forensics",
+      "difficulty": "Hard",
+      "date": "2026-03-14",
+      "updated": "2026-07-06",
+      "summary": "Challenge ini menunjukkan bagaimana attacker mempertahankan akses ke sistem menggunakan custom C2 agent berbasis PHP yang sederhana namun efektif. Dari proses analisis, dapat disimpulkan bahwa: Attacker menggunakan mekanisme polling C2 untuk menerima perintah secara remote. Komunikasi diamankan secara ringan menggunakan AES-128-ECB + double Base64 encoding, yang cukup untuk menghindari deteksi kasual tetapi tetap mudah di-reverse saat dianalisis. Artefak penting seperti agent.php dan agent_debug.log menjadi kunci utama dalam memahami cara kerja malware dan alur komunikasi C2. Hal paling krusial yang berhasil diungkap adalah: 👉 mekanisme persistence yang digunakan attacker, yaitu dengan menambahkan SSH public key ke dalam file authorized_keys. Ini memungkinkan attacker: Masuk kembali ke sistem kapan saja Tanpa perlu eksploitasi ulang Tanpa bergantung pada webshell atau C2 lagi",
+      "tags": [
+        "FORENSIC",
+        "NETWORK ANALYST",
+        "PCAP",
+        "HARD"
+      ],
+      "status": 200,
+      "markdownBytes": 27693,
+      "flag": "FGTE0{echo \"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBWOva1ZYUQ8FvZXcCu4b+VDLU0R4qVjs4sIkK4yUpdA root@ms.ariaf.my.id\" > /home/aria/.ssh/authorized_keys}",
+      "attachments": [],
+      "assetNames": [
+        "writeup-inline-f7c20b69-5700-41d5-93c2-43246b538592.png",
+        "writeup-inline-beeb3841-29da-4957-b999-cb39e60d9d72.png",
+        "writeup-inline-e3db2151-912c-4e12-ad93-890f2ec0a76c.png",
+        "writeup-inline-c2b401a8-4c2d-4bdf-ada5-ce52a8d8ce14.png",
+        "writeup-inline-55132b70-f93a-43cf-8765-6ec4c813170f.png",
+        "writeup-inline-198ff9fd-45be-49be-b711-6f6f254e1eee.png",
+        "writeup-inline-ec05dfca-09ea-4e3c-ab0e-3ffce20301b9.png"
+      ],
+      "domImageNames": [
+        "writeup-inline-f7c20b69-5700-41d5-93c2-43246b538592.png",
+        "writeup-inline-beeb3841-29da-4957-b999-cb39e60d9d72.png",
+        "writeup-inline-e3db2151-912c-4e12-ad93-890f2ec0a76c.png",
+        "writeup-inline-c2b401a8-4c2d-4bdf-ada5-ce52a8d8ce14.png",
+        "writeup-inline-55132b70-f93a-43cf-8765-6ec4c813170f.png",
+        "writeup-inline-198ff9fd-45be-49be-b711-6f6f254e1eee.png",
+        "writeup-inline-ec05dfca-09ea-4e3c-ab0e-3ffce20301b9.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 136429,
+      "bodyBytes": 27097,
+      "flagPresent": true
+    },
+    {
+      "slug": "forensics-evaporated",
+      "source": "https://claritys.web.id/writeups/forensics-evaporated",
+      "title": "Evaporated",
+      "competition": "FGTE",
+      "category": "Forensics",
+      "difficulty": "Medium",
+      "date": "2026-02-09",
+      "updated": "2026-07-06",
+      "summary": "🔚 Kesimpulan Challenge ini tidak hanya tentang forensik filesystem, tetapi juga: analisis struktur file pemahaman format PNG membedakan metadata vs data asli",
+      "tags": [
+        "FORENSIC",
+        "MEDIUM",
+        "DISK"
+      ],
+      "status": 200,
+      "markdownBytes": 12683,
+      "flag": "NCLPS1{t4k_kus4ngkA_t3rny4Ta_fl4gny4_b3rsembuny1_09217b9c25}",
+      "attachments": [],
+      "assetNames": [
+        "writeup-inline-f4908d70-1e53-44a6-a034-0079ad282694.png",
+        "writeup-inline-977a2f52-b927-41a2-a0de-04bddb285c54.png",
+        "writeup-inline-07846031-7d34-4dc7-9a40-db283d202c84.png",
+        "writeup-inline-34bab926-6f59-4d79-9d11-cceaeb5421e5.png",
+        "writeup-inline-4f139c3e-6f57-4770-9b9a-e537c935f7d1.png",
+        "writeup-inline-8c26982d-4801-427c-804e-9346c2d0c83b.png"
+      ],
+      "domImageNames": [
+        "writeup-inline-f4908d70-1e53-44a6-a034-0079ad282694.png",
+        "writeup-inline-977a2f52-b927-41a2-a0de-04bddb285c54.png",
+        "writeup-inline-07846031-7d34-4dc7-9a40-db283d202c84.png",
+        "writeup-inline-34bab926-6f59-4d79-9d11-cceaeb5421e5.png",
+        "writeup-inline-4f139c3e-6f57-4770-9b9a-e537c935f7d1.png",
+        "writeup-inline-8c26982d-4801-427c-804e-9346c2d0c83b.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 76299,
+      "bodyBytes": 12257,
+      "flagPresent": true
+    },
+    {
+      "slug": "forensics-frequency-trap",
+      "source": "https://claritys.web.id/writeups/forensics-frequency-trap",
+      "title": "Frequency Trap",
+      "competition": "TraceBash CTF",
+      "category": "Forensics",
+      "difficulty": "Medium",
+      "date": "2026-06-26",
+      "updated": "2026-06-29",
+      "summary": "Challenge ini ngasih file PNG bernama frequency_trap.png. Dari tampilannya sih cuma gambar biasa, tapi metadata-nya langsung ngasih clue kalau ada steganography di domain frekuensi: Image Description : Method: YCbCr_DCT_8x8_coeff3x3 Jadi intinya: ambil password dari EXIF, ubah gambar ke YCbCr, pecah per blok 8×8, lalu cek tanda (positif/negatif) dari koefisien DCT. Ada jebakan kecil juga: satu koefisien ngasih flag yang kelihatan valid, tapi ternyata decoy.",
+      "tags": [
+        "FORENSIC",
+        "DCT",
+        "EASY-MEDIUM"
+      ],
+      "status": 200,
+      "markdownBytes": 6443,
+      "flag": "TBCTF{frequency_trap_successful}",
+      "attachments": [],
+      "assetNames": [
+        "writeup-inline-24f77616-ee44-42b7-8129-cd2587219b98.png",
+        "writeup-inline-b817def9-612a-42c0-90f9-53a7bf94763e.png",
+        "writeup-inline-a6926340-9886-4f18-90c5-ebef233b00b9.png"
+      ],
+      "domImageNames": [
+        "writeup-inline-24f77616-ee44-42b7-8129-cd2587219b98.png",
+        "writeup-inline-b817def9-612a-42c0-90f9-53a7bf94763e.png",
+        "writeup-inline-a6926340-9886-4f18-90c5-ebef233b00b9.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 21243,
+      "bodyBytes": 6105,
+      "flagPresent": true
+    },
+    {
+      "slug": "forensics-ghost-typist",
+      "source": "https://claritys.web.id/writeups/forensics-ghost-typist",
+      "title": "Ghost Typist",
+      "competition": "FGTE 0",
+      "category": "Forensics",
+      "difficulty": "Medium",
+      "date": "2026-03-07",
+      "updated": "2026-07-06",
+      "summary": "🧩 Summary Flow Git commit → ghost.log (keylogger) → recover password → decrypt ghost.enc → dapat file octal → decode → env dump → ambil FLAG",
+      "tags": [
+        "MISC",
+        "MEDIUM",
+        "FIRST BLOOD"
+      ],
+      "status": 200,
+      "markdownBytes": 9095,
+      "flag": "FGTE0{Gh0st_C0m1ts_K3yL0g5_4nd_3nv_Dump5}",
+      "attachments": [],
+      "assetNames": [],
+      "domImageNames": [],
+      "externalImages": [],
+      "domArticleHtmlBytes": 44479,
+      "bodyBytes": 8841,
+      "flagPresent": true
+    },
+    {
+      "slug": "forensics-invisible-ink",
+      "source": "https://claritys.web.id/writeups/forensics-invisible-ink",
+      "title": "Invisible Ink",
+      "competition": "SCTF 2026",
+      "category": "Forensics",
+      "difficulty": "Medium",
+      "date": "2026-07-04",
+      "updated": "2026-07-06",
+      "summary": "Deskripsi : Can you read between the lines?",
+      "tags": [
+        "FORENSIC",
+        "MEDIUM",
+        "ZERO WIDTH UNICODE"
+      ],
+      "status": 200,
+      "markdownBytes": 1763,
+      "flag": "SCTF26{z3r0_w1dth_1s_tr1cky_f0r_3y3s}",
+      "attachments": [
+        {
+          "url": "/assets/uploads/15091af0-9f94-4064-bd5e-317f4b5e7403-a.txt",
+          "name": "a.txt",
+          "contentType": "text/plain"
+        }
+      ],
+      "assetNames": [
+        "78ee0ebc-732f-4239-b575-338b3744f893-image-10.png",
+        "f611f0ed-c2c3-474e-8196-6ae1f2870e23-image-11.png",
+        "d9131b7b-c24b-4c66-a85f-dcce503c4ec7-image-12.png",
+        "aff974dd-b323-489c-a6f3-0a07a9c7230b-image-13.png",
+        "ad3537bc-2d1c-4669-bd64-2f64245480cc-image-14.png",
+        "15091af0-9f94-4064-bd5e-317f4b5e7403-a.txt"
+      ],
+      "domImageNames": [
+        "78ee0ebc-732f-4239-b575-338b3744f893-image-10.png",
+        "f611f0ed-c2c3-474e-8196-6ae1f2870e23-image-11.png",
+        "d9131b7b-c24b-4c66-a85f-dcce503c4ec7-image-12.png",
+        "aff974dd-b323-489c-a6f3-0a07a9c7230b-image-13.png",
+        "ad3537bc-2d1c-4669-bd64-2f64245480cc-image-14.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 1807,
+      "bodyBytes": 1248,
+      "flagPresent": true
+    },
+    {
+      "slug": "forensics-jindal",
+      "source": "https://claritys.web.id/writeups/forensics-jindal",
+      "title": "Jindal",
+      "competition": "PsychCTF 2026",
+      "category": "Forensics",
+      "difficulty": "Easy",
+      "date": "2026-03-15",
+      "updated": "2026-07-06",
+      "summary": "🧩 Kesimpulan Challenge ini menggunakan beberapa teknik: File embedding (JPEG + ZIP) Nested archive Misdirection (troll message) Whitespace Steganography (tab & space encoding)",
+      "tags": [
+        "FORENSIC",
+        "STEGANO",
+        "EASY"
+      ],
+      "status": 200,
+      "markdownBytes": 7405,
+      "flag": "psych{w311_d0n3_sp4c3s_4r3n7_4lw4y5_3mpty}",
+      "attachments": [],
+      "assetNames": [],
+      "domImageNames": [],
+      "externalImages": [],
+      "domArticleHtmlBytes": 35675,
+      "bodyBytes": 7159,
+      "flagPresent": true
+    },
+    {
+      "slug": "forensics-redaction-fail",
+      "source": "https://claritys.web.id/writeups/forensics-redaction-fail",
+      "title": "Redaction Fail",
+      "competition": "FGTE",
+      "category": "Forensics",
+      "difficulty": "Easy",
+      "date": "2026-03-02",
+      "updated": "2026-07-06",
+      "summary": "🏁 Kesimpulan Flag tidak benar-benar dihapus dari PDF Data tersembunyi dalam stream ter-encode Redaction gagal karena: hanya visual masking tidak menghapus data asli",
+      "tags": [
+        "FORENSIC",
+        "EASY",
+        "PDF"
+      ],
+      "status": 200,
+      "markdownBytes": 16696,
+      "flag": "NCLPS1{teRny4ta_fl4g_d1_r3v1Si0n_z3Ro_iNcr3MenTal_uPddaTe_m3n1pu_m4ta_0dd31503e3}",
+      "attachments": [],
+      "assetNames": [],
+      "domImageNames": [],
+      "externalImages": [],
+      "domArticleHtmlBytes": 63090,
+      "bodyBytes": 16408,
+      "flagPresent": true
+    },
+    {
+      "slug": "forensics-sepuh-forensik",
+      "source": "https://claritys.web.id/writeups/forensics-sepuh-forensik",
+      "title": "Sepuh Forensik",
+      "competition": "DCSC",
+      "category": "Forensics",
+      "difficulty": "Medium",
+      "date": "2026-07-01",
+      "updated": "2026-07-01",
+      "summary": "Di chall ini kita dikasih `forensic.pcapng` yang awalnya keliatan rame banget karena banyak traffic HTTP random. Setelah dipilah, ada beberapa hal yang mencurigakan: login ke `internal-portal.local/login.php`, fake flag yang jelas-jelas jebakan, dan file PNG yang dikirim lewat TCP stream 96. PNG itu ternyata berisi QR code rusak/kurang kebaca, jadi perlu direcover dulu. Setelah QR kebaca, datanya masih belum langsung jadi flag karena masih berlapis Base64, Base32, lalu XOR. Key XOR-nya diambil dari password login yang ketangkep di traffic: `rahasia`.",
+      "tags": [
+        "FORENSICS",
+        "PCAP",
+        "MISC",
+        "MEDIUM"
+      ],
+      "status": 200,
+      "markdownBytes": 5835,
+      "flag": "SCTF{53pUh_f0r3n5iK_b312aK51_4mPun_puH_s838823}",
+      "attachments": [],
+      "assetNames": [
+        "81ce6bef-9f31-430e-933c-a793730500df-screenshot_2026-07-01_10-49-00.png",
+        "8ccbcd16-f840-4648-bc8e-d5623e510622-screenshot_2026-07-01_10-50-49.png",
+        "e6ec052f-4671-4b75-8119-3cf7da6810f3-screenshot_2026-07-01_10-52-18.png",
+        "73397635-e816-4fdc-9c8a-8a86340b70e5-screenshot_2026-07-01_10-53-47.png",
+        "7564d165-fd62-4889-8531-74b363651849-screenshot_2026-07-01_10-54-52.png",
+        "f0830ad2-c27b-41e7-aff8-48114e0315c6-screenshot_2026-07-01_10-55-56.png",
+        "688a9423-a6cc-4000-8df8-73a3ee963a16-screenshot_2026-07-01_10-57-04.png",
+        "ec9ecc26-dafe-4a57-9468-6c60dfcb24e8-secret_evidence.png",
+        "dd4c0ddc-9ccf-40ad-a4dd-1876649a8ca2-screenshot_2026-07-01_11-02-33.png",
+        "48c3193b-d321-46e2-9717-0deb835179c2-recovered_qr_from_secret_evidence.png",
+        "5a454e7a-395b-4cf9-9e7c-792d59316247-screenshot_2026-07-01_11-04-48.png",
+        "acc00cd1-538d-469a-af08-3fb486c4a4e6-screenshot_2026-07-01_11-07-46.png",
+        "0bd61361-062a-49df-bb6c-da1274421698-screenshot_2026-07-01_11-08-38.png",
+        "5c1654ac-69af-4a97-8ddd-2b2e9dbf54f3-screenshot_2026-07-01_11-14-35.png",
+        "b48a2e78-cd67-435f-81bf-9957006b8a96-screenshot_2026-07-01_10-32-50.png"
+      ],
+      "domImageNames": [
+        "81ce6bef-9f31-430e-933c-a793730500df-screenshot_2026-07-01_10-49-00.png",
+        "8ccbcd16-f840-4648-bc8e-d5623e510622-screenshot_2026-07-01_10-50-49.png",
+        "e6ec052f-4671-4b75-8119-3cf7da6810f3-screenshot_2026-07-01_10-52-18.png",
+        "73397635-e816-4fdc-9c8a-8a86340b70e5-screenshot_2026-07-01_10-53-47.png",
+        "7564d165-fd62-4889-8531-74b363651849-screenshot_2026-07-01_10-54-52.png",
+        "f0830ad2-c27b-41e7-aff8-48114e0315c6-screenshot_2026-07-01_10-55-56.png",
+        "688a9423-a6cc-4000-8df8-73a3ee963a16-screenshot_2026-07-01_10-57-04.png",
+        "ec9ecc26-dafe-4a57-9468-6c60dfcb24e8-secret_evidence.png",
+        "dd4c0ddc-9ccf-40ad-a4dd-1876649a8ca2-screenshot_2026-07-01_11-02-33.png",
+        "48c3193b-d321-46e2-9717-0deb835179c2-recovered_qr_from_secret_evidence.png",
+        "5a454e7a-395b-4cf9-9e7c-792d59316247-screenshot_2026-07-01_11-04-48.png",
+        "acc00cd1-538d-469a-af08-3fb486c4a4e6-screenshot_2026-07-01_11-07-46.png",
+        "0bd61361-062a-49df-bb6c-da1274421698-screenshot_2026-07-01_11-08-38.png",
+        "5c1654ac-69af-4a97-8ddd-2b2e9dbf54f3-screenshot_2026-07-01_11-14-35.png",
+        "b48a2e78-cd67-435f-81bf-9957006b8a96-screenshot_2026-07-01_10-32-50.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 12026,
+      "bodyBytes": 5164,
+      "flagPresent": true
+    },
+    {
+      "slug": "forensics-sudah-lama",
+      "source": "https://claritys.web.id/writeups/forensics-sudah-lama",
+      "title": "Sudah lama",
+      "competition": "BeeCTF 2026",
+      "category": "Forensics",
+      "difficulty": "Medium",
+      "date": "2026-08-22",
+      "updated": "2026-08-24",
+      "summary": "Sudah lama tidak ketemu soal seperti ini, semoga memperbanyak ilmu kalian, cemungut BeeCTF. Author: wavess",
+      "tags": [
+        "FORENSIC",
+        "MEDIUM",
+        "USB",
+        "PCAP"
+      ],
+      "status": 200,
+      "markdownBytes": 5964,
+      "flag": "BeeCTF{sud4h_l4ma_t1dak_bu4t_s0al_s3p3rti_1ni}",
+      "attachments": [],
+      "assetNames": [
+        "08d4fafb-72b2-4f39-a6a5-0655133aed27-screenshot_2026-08-24_13-00-19.png",
+        "6064dadb-2e28-4bfe-b25f-49b857817f80-image.png",
+        "70e39a2e-e4eb-4a3f-b00e-24786d3a8cc7-image-1.png",
+        "324a3b3d-30c2-4e8e-9496-b656b2c56447-image-2.png",
+        "9f553bdf-2a0b-4a5f-86b6-612f930eeb06-image-3.png",
+        "7e8dedad-73d5-4e0a-a9a6-830105b08c60-image-4.png",
+        "945a7ccc-1d99-445d-8782-38ddb52dce33-image-5.png",
+        "1e03f4da-398f-41ea-8dc4-3ae75059319e-image-6.png"
+      ],
+      "domImageNames": [
+        "08d4fafb-72b2-4f39-a6a5-0655133aed27-screenshot_2026-08-24_13-00-19.png",
+        "6064dadb-2e28-4bfe-b25f-49b857817f80-image.png",
+        "70e39a2e-e4eb-4a3f-b00e-24786d3a8cc7-image-1.png",
+        "324a3b3d-30c2-4e8e-9496-b656b2c56447-image-2.png",
+        "9f553bdf-2a0b-4a5f-86b6-612f930eeb06-image-3.png",
+        "7e8dedad-73d5-4e0a-a9a6-830105b08c60-image-4.png",
+        "945a7ccc-1d99-445d-8782-38ddb52dce33-image-5.png",
+        "1e03f4da-398f-41ea-8dc4-3ae75059319e-image-6.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 25263,
+      "bodyBytes": 5486,
+      "flagPresent": true
+    },
+    {
+      "slug": "forensics-sunset",
+      "source": "https://claritys.web.id/writeups/forensics-sunset",
+      "title": "Sunset",
+      "competition": "FGTE",
+      "category": "Forensics",
+      "difficulty": "Medium",
+      "date": "2026-03-16",
+      "updated": "2026-07-06",
+      "summary": "🧠 Kesimpulan Challenge ini menggunakan teknik: PNG → LSB extraction → RGB channel split → hex encoding → bit interleave (R-G-B) → ZIP file → PNG → flag",
+      "tags": [
+        "FORENSIC",
+        "STEGANO",
+        "MEDIUM"
+      ],
+      "status": 200,
+      "markdownBytes": 18587,
+      "flag": "flag{9e068194-a2a5-4e4b-bf95-b85a9ca7d7fe}",
+      "attachments": [],
+      "assetNames": [
+        "writeup-inline-0afecfba-af46-4179-973b-0d7e8a03a84a.png"
+      ],
+      "domImageNames": [
+        "writeup-inline-0afecfba-af46-4179-973b-0d7e8a03a84a.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 120279,
+      "bodyBytes": 18319,
+      "flagPresent": true
+    },
+    {
+      "slug": "forensics-the-silent-echo",
+      "source": "https://claritys.web.id/writeups/forensics-the-silent-echo",
+      "title": "The Silent Echo",
+      "competition": "TraceBash CTF",
+      "category": "Forensics",
+      "difficulty": "Medium",
+      "date": "2026-06-27",
+      "updated": "2026-06-29",
+      "summary": "Di challenge ini kita dikasih file challenge.pcap. Kalau cuma pakai strings, banyak clue yang kelihatan sengaja dilempar ke muka: ada base64, SSH banner, HTTP request, payload AAAA, sampai download ISO Ubuntu. Tapi flag aslinya bukan di payload biasa. Dia disembunyikan di metadata paket: bagian pertama di high byte IP ID paket ICMP echo request bagian kedua di TCP window size ACK client pada koneksi HTTP download palsu",
+      "tags": [
+        "FORENSIC",
+        "PCAP",
+        "NETWORK ANALYST",
+        "MEDIUM"
+      ],
+      "status": 200,
+      "markdownBytes": 8402,
+      "flag": "TBCTF{h1dd3n_1n_w1nd0w_4nd_1p_1d!}",
+      "attachments": [],
+      "assetNames": [
+        "writeup-inline-eaf120f0-fce5-4d89-bbc7-68c974e0345a.png",
+        "writeup-inline-90720f29-9133-4c6b-843e-af5f5beb36f9.png",
+        "writeup-inline-653bc72b-b62f-4e2b-adaf-7e8b746c3035.png",
+        "writeup-inline-13484b9d-ed9d-4752-8641-0d95b200e855.png",
+        "writeup-inline-7ebae386-0082-4cd9-89cb-db7a722b966b.png",
+        "writeup-inline-4f8c62e7-b219-4584-b255-6b503647f2bc.png",
+        "writeup-inline-e13d0202-8184-4c6f-8998-f7827abe4ed8.png",
+        "writeup-inline-08dba8a4-b648-4d97-b50a-dfcaf7862ce1.png",
+        "writeup-inline-19e52a9d-7dc3-4ada-99e6-31fdef271442.png",
+        "writeup-inline-8aa2d82e-7b39-4445-bd6e-c4e8e2c19f17.png",
+        "writeup-inline-5928a8dc-bac1-47c9-a7ba-44c855d99e07.png",
+        "writeup-inline-fde5f2f6-c921-4950-80d9-97cc300fd0a5.png",
+        "writeup-inline-fcceaff4-4db1-4d60-b182-6beed52d5e6b.png",
+        "writeup-inline-ecab0686-2343-4f1f-a850-2e79fa4c9eee.png"
+      ],
+      "domImageNames": [
+        "writeup-inline-eaf120f0-fce5-4d89-bbc7-68c974e0345a.png",
+        "writeup-inline-90720f29-9133-4c6b-843e-af5f5beb36f9.png",
+        "writeup-inline-653bc72b-b62f-4e2b-adaf-7e8b746c3035.png",
+        "writeup-inline-13484b9d-ed9d-4752-8641-0d95b200e855.png",
+        "writeup-inline-7ebae386-0082-4cd9-89cb-db7a722b966b.png",
+        "writeup-inline-4f8c62e7-b219-4584-b255-6b503647f2bc.png",
+        "writeup-inline-e13d0202-8184-4c6f-8998-f7827abe4ed8.png",
+        "writeup-inline-08dba8a4-b648-4d97-b50a-dfcaf7862ce1.png",
+        "writeup-inline-19e52a9d-7dc3-4ada-99e6-31fdef271442.png",
+        "writeup-inline-8aa2d82e-7b39-4445-bd6e-c4e8e2c19f17.png",
+        "writeup-inline-5928a8dc-bac1-47c9-a7ba-44c855d99e07.png",
+        "writeup-inline-fde5f2f6-c921-4950-80d9-97cc300fd0a5.png",
+        "writeup-inline-fcceaff4-4db1-4d60-b182-6beed52d5e6b.png",
+        "writeup-inline-ecab0686-2343-4f1f-a850-2e79fa4c9eee.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 23835,
+      "bodyBytes": 7750,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-abbys",
+      "source": "https://claritys.web.id/writeups/pwn-abbys",
+      "title": "Abbys",
+      "competition": "SCTF 2026",
+      "category": "Pwn",
+      "difficulty": "Medium",
+      "date": "2026-07-04",
+      "updated": "2026-07-06",
+      "summary": "Deskripsi: Sebuah sinyal aneh terdeteksi dari stasiun penelitian bawah laut 'Abbys'. Tim ekspedisi sebelumnya menghilang tanpa jejak, meninggalkan sebuah antarmuka usang yang masih terus menyala dan memancarkan data. Mampukah kamu menyelami kedalaman kode ini dan merebut akses sistem sebelum tekanan air menghancurkan segalanya?\\n\\nnc 103.127.98.249 5001",
+      "tags": [
+        "PWN",
+        "MEDIUM",
+        "STACK & HEAP"
+      ],
+      "status": 200,
+      "markdownBytes": 5513,
+      "flag": "SCTF26{duh_puh_pwn_st4ck_d1tambah_h3ap_1ni_m4h_b4hl1l_jug4_b1ngng}",
+      "attachments": [
+        {
+          "url": "/assets/uploads/d591f01b-d4aa-4e2e-8a57-48f894fe2970-abbys",
+          "name": "abbys",
+          "contentType": "application/octet-stream"
+        }
+      ],
+      "assetNames": [
+        "e486f7a6-fe5e-4030-a33c-d7cd2c344ea6-image-22.png",
+        "d591f01b-d4aa-4e2e-8a57-48f894fe2970-abbys"
+      ],
+      "domImageNames": [
+        "e486f7a6-fe5e-4030-a33c-d7cd2c344ea6-image-22.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 23850,
+      "bodyBytes": 5116,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-alloc-101",
+      "source": "https://claritys.web.id/writeups/pwn-alloc-101",
+      "title": "alloc-101",
+      "competition": "Alpacahack",
+      "category": "Pwn",
+      "difficulty": "Easy",
+      "date": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "Heap Exploitation, Use After Free (UAF)",
+      "tags": [
+        "HEAP",
+        "UAF"
+      ],
+      "status": 200,
+      "markdownBytes": 5125,
+      "flag": "Alpaca{dive_into_heap_23af5b4f}",
+      "attachments": [],
+      "assetNames": [
+        "fdf7d362-019b-4e64-99df-cb041bed6463-image.png",
+        "1d7fa57c-6e7e-45c0-b375-68ae2b3451ce-image-1.png",
+        "45c7309c-7e1b-4d02-bf45-32fe57ce296f-image-2.png",
+        "adf99911-ec23-43d5-84b4-78ea9a0f7236-image-3.png"
+      ],
+      "domImageNames": [
+        "fdf7d362-019b-4e64-99df-cb041bed6463-image.png",
+        "1d7fa57c-6e7e-45c0-b375-68ae2b3451ce-image-1.png",
+        "45c7309c-7e1b-4d02-bf45-32fe57ce296f-image-2.png",
+        "adf99911-ec23-43d5-84b4-78ea9a0f7236-image-3.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 35085,
+      "bodyBytes": 4805,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-baby-stack",
+      "source": "https://claritys.web.id/writeups/pwn-baby-stack",
+      "title": "baby-stack",
+      "competition": "FGTE",
+      "category": "Pwn",
+      "difficulty": "Easy",
+      "date": "2026-02-18",
+      "updated": "2026-07-06",
+      "summary": "🏁 Kesimpulan Challenge ini menunjukkan: Bahaya penggunaan gets() Konsep dasar stack buffer overflow Manipulasi non-control data Dengan overflow sederhana, kita bisa: Mengubah variabel penting dan mendapatkan akses admin.",
+      "tags": [
+        "PWN",
+        "EASY",
+        "STACK OVERFLOW"
+      ],
+      "status": 200,
+      "markdownBytes": 3108,
+      "flag": "FGTE{B4bY_sT4ck_0verflow_1s_V3ry_D4ng3r0us!}",
+      "attachments": [],
+      "assetNames": [],
+      "domImageNames": [],
+      "externalImages": [],
+      "domArticleHtmlBytes": 15148,
+      "bodyBytes": 2871,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-banned-bytes",
+      "source": "https://claritys.web.id/writeups/pwn-banned-bytes",
+      "title": "Banned Bytes",
+      "competition": "TraceBash CTF",
+      "category": "Pwn",
+      "difficulty": "Hard",
+      "date": "2026-06-27",
+      "updated": "2026-06-29",
+      "summary": "Challenge-nya: binary pwn dengan overflow, tapi input kita disensor beberapa byte. Terus remote-nya dibungkus socat pakai pty, jadi exploit yang jalan di proses lokal belum tentu langsung jalan remote. Agak nyebelin, tapi justru bagian ngerinya di situ.",
+      "tags": [
+        "PWN",
+        "HARD",
+        "SANITIZED BUFFEROVERFLOW"
+      ],
+      "status": 200,
+      "markdownBytes": 36439,
+      "flag": "TBCTF{r0p_byp4551ng_ch4r5_4r3_s0_3z}",
+      "attachments": [],
+      "assetNames": [
+        "writeup-inline-c2e4b02d-2044-420c-98a9-0641823cfe7b.png",
+        "writeup-inline-25a9c3af-0aa3-4e19-919f-c54e43aa5671.png"
+      ],
+      "domImageNames": [
+        "writeup-inline-c2e4b02d-2044-420c-98a9-0641823cfe7b.png",
+        "writeup-inline-25a9c3af-0aa3-4e19-919f-c54e43aa5671.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 170058,
+      "bodyBytes": 36133,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-combination-32",
+      "source": "https://claritys.web.id/writeups/pwn-combination-32",
+      "title": "combination_32",
+      "competition": "Exercise",
+      "category": "Pwn",
+      "difficulty": "Medium",
+      "date": "2026-08-18",
+      "updated": "2026-08-24",
+      "summary": "Latihan buat persiapan seleksi LKS, isinya ret2plt and ret2libc.",
+      "tags": [
+        "PWN",
+        "ROP",
+        "HANDS-ON",
+        "MEDIUM",
+        "X86",
+        "RET2PLT",
+        "RET2LIBC"
+      ],
+      "status": 200,
+      "markdownBytes": 14105,
+      "flag": "SHELL",
+      "attachments": [],
+      "assetNames": [
+        "383f96db-caee-4046-b4ea-be6afe028343-screenshot_2026-08-18_12-52-35.png"
+      ],
+      "domImageNames": [
+        "383f96db-caee-4046-b4ea-be6afe028343-screenshot_2026-08-18_12-52-35.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 52307,
+      "bodyBytes": 13841,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-combination-64",
+      "source": "https://claritys.web.id/writeups/pwn-combination-64",
+      "title": "combination_64",
+      "competition": "Exercise",
+      "category": "Pwn",
+      "difficulty": "Medium",
+      "date": "2026-08-18",
+      "updated": "2026-08-24",
+      "summary": "Latihan buat persiapan seleksi LKS, isinya ret2plt and ret2libc.",
+      "tags": [
+        "PWN",
+        "ROP",
+        "HANDS-ON",
+        "MEDIUM",
+        "X64",
+        "RET2PLT",
+        "RET2LIBC"
+      ],
+      "status": 200,
+      "markdownBytes": 14271,
+      "flag": "SHELL",
+      "attachments": [],
+      "assetNames": [],
+      "domImageNames": [],
+      "externalImages": [],
+      "domArticleHtmlBytes": 55923,
+      "bodyBytes": 14034,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-daily-32",
+      "source": "https://claritys.web.id/writeups/pwn-daily-32",
+      "title": "daily_32",
+      "competition": "Exercise",
+      "category": "Pwn",
+      "difficulty": "Medium",
+      "date": "2026-08-18",
+      "updated": "2026-08-24",
+      "summary": "Latihan buat persiapan seleksi LKS, isinya ret2bss / ret2plt.",
+      "tags": [
+        "PWN",
+        "ROP",
+        "HANDS-ON",
+        "MEDIUM",
+        "X86",
+        "RET2BSS"
+      ],
+      "status": 200,
+      "markdownBytes": 16422,
+      "flag": "SHELL",
+      "attachments": [],
+      "assetNames": [],
+      "domImageNames": [],
+      "externalImages": [],
+      "domArticleHtmlBytes": 66837,
+      "bodyBytes": 16207,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-daily-64",
+      "source": "https://claritys.web.id/writeups/pwn-daily-64",
+      "title": "daily_64",
+      "competition": "Exercise",
+      "category": "Pwn",
+      "difficulty": "Medium",
+      "date": "2026-08-18",
+      "updated": "2026-08-24",
+      "summary": "Latihan buat persiapan seleksi LKS, isinya ret2bss / ret2plt.",
+      "tags": [
+        "PWN",
+        "ROP",
+        "HANDS-ON",
+        "MEDIUM",
+        "X64",
+        "RET2BSS"
+      ],
+      "status": 200,
+      "markdownBytes": 12155,
+      "flag": "SHELL",
+      "attachments": [],
+      "assetNames": [],
+      "domImageNames": [],
+      "externalImages": [],
+      "domArticleHtmlBytes": 43806,
+      "bodyBytes": 11940,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-format-string-2",
+      "source": "https://claritys.web.id/writeups/pwn-format-string-2",
+      "title": "Format String 2",
+      "competition": "Cylab Security Academy (PicoCTF)",
+      "category": "Pwn",
+      "difficulty": "Easy",
+      "date": "2026-10-22",
+      "updated": "2026-10-30",
+      "summary": "Format string attack with pwntools automated (elite ball knowledge)",
+      "tags": [
+        "ROP",
+        "FORMAT STRING"
+      ],
+      "status": 200,
+      "markdownBytes": 5713,
+      "flag": "academy{type_it_manually_if_you_want_but_better_you_do_it_yourself}",
+      "attachments": [],
+      "assetNames": [
+        "605be242-2e5a-468b-8005-ed9b8f195998-image.png"
+      ],
+      "domImageNames": [
+        "605be242-2e5a-468b-8005-ed9b8f195998-image.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 37785,
+      "bodyBytes": 5395,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-format-string-3",
+      "source": "https://claritys.web.id/writeups/pwn-format-string-3",
+      "title": "Format String 3",
+      "competition": "Cylab Security Academy (PicoCTF)",
+      "category": "Pwn",
+      "difficulty": "Medium",
+      "date": "2026-10-22",
+      "updated": "2026-10-30",
+      "summary": "GOT overwrite with libc technique + format string attack.",
+      "tags": [
+        "FORMAT STRING",
+        "GOT OVERWRITE"
+      ],
+      "status": 200,
+      "markdownBytes": 5462,
+      "flag": "academy{type_it_manually_if_you_want_but_better_you_do_it_yourself}",
+      "attachments": [],
+      "assetNames": [
+        "2f5e1ae4-27c0-42a6-a8c1-c15cca8adace-image.png",
+        "5339f09e-38c0-455a-b775-9ec7df8cc066-image-1.png",
+        "320f9c67-34f6-42f1-bc47-190a08864063-image-2.png"
+      ],
+      "domImageNames": [
+        "2f5e1ae4-27c0-42a6-a8c1-c15cca8adace-image.png",
+        "5339f09e-38c0-455a-b775-9ec7df8cc066-image-1.png",
+        "320f9c67-34f6-42f1-bc47-190a08864063-image-2.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 31720,
+      "bodyBytes": 5078,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-full-writeup-with-teams-15-place-top-20",
+      "source": "https://claritys.web.id/writeups/pwn-full-writeup-with-teams-15-place-top-20",
+      "title": "Full Writeup with teams (15 place / top 20)",
+      "competition": "SCTF 2026",
+      "category": "Pwn",
+      "difficulty": "Medium",
+      "date": "2026-07-04",
+      "updated": "2026-07-06",
+      "summary": "SCTF 2026 Presented by : Kata ellie lagi cari team, jadi dia kontak kkarinzzz untuk menjadi membernya, lalu kkarinzzz mengontak claritys untuk menjadi anggota team dan dia setuju Party Members: Ellie Kkarinzzz Claritys (Me)",
+      "tags": [
+        "PWN",
+        "REVERSE ENGINEERING",
+        "FORENSIC"
+      ],
+      "status": 200,
+      "markdownBytes": 49234,
+      "flag": "KTCG Community https://discord.gg/Q5dVVBs6xX",
+      "attachments": [],
+      "assetNames": [
+        "writeup-inline-1f04ea2c-81c9-4c5e-8c2b-28cce3518823.jpg",
+        "ea50a8f6-10c9-4a8c-8d93-d1bca76527d2-image.png",
+        "39008146-b7ac-419e-b94d-c1c3f31ce78b-image-1.png",
+        "50e33b4f-d2ff-4481-9b84-6a46bba47c4b-image-2.png",
+        "293a1d0d-e438-426c-8ceb-f63586ac5d9d-image-3.png",
+        "f796462a-d8ed-4492-b4e9-d788ce50514b-image-4.png",
+        "e865623b-8570-40c9-a182-0cd3e50f2eaa-image-5.png",
+        "1f887f7b-4d01-4374-a441-dfd6c5bcc2c6-image-6.png",
+        "cab9608d-e98b-408b-8c29-6d9141efdfa2-image-7.png",
+        "ddc78159-7401-4c8e-893f-4df214945d73-image-8.png",
+        "30c1d690-a74f-40ac-8a6e-30bafbf13b4c-image-9.png",
+        "78ee0ebc-732f-4239-b575-338b3744f893-image-10.png",
+        "f611f0ed-c2c3-474e-8196-6ae1f2870e23-image-11.png",
+        "d9131b7b-c24b-4c66-a85f-dcce503c4ec7-image-12.png",
+        "aff974dd-b323-489c-a6f3-0a07a9c7230b-image-13.png",
+        "ad3537bc-2d1c-4669-bd64-2f64245480cc-image-14.png",
+        "b60ceb95-0960-4ab8-8566-9e9e63f6b039-image-15.png",
+        "71283e80-a9d1-4168-89c9-99ef1c89bbea-image-16.png",
+        "89cfc4c5-137c-446f-ab61-55427808aa3a-image-17.png",
+        "093f5908-7fd0-4803-b001-a81c6e023969-image-18.png",
+        "72821544-6039-496e-b22f-e2adcef76b3d-image-19.png",
+        "31fcb80b-4a40-4a96-9fce-65c603794040-image-20.png",
+        "48985555-4b52-44cf-b821-aff0f3126777-image-21.png",
+        "e486f7a6-fe5e-4030-a33c-d7cd2c344ea6-image-22.png",
+        "3b6effec-324b-4179-b86c-33de9a518e64-f9f56441-c963-48e7-83f0-68f4636ac55c.png",
+        "2c65acd4-c29b-495e-9a85-e49804f5c8a1-image-23.png",
+        "ba1c3031-01bc-4a38-8d90-30eaa7a9c506-image-24.png",
+        "d61dcd74-dc44-4493-9967-8a7a8d8301ff-Screenshot_2026-07-03_150725.png",
+        "cf3c3889-45df-4e9b-8c13-10600628393b-image-25.png",
+        "431b611c-d8d5-4c4f-b709-80dcf539bf60-image-26.png",
+        "18810e68-2746-4c34-b62f-aa5b6094c790-image-27.png",
+        "e13ac486-4566-40ff-8f4f-0f804622ec74-image-28.png",
+        "a6e12626-bd04-41bc-ac2a-16dd75e4480b-image-29.png",
+        "44235f11-7721-4d50-91dc-60b1cecf1862-image-30.png",
+        "11301d01-499e-4221-b3b1-237cbad9d2c7-image-31.png"
+      ],
+      "domImageNames": [
+        "writeup-inline-1f04ea2c-81c9-4c5e-8c2b-28cce3518823.jpg",
+        "ea50a8f6-10c9-4a8c-8d93-d1bca76527d2-image.png",
+        "39008146-b7ac-419e-b94d-c1c3f31ce78b-image-1.png",
+        "50e33b4f-d2ff-4481-9b84-6a46bba47c4b-image-2.png",
+        "293a1d0d-e438-426c-8ceb-f63586ac5d9d-image-3.png",
+        "f796462a-d8ed-4492-b4e9-d788ce50514b-image-4.png",
+        "e865623b-8570-40c9-a182-0cd3e50f2eaa-image-5.png",
+        "1f887f7b-4d01-4374-a441-dfd6c5bcc2c6-image-6.png",
+        "cab9608d-e98b-408b-8c29-6d9141efdfa2-image-7.png",
+        "ddc78159-7401-4c8e-893f-4df214945d73-image-8.png",
+        "30c1d690-a74f-40ac-8a6e-30bafbf13b4c-image-9.png",
+        "78ee0ebc-732f-4239-b575-338b3744f893-image-10.png",
+        "f611f0ed-c2c3-474e-8196-6ae1f2870e23-image-11.png",
+        "d9131b7b-c24b-4c66-a85f-dcce503c4ec7-image-12.png",
+        "aff974dd-b323-489c-a6f3-0a07a9c7230b-image-13.png",
+        "ad3537bc-2d1c-4669-bd64-2f64245480cc-image-14.png",
+        "b60ceb95-0960-4ab8-8566-9e9e63f6b039-image-15.png",
+        "71283e80-a9d1-4168-89c9-99ef1c89bbea-image-16.png",
+        "89cfc4c5-137c-446f-ab61-55427808aa3a-image-17.png",
+        "093f5908-7fd0-4803-b001-a81c6e023969-image-18.png",
+        "72821544-6039-496e-b22f-e2adcef76b3d-image-19.png",
+        "31fcb80b-4a40-4a96-9fce-65c603794040-image-20.png",
+        "48985555-4b52-44cf-b821-aff0f3126777-image-21.png",
+        "e486f7a6-fe5e-4030-a33c-d7cd2c344ea6-image-22.png",
+        "3b6effec-324b-4179-b86c-33de9a518e64-f9f56441-c963-48e7-83f0-68f4636ac55c.png",
+        "2c65acd4-c29b-495e-9a85-e49804f5c8a1-image-23.png",
+        "ba1c3031-01bc-4a38-8d90-30eaa7a9c506-image-24.png",
+        "d61dcd74-dc44-4493-9967-8a7a8d8301ff-Screenshot_2026-07-03_150725.png",
+        "cf3c3889-45df-4e9b-8c13-10600628393b-image-25.png",
+        "431b611c-d8d5-4c4f-b709-80dcf539bf60-image-26.png",
+        "18810e68-2746-4c34-b62f-aa5b6094c790-image-27.png",
+        "e13ac486-4566-40ff-8f4f-0f804622ec74-image-28.png",
+        "a6e12626-bd04-41bc-ac2a-16dd75e4480b-image-29.png",
+        "44235f11-7721-4d50-91dc-60b1cecf1862-image-30.png",
+        "11301d01-499e-4221-b3b1-237cbad9d2c7-image-31.png"
+      ],
+      "externalImages": [
+        "https://media1.tenor.com/m/JKpw7pszaqsAAAAd/tendou-alice-blue-archive.gif"
+      ],
+      "domArticleHtmlBytes": 255289,
+      "bodyBytes": 47974,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-hsr-32",
+      "source": "https://claritys.web.id/writeups/pwn-hsr-32",
+      "title": "hsr_32",
+      "competition": "Exercise",
+      "category": "Pwn",
+      "difficulty": "Medium",
+      "date": "2026-08-18",
+      "updated": "2026-08-24",
+      "summary": "Latihan buat persiapan seleksi LKS, isinya ret2libc.",
+      "tags": [
+        "PWN",
+        "ROP",
+        "HANDS-ON",
+        "MEDIUM",
+        "X86",
+        "RET2LIBC"
+      ],
+      "status": 200,
+      "markdownBytes": 11889,
+      "flag": "SHELL",
+      "attachments": [],
+      "assetNames": [
+        "0c6933ec-8975-4ca7-9458-f22ba2c3d98a-image-3.png",
+        "d5a11b89-4fee-4842-96e5-dbdedb6703fc-image-4.png"
+      ],
+      "domImageNames": [
+        "0c6933ec-8975-4ca7-9458-f22ba2c3d98a-image-3.png",
+        "d5a11b89-4fee-4842-96e5-dbdedb6703fc-image-4.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 46240,
+      "bodyBytes": 11623,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-hsr-64",
+      "source": "https://claritys.web.id/writeups/pwn-hsr-64",
+      "title": "hsr_64",
+      "competition": "Exercise",
+      "category": "Pwn",
+      "difficulty": "Medium",
+      "date": "2026-08-18",
+      "updated": "2026-08-24",
+      "summary": "Latihan buat persiapan seleksi LKS, isinya ret2libc.",
+      "tags": [
+        "PWN",
+        "ROP",
+        "HANDS-ON",
+        "MEDIUM",
+        "X64",
+        "RET2LIBC"
+      ],
+      "status": 200,
+      "markdownBytes": 11009,
+      "flag": "SHELL",
+      "attachments": [],
+      "assetNames": [
+        "14555b32-282b-43b2-8377-5d361cb5c808-image-5.png"
+      ],
+      "domImageNames": [
+        "14555b32-282b-43b2-8377-5d361cb5c808-image-5.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 45278,
+      "bodyBytes": 10770,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-integer-writer",
+      "source": "https://claritys.web.id/writeups/pwn-integer-writer",
+      "title": "Integer Writer",
+      "competition": "Alpacahack",
+      "category": "Pwn",
+      "difficulty": "Hard",
+      "date": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "Negative Integer + Out Of Bounds.",
+      "tags": [
+        "OUT OF BOUNDS",
+        "NEGATIVE INTEGER",
+        "STACK"
+      ],
+      "status": 200,
+      "markdownBytes": 5844,
+      "flag": "Alpaca{D0_y0u_th1nk_th3_st4ck_gr0ws_upw4rd_0r_d0wnw4rd?}",
+      "attachments": [],
+      "assetNames": [
+        "1a3eb32e-fdb1-4786-9adf-e7fde8b7b6a3-image.png",
+        "ba3eaf5d-e7e6-4258-a8a5-b046068a7224-image-1.png",
+        "24e81a8a-2861-4173-819d-e32f50174104-image-2.png",
+        "80ab0be6-4c2d-4f96-921e-413a8fb5f3cf-image.png"
+      ],
+      "domImageNames": [
+        "1a3eb32e-fdb1-4786-9adf-e7fde8b7b6a3-image.png",
+        "ba3eaf5d-e7e6-4258-a8a5-b046068a7224-image-1.png",
+        "24e81a8a-2861-4173-819d-e32f50174104-image-2.png",
+        "80ab0be6-4c2d-4f96-921e-413a8fb5f3cf-image.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 34923,
+      "bodyBytes": 5460,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-kodama",
+      "source": "https://claritys.web.id/writeups/pwn-kodama",
+      "title": "kodama",
+      "competition": "PlayITPlus",
+      "category": "Pwn",
+      "difficulty": "Medium",
+      "date": "2026-11-08",
+      "updated": "2026-11-09",
+      "summary": "Sigreturn Oriented Programming (SROP) challenge, but it's easier cuz in the binary have the /bin/bash string. So we doesn't have to input the /bin/bash at .bss.",
+      "tags": [
+        "SROP",
+        "BUFFER OVERFLOW",
+        "SYSCALL",
+        "LINUX"
+      ],
+      "status": 200,
+      "markdownBytes": 9322,
+      "flag": "PLAYITPLUS{5fdf16138ae47bbdb843f79e0f966bd1b047ec4d42707250ad1e4a6857472ec4}",
+      "attachments": [],
+      "assetNames": [
+        "f6774b88-42fa-4cca-976c-b8625329aa98-1794213639235187297.png",
+        "ae71e611-bd46-42ae-b28e-be5536db16c7-image.png",
+        "406435ed-e223-4218-8109-c919456b7bdd-image-1.png",
+        "a3eeec3a-f122-42f2-a0de-a20c8227f2db-image-2.png",
+        "85928f0b-e0f3-4a75-9f19-cbbf4f7d5462-image-3.png"
+      ],
+      "domImageNames": [
+        "f6774b88-42fa-4cca-976c-b8625329aa98-1794213639235187297.png",
+        "ae71e611-bd46-42ae-b28e-be5536db16c7-image.png",
+        "406435ed-e223-4218-8109-c919456b7bdd-image-1.png",
+        "a3eeec3a-f122-42f2-a0de-a20c8227f2db-image-2.png",
+        "85928f0b-e0f3-4a75-9f19-cbbf4f7d5462-image-3.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 36038,
+      "bodyBytes": 8906,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-koperasi",
+      "source": "https://claritys.web.id/writeups/pwn-koperasi",
+      "title": "Koperasi",
+      "competition": "SCTF 2026",
+      "category": "Pwn",
+      "difficulty": "Medium",
+      "date": "2026-07-04",
+      "updated": "2026-07-06",
+      "summary": "Deskripsi : Sistem Koperasi Desa Suka Maju baru saja direvolusi menjadi digital. Namun, Kepala Desa mencium aroma busuk: kas mereka terus menyusut padahal tidak ada laporan kerugian! Diduga ada celah matematis yang memungkinkan peretas menggandakan uang mereka dari udara kosong. Tugasmu adalah menjadi auditor keamanan dadakan dan menguras kas tersebut untuk membuktikan kebobrokannya! nc 103.127.98.249 5002",
+      "tags": [
+        "PWN",
+        "MEDIUM",
+        "RET2LIBC (SHOULD BE)",
+        "RET2DLRESOLVE"
+      ],
+      "status": 200,
+      "markdownBytes": 7985,
+      "flag": "SCTF26{p0l1n0m14l_d4n_b0f_b1k1n_k0p3r4s1_j3b0l}",
+      "attachments": [
+        {
+          "url": "/assets/uploads/6e464511-a13e-42da-bdc6-e683285a461d-koperasi",
+          "name": "koperasi",
+          "contentType": "application/octet-stream"
+        }
+      ],
+      "assetNames": [
+        "093f5908-7fd0-4803-b001-a81c6e023969-image-18.png",
+        "72821544-6039-496e-b22f-e2adcef76b3d-image-19.png",
+        "31fcb80b-4a40-4a96-9fce-65c603794040-image-20.png",
+        "6e464511-a13e-42da-bdc6-e683285a461d-koperasi"
+      ],
+      "domImageNames": [
+        "093f5908-7fd0-4803-b001-a81c6e023969-image-18.png",
+        "72821544-6039-496e-b22f-e2adcef76b3d-image-19.png",
+        "31fcb80b-4a40-4a96-9fce-65c603794040-image-20.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 44022,
+      "bodyBytes": 7518,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-kukyo",
+      "source": "https://claritys.web.id/writeups/pwn-kukyo",
+      "title": "kukyo",
+      "competition": "PlayITPlus",
+      "category": "Pwn",
+      "difficulty": "Hard",
+      "date": "2026-11-08",
+      "updated": "2026-11-09",
+      "summary": "ret2dlresolve with unexpected no gadget ahh.",
+      "tags": [
+        "BUFFER OVERFLOW",
+        "RET2DLRESOLVE",
+        "HARD"
+      ],
+      "status": 200,
+      "markdownBytes": 12401,
+      "flag": "PLAYITPLUS{773ed891fe2d30dfb9d67c6d7aac868efb542157929bc8636494a5b103225a6b}",
+      "attachments": [],
+      "assetNames": [
+        "f84a6866-4c12-428a-9722-65d198e467b5-1794213593155945300.png",
+        "d300ddba-de71-4037-9f41-44b101376be4-image.png",
+        "dcd372de-1205-43b4-9433-8eb0143764ad-image-1.png",
+        "ed17d4c9-c3d8-47de-abaa-2ae53f7ae470-image-2.png",
+        "fd49b05d-e710-42c9-9584-825aad8da244-image-3.png",
+        "3d85aed2-9b62-4ecd-83f0-852c4eb1bf94-image-4.png"
+      ],
+      "domImageNames": [
+        "f84a6866-4c12-428a-9722-65d198e467b5-1794213593155945300.png",
+        "d300ddba-de71-4037-9f41-44b101376be4-image.png",
+        "dcd372de-1205-43b4-9433-8eb0143764ad-image-1.png",
+        "ed17d4c9-c3d8-47de-abaa-2ae53f7ae470-image-2.png",
+        "fd49b05d-e710-42c9-9584-825aad8da244-image-3.png",
+        "3d85aed2-9b62-4ecd-83f0-852c4eb1bf94-image-4.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 73758,
+      "bodyBytes": 11963,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-lion-parcel",
+      "source": "https://claritys.web.id/writeups/pwn-lion-parcel",
+      "title": "Lion Parcel",
+      "competition": "Warmup PlayITplus",
+      "category": "Pwn",
+      "difficulty": "Easy",
+      "date": "2026-11-07",
+      "updated": "2026-11-07",
+      "summary": "ret2libc but we have to pull the libc from docker manually.",
+      "tags": [
+        "RET2LIBC",
+        "BUFFER OVERFLOW",
+        "GOT OVERWRITE"
+      ],
+      "status": 200,
+      "markdownBytes": 15919,
+      "flag": "PLAYITPLUS{4ee458a53ab498aaa7958bb6855a55ef339917d48a0753c4e9b1fc868837396e}",
+      "attachments": [],
+      "assetNames": [
+        "a888a4db-66e0-4ff3-9faa-27dff968e319-image.png",
+        "26afd201-2898-4337-b0e6-ed54259b3ca4-image-1.png",
+        "80c8b1a9-537c-49b0-8c88-3c17d4ee8d5e-image-2.png",
+        "5089feee-9d83-4d20-8a06-9ab710232a8d-image-3.png",
+        "708a7dde-66e6-4665-ab26-cb64a9d1206c-image-4.png",
+        "f800a3c2-f2bd-45fd-b9d3-b0dd8ea99d2c-image-5.png",
+        "88150c90-a1b2-4a4b-b6e4-7b23d2deb042-image-6.png",
+        "b5033137-9369-4289-b792-b73c72967a2d-image-7.png",
+        "750e6019-4fa3-4937-8c4f-fa8f01ab9917-image-8.png"
+      ],
+      "domImageNames": [
+        "a888a4db-66e0-4ff3-9faa-27dff968e319-image.png",
+        "26afd201-2898-4337-b0e6-ed54259b3ca4-image-1.png",
+        "80c8b1a9-537c-49b0-8c88-3c17d4ee8d5e-image-2.png",
+        "5089feee-9d83-4d20-8a06-9ab710232a8d-image-3.png",
+        "708a7dde-66e6-4665-ab26-cb64a9d1206c-image-4.png",
+        "f800a3c2-f2bd-45fd-b9d3-b0dd8ea99d2c-image-5.png",
+        "88150c90-a1b2-4a4b-b6e4-7b23d2deb042-image-6.png",
+        "b5033137-9369-4289-b792-b73c72967a2d-image-7.png",
+        "750e6019-4fa3-4937-8c4f-fa8f01ab9917-image-8.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 154340,
+      "bodyBytes": 15377,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-login-bonus",
+      "source": "https://claritys.web.id/writeups/pwn-login-bonus",
+      "title": "login bonus",
+      "competition": "Alpacahack",
+      "category": "Pwn",
+      "difficulty": "Medium",
+      "date": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "Bufferoverflow",
+      "tags": [
+        "BUFFER OVERFLOW"
+      ],
+      "status": 200,
+      "markdownBytes": 4825,
+      "flag": "Alpaca{h0w_d1d_U_gu3s5_i7}",
+      "attachments": [],
+      "assetNames": [
+        "2199483f-25af-4ec6-9d11-cb32f637486d-image.png",
+        "8878f200-95a3-4ced-b144-1770fecebe5c-image-1.png"
+      ],
+      "domImageNames": [
+        "2199483f-25af-4ec6-9d11-cb32f637486d-image.png",
+        "8878f200-95a3-4ced-b144-1770fecebe5c-image-1.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 31040,
+      "bodyBytes": 4552,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-nash-jail",
+      "source": "https://claritys.web.id/writeups/pwn-nash-jail",
+      "title": "Nash Jail",
+      "competition": "TraceBash CTF",
+      "category": "Pwn",
+      "difficulty": "Hard",
+      "date": "2026-06-26",
+      "updated": "2026-06-29",
+      "summary": "Blacklist karakter untuk Bash hampir selalu bisa dibypass, apalagi kalau masih ada: eval \"$input\" Bash expansion itu luas banget: tilde expansion, parameter expansion, substring expansion, arithmetic expansion, case conversion, dan sebagainya. Kalau user input bisa masuk ke eval, tinggal cari cara buat “merakit” karakter yang diblok setelah proses validasi selesai.",
+      "tags": [
+        "MISC",
+        "SYMBOL-ONLY BASH ESCAPE",
+        "HARD"
+      ],
+      "status": 200,
+      "markdownBytes": 7250,
+      "flag": "TBCTF{r357r1c73d_bu7_n07_1mp0551bl3}",
+      "attachments": [],
+      "assetNames": [
+        "writeup-inline-bbc61e82-5a77-4101-8bdf-cccae7fc3065.png",
+        "writeup-inline-fa2702b1-2319-4f56-b118-3c1a6729d3fb.png"
+      ],
+      "domImageNames": [
+        "writeup-inline-bbc61e82-5a77-4101-8bdf-cccae7fc3065.png",
+        "writeup-inline-fa2702b1-2319-4f56-b118-3c1a6729d3fb.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 43961,
+      "bodyBytes": 6950,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-ret2csu",
+      "source": "https://claritys.web.id/writeups/pwn-ret2csu",
+      "title": "ret2csu",
+      "competition": "Exercise",
+      "category": "Pwn",
+      "difficulty": "Medium",
+      "date": "2026-08-18",
+      "updated": "2026-08-24",
+      "summary": "Latihan buat persiapan seleksi LKS, isinya ret2csu.",
+      "tags": [
+        "PWN",
+        "ROP",
+        "HANDS-ON",
+        "MEDIUM",
+        "X64",
+        "RET2CSU"
+      ],
+      "status": 200,
+      "markdownBytes": 18940,
+      "flag": "SHELL",
+      "attachments": [],
+      "assetNames": [],
+      "domImageNames": [],
+      "externalImages": [],
+      "domArticleHtmlBytes": 52301,
+      "bodyBytes": 18727,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-ret2param",
+      "source": "https://claritys.web.id/writeups/pwn-ret2param",
+      "title": "ret2param",
+      "competition": "Exercise",
+      "category": "Pwn",
+      "difficulty": "Easy",
+      "date": "2026-08-18",
+      "updated": "2026-08-24",
+      "summary": "Latihan buat persiapan seleksi LKS, isinya ret2param.",
+      "tags": [
+        "PWN",
+        "ROP",
+        "HANDS-ON",
+        "EASY",
+        "X86",
+        "RET2PARAM"
+      ],
+      "status": 200,
+      "markdownBytes": 12750,
+      "flag": "SHELL",
+      "attachments": [],
+      "assetNames": [
+        "8e515604-3bbe-48c2-ad68-2cb88c82cfe2-image-1.png"
+      ],
+      "domImageNames": [
+        "8e515604-3bbe-48c2-ad68-2cb88c82cfe2-image-1.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 47308,
+      "bodyBytes": 12508,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-ret2param-2",
+      "source": "https://claritys.web.id/writeups/pwn-ret2param-2",
+      "title": "ret2param",
+      "competition": "Exercise",
+      "category": "Pwn",
+      "difficulty": "Easy",
+      "date": "2026-08-18",
+      "updated": "2026-08-24",
+      "summary": "Latihan buat persiapan seleksi LKS, isinya ret2param.",
+      "tags": [
+        "PWN",
+        "ROP",
+        "HANDS-ON",
+        "EASY",
+        "X64",
+        "RET2PARAM"
+      ],
+      "status": 200,
+      "markdownBytes": 12770,
+      "flag": "SHELL",
+      "attachments": [],
+      "assetNames": [
+        "029e3b31-9cb5-404b-addd-dc6ba5f0290d-image-2.png"
+      ],
+      "domImageNames": [
+        "029e3b31-9cb5-404b-addd-dc6ba5f0290d-image-2.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 51818,
+      "bodyBytes": 12526,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-ret2shellcode",
+      "source": "https://claritys.web.id/writeups/pwn-ret2shellcode",
+      "title": "ret2shellcode",
+      "competition": "Exercise",
+      "category": "Pwn",
+      "difficulty": "Easy",
+      "date": "2026-08-18",
+      "updated": "2026-08-24",
+      "summary": "Latihan buat persiapan seleksi LKS, isinya ret2shellcode.",
+      "tags": [
+        "PWN",
+        "ROP",
+        "HANDS-ON",
+        "EASY",
+        "X86",
+        "RET2SHELLCODE"
+      ],
+      "status": 200,
+      "markdownBytes": 11842,
+      "flag": "SHELL",
+      "attachments": [],
+      "assetNames": [],
+      "domImageNames": [],
+      "externalImages": [],
+      "domArticleHtmlBytes": 46788,
+      "bodyBytes": 11615,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-ret2shellcode-2",
+      "source": "https://claritys.web.id/writeups/pwn-ret2shellcode-2",
+      "title": "ret2shellcode",
+      "competition": "Exercise",
+      "category": "Pwn",
+      "difficulty": "Easy",
+      "date": "2026-08-18",
+      "updated": "2026-08-24",
+      "summary": "Latihan buat persiapan seleksi LKS, isinya ret2shellcode.",
+      "tags": [
+        "PWN",
+        "ROP",
+        "HANDS-ON",
+        "EASY",
+        "X64",
+        "RET2SHELLCODE"
+      ],
+      "status": 200,
+      "markdownBytes": 11089,
+      "flag": "SHELL",
+      "attachments": [],
+      "assetNames": [],
+      "domImageNames": [],
+      "externalImages": [],
+      "domArticleHtmlBytes": 37305,
+      "bodyBytes": 10860,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-ret2syscall",
+      "source": "https://claritys.web.id/writeups/pwn-ret2syscall",
+      "title": "ret2syscall",
+      "competition": "Exercise",
+      "category": "Pwn",
+      "difficulty": "Easy",
+      "date": "2026-08-18",
+      "updated": "2026-08-24",
+      "summary": "Latihan buat persiapan seleksi LKS, isinya ret2syscall.",
+      "tags": [
+        "PWN",
+        "ROP",
+        "HANDS-ON",
+        "EASY",
+        "X86",
+        "RET2SYSCALL"
+      ],
+      "status": 200,
+      "markdownBytes": 9825,
+      "flag": "SHELL",
+      "attachments": [],
+      "assetNames": [],
+      "domImageNames": [],
+      "externalImages": [],
+      "domArticleHtmlBytes": 48281,
+      "bodyBytes": 9604,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-ret2syscall-2",
+      "source": "https://claritys.web.id/writeups/pwn-ret2syscall-2",
+      "title": "ret2syscall",
+      "competition": "Exercise",
+      "category": "Pwn",
+      "difficulty": "Easy",
+      "date": "2026-08-18",
+      "updated": "2026-08-24",
+      "summary": "Latihan buat persiapan seleksi LKS, isinya ret2syscall.",
+      "tags": [
+        "PWN",
+        "ROP",
+        "HANDS-ON",
+        "EASY",
+        "X64",
+        "RET2SYSCALL"
+      ],
+      "status": 200,
+      "markdownBytes": 15940,
+      "flag": "SHELL",
+      "attachments": [],
+      "assetNames": [
+        "30ff98d3-8b38-4397-b943-8551df5f003a-image.png"
+      ],
+      "domImageNames": [
+        "30ff98d3-8b38-4397-b943-8551df5f003a-image.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 59030,
+      "bodyBytes": 15690,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-rotten-beef",
+      "source": "https://claritys.web.id/writeups/pwn-rotten-beef",
+      "title": "Rotten Beef",
+      "competition": "Alpacahack",
+      "category": "Pwn",
+      "difficulty": "Medium",
+      "date": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Arbitrary Write, format string attack.",
+      "tags": [
+        "ARBITRARY WRITE",
+        "FORMAT STRING"
+      ],
+      "status": 200,
+      "markdownBytes": 4025,
+      "flag": "Alpaca{format_str1ng_is_s0_fun}",
+      "attachments": [],
+      "assetNames": [
+        "a72817c0-ab07-4499-a8b6-0765dc1f9e14-image.png",
+        "ffbcaea9-ef08-46f1-b58b-9ded5eede0a8-image-1.png"
+      ],
+      "domImageNames": [
+        "a72817c0-ab07-4499-a8b6-0765dc1f9e14-image.png",
+        "ffbcaea9-ef08-46f1-b58b-9ded5eede0a8-image-1.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 22101,
+      "bodyBytes": 3732,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-round-robin",
+      "source": "https://claritys.web.id/writeups/pwn-round-robin",
+      "title": "Round Robin",
+      "competition": "SCTF 2026",
+      "category": "Pwn",
+      "difficulty": "Medium",
+      "date": "2026-07-04",
+      "updated": "2026-07-06",
+      "summary": "Deskripsi: Seorang SysAdmin pemula di perusahaan rintisan mencoba memamerkan kejeniusannya dengan merancang sistem penjadwalan OS (Scheduler) kustom dari nol. Dia sesumbar bahwa pembagian kerjanya sempurna dan mustahil disusupi. Buktikan bahwa dia salah. Eksploitasi antrean prosesnya, ambil alih kendali tertinggi, dan jadilah raja di sistem itu!\\n\\nnc 103.127.98.249 5003",
+      "tags": [
+        "PWN",
+        "MEDIUM",
+        "GOT OVERWRITE"
+      ],
+      "status": 200,
+      "markdownBytes": 3113,
+      "flag": "SCTF26{r0und_r0b1n_scheduler_n1ghtm4re_72918403a}",
+      "attachments": [
+        {
+          "url": "/assets/uploads/788c0054-2f0c-4e0e-a0e3-1273cc785ba2-round_robin.zip",
+          "name": "round_robin.zip",
+          "contentType": "application/octet-stream"
+        }
+      ],
+      "assetNames": [
+        "48985555-4b52-44cf-b821-aff0f3126777-image-21.png",
+        "788c0054-2f0c-4e0e-a0e3-1273cc785ba2-round_robin.zip"
+      ],
+      "domImageNames": [
+        "48985555-4b52-44cf-b821-aff0f3126777-image-21.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 5767,
+      "bodyBytes": 2700,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-saya-akan-lawan",
+      "source": "https://claritys.web.id/writeups/pwn-saya-akan-lawan",
+      "title": "Saya akan lawan",
+      "competition": "BeeCTF 2026",
+      "category": "Pwn",
+      "difficulty": "Easy",
+      "date": "2026-08-22",
+      "updated": "2026-08-24",
+      "summary": "Owi terus dihujat netizen, tetapi ia tetap diam. Entah sampai kapan kesabarannya bertahan. Author: pecinta jamu nc 103.185.52.197 5010 I failed to firstblood this challenge because distracted..",
+      "tags": [
+        "PWN",
+        "RET2LIBC",
+        "CALL2PLT",
+        "FORMAT STRING",
+        "HEAP",
+        "PIE",
+        "X64",
+        "EASY",
+        "MEDIUM"
+      ],
+      "status": 200,
+      "markdownBytes": 32206,
+      "flag": "BeeCTF{s4y4_s3b3tulny4_sud4h_d14m_4_5_t4hun_d1f1tn4h_s4y4_d14m_d1huj4t_s4y4_d14m_t4p1_h4r1_1n1_s4y4_4k4n_l4w4n}",
+      "attachments": [],
+      "assetNames": [
+        "a12a835b-289b-40e4-8465-f6f97d7ea361-screenshot_2026-08-24_10-19-03.png"
+      ],
+      "domImageNames": [
+        "a12a835b-289b-40e4-8465-f6f97d7ea361-screenshot_2026-08-24_10-19-03.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 215831,
+      "bodyBytes": 31815,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-shellcode-reworked-using-pwndbg",
+      "source": "https://claritys.web.id/writeups/pwn-shellcode-reworked-using-pwndbg",
+      "title": "Shellcode (reworked using pwndbg)",
+      "competition": "Cybersecurity Notes - GitBook",
+      "category": "Pwn",
+      "difficulty": "Easy",
+      "date": "2026-07-09",
+      "updated": "2026-07-10",
+      "summary": "",
+      "tags": [
+        "PWN",
+        "EASY",
+        "SHELLCODE"
+      ],
+      "status": 200,
+      "markdownBytes": 11540,
+      "flag": "-",
+      "attachments": [
+        {
+          "url": "/assets/uploads/80897c2b-dec8-4a03-a379-7ac82d443be0-vuln",
+          "name": "vuln",
+          "contentType": "application/octet-stream"
+        }
+      ],
+      "assetNames": [
+        "a3725093-e4ad-4dde-acf2-0c32563f56c7-screenshot_2026-07-09_16-33-18.png",
+        "599c8e44-cd73-4f7a-9c88-173ceb78c4a4-screenshot_2026-07-09_16-35-20.png",
+        "80897c2b-dec8-4a03-a379-7ac82d443be0-vuln"
+      ],
+      "domImageNames": [
+        "a3725093-e4ad-4dde-acf2-0c32563f56c7-screenshot_2026-07-09_16-33-18.png",
+        "599c8e44-cd73-4f7a-9c88-173ceb78c4a4-screenshot_2026-07-09_16-35-20.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 48908,
+      "bodyBytes": 11116,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-truman",
+      "source": "https://claritys.web.id/writeups/pwn-truman",
+      "title": "Truman",
+      "competition": "BeeCTF 2026",
+      "category": "Pwn",
+      "difficulty": "Medium",
+      "date": "2026-08-22",
+      "updated": "2026-08-24",
+      "summary": "I've always thought I have been in control of my whole world, but it's all a lie. I've finally found the door to really do what I want. Author: midn8 nc 103.185.52.197 6007 This one is hard, because I haven't really studied heap yet.",
+      "tags": [
+        "PWN",
+        "UAF",
+        "RET2LIBC",
+        "HEAP",
+        "TCACHE",
+        "SHELL",
+        "PIE",
+        "X64",
+        "MEDIUM"
+      ],
+      "status": 200,
+      "markdownBytes": 33674,
+      "flag": "BeeCTF{gut3nm0rg3n_s3l4m4ts14ng_k0nb4w4!}",
+      "attachments": [],
+      "assetNames": [
+        "076c1dbb-54ed-45f2-b236-266a2ceb0115-screenshot_2026-08-24_10-55-43.png"
+      ],
+      "domImageNames": [
+        "076c1dbb-54ed-45f2-b236-266a2ceb0115-screenshot_2026-08-24_10-55-43.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 250215,
+      "bodyBytes": 33380,
+      "flagPresent": true
+    },
+    {
+      "slug": "pwn-useless",
+      "source": "https://claritys.web.id/writeups/pwn-useless",
+      "title": "useless",
+      "competition": "CTF.mn",
+      "category": "Pwn",
+      "difficulty": "Medium",
+      "date": "2026-10-23",
+      "updated": "2026-10-30",
+      "summary": "BOF → ret2libc",
+      "tags": [
+        "ROP",
+        "RET2LIBC",
+        "BUFFER OVERFLOW"
+      ],
+      "status": 200,
+      "markdownBytes": 7343,
+      "flag": "HZU18{type_it_manually_if_you_want_but_better_you_do_it_yourself}",
+      "attachments": [],
+      "assetNames": [
+        "a140e995-59ec-489a-bef5-827c3ffed0a3-image.png",
+        "deda0794-a298-44c9-862e-e8d9a711891d-image-1.png",
+        "0412050f-2c71-4dbf-944a-cb7eb9eff755-image-2.png",
+        "8dabcca2-2c7f-4da9-a6bf-be561cf0533a-image-3.png"
+      ],
+      "domImageNames": [
+        "a140e995-59ec-489a-bef5-827c3ffed0a3-image.png",
+        "deda0794-a298-44c9-862e-e8d9a711891d-image-1.png",
+        "0412050f-2c71-4dbf-944a-cb7eb9eff755-image-2.png",
+        "8dabcca2-2c7f-4da9-a6bf-be561cf0533a-image-3.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 56310,
+      "bodyBytes": 6974,
+      "flagPresent": true
+    },
+    {
+      "slug": "reverse-bank-vault",
+      "source": "https://claritys.web.id/writeups/reverse-bank-vault",
+      "title": "Bank Vault",
+      "competition": "SCTF 2026",
+      "category": "Reverse",
+      "difficulty": "Medium",
+      "date": "2026-07-04",
+      "updated": "2026-07-06",
+      "summary": "Deskripsi: An ATM simulation with a custom encryption algorithm for the PIN.",
+      "tags": [
+        "REVERSE ENGINEERING",
+        "MEDIUM",
+        "KEYCHECK"
+      ],
+      "status": 200,
+      "markdownBytes": 2520,
+      "flag": "SCTF26{w3lc0m3_t0_th3_v4ult_p1n_9147487905852048613}",
+      "attachments": [
+        {
+          "url": "/assets/uploads/388f3f8d-7bee-494d-be8e-3b9b2e77271c-bank_vault.zip",
+          "name": "bank_vault.zip",
+          "contentType": "application/octet-stream"
+        }
+      ],
+      "assetNames": [
+        "89cfc4c5-137c-446f-ab61-55427808aa3a-image-17.png",
+        "388f3f8d-7bee-494d-be8e-3b9b2e77271c-bank_vault.zip"
+      ],
+      "domImageNames": [
+        "89cfc4c5-137c-446f-ab61-55427808aa3a-image-17.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 2422,
+      "bodyBytes": 2089,
+      "flagPresent": true
+    },
+    {
+      "slug": "reverse-flux-capacitor",
+      "source": "https://claritys.web.id/writeups/reverse-flux-capacitor",
+      "title": "Flux Capacitor",
+      "competition": "BeeCTF 2026",
+      "category": "Reverse",
+      "difficulty": "Medium",
+      "date": "2026-08-22",
+      "updated": "2026-08-24",
+      "summary": "The Flux Capacitor in Dr. Brown's old car is acting up, leaving him stuck in the wrong timeline. Maybe the “data” inside it can help him get the DeLorean running again. Author: c0smic",
+      "tags": [
+        "REVERSE ENGINEERING",
+        "XOR"
+      ],
+      "status": 200,
+      "markdownBytes": 17168,
+      "flag": "BeeCTF{flUx_cApAc1t0r_d3crYpt3d_sUcc3ss_djb21s34sy}",
+      "attachments": [],
+      "assetNames": [
+        "3ade3826-885a-4fcb-ad32-c51ba731f03b-screenshot_2026-08-24_13-09-17.png",
+        "35db3f18-a284-48e4-ac47-13dca3d4f810-image-7.png",
+        "aa45d41b-2ccb-437d-bb1e-19e64b9250a6-image-8.png"
+      ],
+      "domImageNames": [
+        "3ade3826-885a-4fcb-ad32-c51ba731f03b-screenshot_2026-08-24_13-09-17.png",
+        "35db3f18-a284-48e4-ac47-13dca3d4f810-image-7.png",
+        "aa45d41b-2ccb-437d-bb1e-19e64b9250a6-image-8.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 138294,
+      "bodyBytes": 16819,
+      "flagPresent": true
+    },
+    {
+      "slug": "reverse-wrongkube",
+      "source": "https://claritys.web.id/writeups/reverse-wrongkube",
+      "title": "WrongKube+",
+      "competition": "JuniorCrypt",
+      "category": "Reverse",
+      "difficulty": "Hard",
+      "date": "2026-07-12",
+      "updated": "2026-07-18",
+      "summary": "Desc: I stumbled upon a rather peculiar utility for visualizing Kubernetes clusters online, but I have a feeling there’s something hidden inside it. Flag format: grodno{}",
+      "tags": [
+        "REVERSE ENGINEERING",
+        "HARD",
+        "PYINSTXTRACTOR"
+      ],
+      "status": 200,
+      "markdownBytes": 28422,
+      "flag": "grodno{5h4d0w_c0ntr0l_pl4n3_qu0rum_r3c0nc1l3d}",
+      "attachments": [],
+      "assetNames": [],
+      "domImageNames": [],
+      "externalImages": [],
+      "domArticleHtmlBytes": 143696,
+      "bodyBytes": 28153,
+      "flagPresent": true
+    },
+    {
+      "slug": "web-alpaca-certification",
+      "source": "https://claritys.web.id/writeups/web-alpaca-certification",
+      "title": "Alpaca Certification",
+      "competition": "Alpacahack",
+      "category": "Web",
+      "difficulty": "Easy",
+      "date": "2026-11-07",
+      "updated": "2026-11-07",
+      "summary": "\"Intercepting an SSL request and decoding it (using OpenSSL and HTTPS requests)\"",
+      "tags": [],
+      "status": 200,
+      "markdownBytes": 2985,
+      "flag": "Alpaca{L3ts_continu3_th1s_f0r_another_6_mon7hs}",
+      "attachments": [],
+      "assetNames": [
+        "35020000-1718-4f49-8226-07cfb66b472c-image.png"
+      ],
+      "domImageNames": [
+        "35020000-1718-4f49-8226-07cfb66b472c-image.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 13711,
+      "bodyBytes": 2726,
+      "flagPresent": true
+    },
+    {
+      "slug": "web-animal-viewer",
+      "source": "https://claritys.web.id/writeups/web-animal-viewer",
+      "title": "Animal Viewer",
+      "competition": "Alpacahack",
+      "category": "Web",
+      "difficulty": "Medium",
+      "date": "2026-11-07",
+      "updated": "2026-11-07",
+      "summary": "client side like bot fetcher, but holy moly i'm stuck because i thought the conf is different than the source code that given to us :heart_break:",
+      "tags": [
+        "XSS",
+        "BOT",
+        "CRAWLER",
+        "FETCHER",
+        "ATTRIBUTE INJECTION"
+      ],
+      "status": 200,
+      "markdownBytes": 6258,
+      "flag": "Alpaca{Client_s1de_ch4llenges_ar3_fun}",
+      "attachments": [],
+      "assetNames": [
+        "2ee9d131-f766-4553-a5e1-771f7dabacc7-image.png",
+        "ce86447d-70fe-4258-bed7-991bc013509f-image-1.png",
+        "fbe4fed3-06e3-47ac-9bc1-ba50a752d425-image-2.png",
+        "bb331974-1053-420e-830d-420401a9476b-image-3.png",
+        "06b80f4c-cee9-464a-8aff-9eb10e47976d-image-4.png",
+        "cc6eb707-1d0f-41a2-a521-fb3bfc55e228-image-5.png"
+      ],
+      "domImageNames": [
+        "2ee9d131-f766-4553-a5e1-771f7dabacc7-image.png",
+        "ce86447d-70fe-4258-bed7-991bc013509f-image-1.png",
+        "fbe4fed3-06e3-47ac-9bc1-ba50a752d425-image-2.png",
+        "bb331974-1053-420e-830d-420401a9476b-image-3.png",
+        "06b80f4c-cee9-464a-8aff-9eb10e47976d-image-4.png",
+        "cc6eb707-1d0f-41a2-a521-fb3bfc55e228-image-5.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 32178,
+      "bodyBytes": 5829,
+      "flagPresent": true
+    },
+    {
+      "slug": "web-emojify",
+      "source": "https://claritys.web.id/writeups/web-emojify",
+      "title": "Emojify",
+      "competition": "Alpacahack",
+      "category": "Web",
+      "difficulty": "Medium",
+      "date": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "WAF filtered not really functional and SSRF vulnerability",
+      "tags": [
+        "WAF",
+        "SSRF"
+      ],
+      "status": 200,
+      "markdownBytes": 5584,
+      "flag": "Alpaca{Sup3r_Speci4l_Rar3_Flag}",
+      "attachments": [],
+      "assetNames": [
+        "7b1c15e3-6174-43fe-8796-67f6818ad43f-image.png",
+        "e3a642c7-001f-4127-be5a-ead444dec255-image-1.png"
+      ],
+      "domImageNames": [
+        "7b1c15e3-6174-43fe-8796-67f6818ad43f-image.png",
+        "e3a642c7-001f-4127-be5a-ead444dec255-image-1.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 33779,
+      "bodyBytes": 5320,
+      "flagPresent": true
+    },
+    {
+      "slug": "web-fushigi-crawler",
+      "source": "https://claritys.web.id/writeups/web-fushigi-crawler",
+      "title": "Fushigi Crawler",
+      "competition": "Alpacahack",
+      "category": "Web",
+      "difficulty": "Easy",
+      "date": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "A bot crawler carries a flag as a header",
+      "tags": [
+        "CRAWLER"
+      ],
+      "status": 200,
+      "markdownBytes": 2739,
+      "flag": "Alpaca{CRAWLER_IS_SUGOI!}",
+      "attachments": [],
+      "assetNames": [
+        "f9b9e5db-b189-4b81-b268-0e489525cd68-image.png",
+        "27e1abc8-7457-4700-9893-0ab8564ecca4-image-1.png"
+      ],
+      "domImageNames": [
+        "f9b9e5db-b189-4b81-b268-0e489525cd68-image.png",
+        "27e1abc8-7457-4700-9893-0ab8564ecca4-image-1.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 20074,
+      "bodyBytes": 2469,
+      "flagPresent": true
+    },
+    {
+      "slug": "web-math6025-discrete-mathematics",
+      "source": "https://claritys.web.id/writeups/web-math6025-discrete-mathematics",
+      "title": "MATH6025 - Discrete Mathematics",
+      "competition": "BeeCTF 2026",
+      "category": "Web",
+      "difficulty": "Easy",
+      "date": "2026-08-22",
+      "updated": "2026-08-24",
+      "summary": "\"Solve this math assigment\" Then my ai proceeds to use some weird markup language for my math assigment. I asked the ai to make me a website so that i can use this language for my future assigment. Let's hope there's no naughty highschooler that will inject my site lol Author: sierra http://103.185.52.197:6767",
+      "tags": [
+        "WEB EXPLOITATION",
+        "LATEX"
+      ],
+      "status": 200,
+      "markdownBytes": 2258,
+      "flag": "BeeCTF{Duh_dismathlagi_dismathLagi_disssnutz_hehehehheeh_galucu_ya:(}",
+      "attachments": [],
+      "assetNames": [
+        "2a897492-32d8-4738-80cc-b13b778a5a56-screenshot_2026-08-24_13-11-05.png",
+        "63057fe6-c68b-42ef-a52e-c0ca0e541d82-image-9.png",
+        "f7ed4987-5b73-435a-bfdc-e3780ed6fda0-image-10.png",
+        "c45f5ea6-6439-4693-ac1d-7eb1e87ae40c-1787457035691946629.png",
+        "c2e7adfc-d23a-414c-84f7-9cf681a6b30d-image-11.png"
+      ],
+      "domImageNames": [
+        "2a897492-32d8-4738-80cc-b13b778a5a56-screenshot_2026-08-24_13-11-05.png",
+        "63057fe6-c68b-42ef-a52e-c0ca0e541d82-image-9.png",
+        "f7ed4987-5b73-435a-bfdc-e3780ed6fda0-image-10.png",
+        "c45f5ea6-6439-4693-ac1d-7eb1e87ae40c-1787457035691946629.png",
+        "c2e7adfc-d23a-414c-84f7-9cf681a6b30d-image-11.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 2391,
+      "bodyBytes": 1816,
+      "flagPresent": true
+    },
+    {
+      "slug": "web-secret-table-2",
+      "source": "https://claritys.web.id/writeups/web-secret-table-2",
+      "title": "secret-table-2",
+      "competition": "Alpacahack",
+      "category": "Web",
+      "difficulty": "Medium",
+      "date": "2026-11-06",
+      "updated": "2026-11-06",
+      "summary": "SQL Injection, but first we need to find the table name (because it's randomized) and then the column name (since it's also randomized). Once we have those, you can just extract the flag using a UNION injection.",
+      "tags": [
+        "SQL INJECTION",
+        "SQLI"
+      ],
+      "status": 200,
+      "markdownBytes": 6401,
+      "flag": "Alpaca{y0u_must_b3_sqli_m4ster}",
+      "attachments": [],
+      "assetNames": [
+        "0fdff96f-4b41-435b-af1f-a21ee9a4f8be-image.png",
+        "ec4a588e-7e12-46ba-b24d-78c21b763a02-image-1.png",
+        "f9ddf70f-0b86-4e42-83af-80a675a98992-image-2.png",
+        "5b5c1890-4045-4de6-a37b-cf370e193ca7-image-3.png"
+      ],
+      "domImageNames": [
+        "0fdff96f-4b41-435b-af1f-a21ee9a4f8be-image.png",
+        "ec4a588e-7e12-46ba-b24d-78c21b763a02-image-1.png",
+        "f9ddf70f-0b86-4e42-83af-80a675a98992-image-2.png",
+        "5b5c1890-4045-4de6-a37b-cf370e193ca7-image-3.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 35918,
+      "bodyBytes": 6059,
+      "flagPresent": true
+    },
+    {
+      "slug": "web-shirogane",
+      "source": "https://claritys.web.id/writeups/web-shirogane",
+      "title": "Shirogane",
+      "competition": "PlayITPlus",
+      "category": "Web",
+      "difficulty": "Easy",
+      "date": "2026-11-08",
+      "updated": "2026-11-09",
+      "summary": "A whiteboxed web exploit challenge. But there’s two steps: 1. SQL Injection to get Admin 2. Zip Slip to get RCE",
+      "tags": [
+        "SQLI",
+        "ZIP SLIP",
+        "RCE",
+        "PHP"
+      ],
+      "status": 200,
+      "markdownBytes": 15023,
+      "flag": "PLAYITPLUS{904af8d2487a0dc563af637b879ead350c8a4c75e3dc736057fba35ca2a44db2}",
+      "attachments": [],
+      "assetNames": [
+        "9517698c-f88d-42ae-a49d-ce42eb1d4923-image.png",
+        "cfcd6dbb-bc88-4fd1-bbb6-986067371a47-image-1.png",
+        "a04ea2d4-24e1-4b29-8858-d7585e86a5ad-image-2.png",
+        "eba38d8c-9889-4d24-9fbc-c394810ef22e-image-3.png",
+        "6f3091f6-614b-42c3-b0e8-e5fa63cba37c-image-4.png",
+        "c648dfe3-d2f8-49f9-9b90-29d89588b4f9-image-5.png",
+        "a1023e60-fd02-4656-8f8b-f616934738b5-image-6.png",
+        "01513f5c-2272-41b2-b28d-39569ae0c470-image-7.png",
+        "6d70fa20-0acb-4778-8e02-6cd22ecf91fc-a0a3c637-9fa7-43d8-8cb8-e6c629364476.png",
+        "698e7fe2-7f72-44fe-a6d7-b2542ca91361-image-8.png",
+        "7cf7a9ca-ef0c-4ab1-8194-3666729fa48a-image-9.png",
+        "a0d08951-b8fb-422d-8b87-149f2154b52a-image-10.png"
+      ],
+      "domImageNames": [
+        "9517698c-f88d-42ae-a49d-ce42eb1d4923-image.png",
+        "cfcd6dbb-bc88-4fd1-bbb6-986067371a47-image-1.png",
+        "a04ea2d4-24e1-4b29-8858-d7585e86a5ad-image-2.png",
+        "eba38d8c-9889-4d24-9fbc-c394810ef22e-image-3.png",
+        "6f3091f6-614b-42c3-b0e8-e5fa63cba37c-image-4.png",
+        "c648dfe3-d2f8-49f9-9b90-29d89588b4f9-image-5.png",
+        "a1023e60-fd02-4656-8f8b-f616934738b5-image-6.png",
+        "01513f5c-2272-41b2-b28d-39569ae0c470-image-7.png",
+        "6d70fa20-0acb-4778-8e02-6cd22ecf91fc-a0a3c637-9fa7-43d8-8cb8-e6c629364476.png",
+        "698e7fe2-7f72-44fe-a6d7-b2542ca91361-image-8.png",
+        "7cf7a9ca-ef0c-4ab1-8194-3666729fa48a-image-9.png",
+        "a0d08951-b8fb-422d-8b87-149f2154b52a-image-10.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 77878,
+      "bodyBytes": 14427,
+      "flagPresent": true
+    },
+    {
+      "slug": "web-simple-login",
+      "source": "https://claritys.web.id/writeups/web-simple-login",
+      "title": "Simple Login",
+      "competition": "Alpacahack",
+      "category": "Web",
+      "difficulty": "Easy",
+      "date": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "SQL Injection, but we can't use single quote.",
+      "tags": [
+        "SQLI",
+        "SQL INJECTION"
+      ],
+      "status": 200,
+      "markdownBytes": 5955,
+      "flag": "Alpaca{SQLi_with0ut_5ingle_quot3s!}",
+      "attachments": [],
+      "assetNames": [
+        "788d6344-0360-4173-a53c-18528fae6319-image.png"
+      ],
+      "domImageNames": [
+        "788d6344-0360-4173-a53c-18528fae6319-image.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 37460,
+      "bodyBytes": 5696,
+      "flagPresent": true
+    },
+    {
+      "slug": "web-skills-assessment-sql-injection-fundamentals",
+      "source": "https://claritys.web.id/writeups/web-skills-assessment-sql-injection-fundamentals",
+      "title": "Skills Assessment - SQL Injection Fundamentals",
+      "competition": "Hack The Box",
+      "category": "Web",
+      "difficulty": "Medium",
+      "date": "2026-11-06",
+      "updated": "2026-11-06",
+      "summary": "This is a Hack The Box module but about SQL Injection. But the last Section is a real challenge like CTF but with quiz based. https://academy.hackthebox.com/app/module/33/ https://academy.hackthebox.com/app/module/33/section/518",
+      "tags": [
+        "SQL INJECTION",
+        "SQLI"
+      ],
+      "status": 200,
+      "markdownBytes": 7309,
+      "flag": "HTB{go_copy_that_manually_if_you_really_need_it_that_BAD!}",
+      "attachments": [],
+      "assetNames": [
+        "c009dc06-e8ce-4bdd-9e82-5f9de73f86ce-image.png",
+        "6f5178be-7d15-416f-9ede-fc74f6a45636-image-1.png",
+        "d35370d1-1887-4e12-bd5d-5059ef5c4a8d-image-2.png",
+        "b5faa171-eb28-4d3e-833f-6aeadb88cde7-image-3.png",
+        "b61fcfaf-d7ee-4e2f-bfdd-2bfea2184900-image-4.png",
+        "1beb8ea6-c364-4960-8219-ee3444deb654-image-5.png",
+        "19e0d23c-754f-48d9-b172-08f9bcd5a4d8-image-6.png",
+        "14a26d55-f459-4581-8a50-af141d7c1704-image-7.png",
+        "1fe38bcc-6dc6-424b-81eb-e06f08841710-image-8.png",
+        "9deb312a-9cde-4812-a56e-924fe5878f70-image-9.png",
+        "b2851694-cc3d-44eb-8b15-9db165bbd0e5-image-10.png",
+        "97fa0cca-b4e3-4ca6-b41f-ac879755f64e-image-11.png",
+        "6975f0a2-38ab-4e98-a86b-7c37585f184f-image-12.png",
+        "09e7fac2-229c-4b9d-af53-9614f6c1d0ca-image-13.png",
+        "8ed5d5a5-e3e5-4db2-9b20-fa5d68d78b5f-image-14.png",
+        "ce7e0ecd-31fc-452a-9c05-22994bb4458f-image-15.png",
+        "2dbd9de0-5243-40ff-ac46-247abd7640ae-image-16.png",
+        "2cd10599-8ad0-4932-aec3-0625e409fdf1-image-17.png",
+        "c1906528-94b0-40d0-a77d-64a9bbe31a93-image-18.png",
+        "27f0ccef-6abf-4acc-83da-8d09f24bebab-image-19.png",
+        "63b4a944-2be5-405c-bff0-c048bf934f53-image-20.png"
+      ],
+      "domImageNames": [
+        "c009dc06-e8ce-4bdd-9e82-5f9de73f86ce-image.png",
+        "6f5178be-7d15-416f-9ede-fc74f6a45636-image-1.png",
+        "d35370d1-1887-4e12-bd5d-5059ef5c4a8d-image-2.png",
+        "b5faa171-eb28-4d3e-833f-6aeadb88cde7-image-3.png",
+        "b61fcfaf-d7ee-4e2f-bfdd-2bfea2184900-image-4.png",
+        "1beb8ea6-c364-4960-8219-ee3444deb654-image-5.png",
+        "19e0d23c-754f-48d9-b172-08f9bcd5a4d8-image-6.png",
+        "14a26d55-f459-4581-8a50-af141d7c1704-image-7.png",
+        "1fe38bcc-6dc6-424b-81eb-e06f08841710-image-8.png",
+        "9deb312a-9cde-4812-a56e-924fe5878f70-image-9.png",
+        "b2851694-cc3d-44eb-8b15-9db165bbd0e5-image-10.png",
+        "97fa0cca-b4e3-4ca6-b41f-ac879755f64e-image-11.png",
+        "6975f0a2-38ab-4e98-a86b-7c37585f184f-image-12.png",
+        "09e7fac2-229c-4b9d-af53-9614f6c1d0ca-image-13.png",
+        "8ed5d5a5-e3e5-4db2-9b20-fa5d68d78b5f-image-14.png",
+        "ce7e0ecd-31fc-452a-9c05-22994bb4458f-image-15.png",
+        "2dbd9de0-5243-40ff-ac46-247abd7640ae-image-16.png",
+        "2cd10599-8ad0-4932-aec3-0625e409fdf1-image-17.png",
+        "c1906528-94b0-40d0-a77d-64a9bbe31a93-image-18.png",
+        "27f0ccef-6abf-4acc-83da-8d09f24bebab-image-19.png",
+        "63b4a944-2be5-405c-bff0-c048bf934f53-image-20.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 15449,
+      "bodyBytes": 6417,
+      "flagPresent": true
+    },
+    {
+      "slug": "web-two-million",
+      "source": "https://claritys.web.id/writeups/web-two-million",
+      "title": "Two Million",
+      "competition": "Hack The Box",
+      "category": "Web",
+      "difficulty": "Easy",
+      "date": "2026-10-21",
+      "updated": "2026-10-30",
+      "summary": "A quiz based boot2root with combination of Web Exploitation",
+      "tags": [
+        "BOOT2ROOT",
+        "WEB EXPLOITATION",
+        "OBFUSCATED",
+        "CVE"
+      ],
+      "status": 200,
+      "markdownBytes": 10003,
+      "flag": "HTB{type_it_manually_if_you_want_but_better_you_do_it_yourself}",
+      "attachments": [],
+      "assetNames": [
+        "41594c7c-9762-43f5-b2e1-f8833f133b23-image.png",
+        "a5cbb2b0-b6e0-4720-8868-58a07ee65a53-image-1.png",
+        "255c2c4c-30e1-482d-85a4-79d14e7b12c3-image-2.png",
+        "4add3101-9ff4-4f06-a0f2-b9b2c43c8e17-image-3.png",
+        "f4476c97-20fe-4692-bbd4-32fed660c58d-image-4.png",
+        "74799cc2-5558-4d3f-bf67-15d3999cc6b9-image-5.png",
+        "1d44cc8b-e1c1-4daa-a701-e3ad1ccb9cd1-image-6.png",
+        "81b02ce1-55fc-48e7-8952-d52e615e58ed-image-7.png",
+        "aad10c9e-0645-4461-b660-ddf402141baa-image-8.png",
+        "bc836754-6ea9-43fd-9570-d85ded09ba43-image-9.png",
+        "784043e0-198e-44f0-9089-3a36bb3cac34-image-10.png",
+        "8932d875-2f6c-40df-9067-8867c871caaf-image-11.png",
+        "03732cc6-bc9c-4153-bcd4-be1e00a31386-image-12.png",
+        "9b014b9b-10e0-4790-a4f5-845dab84a66a-image-13.png",
+        "f9da0b04-4e88-4d47-bdef-0f73514aeb7c-image-14.png",
+        "9aec58c3-f17b-484c-9dbb-5a3f69e3a7ae-image-15.png",
+        "4e185201-0d0b-4ca7-a2d0-9ae44f752cfa-image-16.png",
+        "ba071aa1-79f0-4022-b488-3b2a835e1a2c-1792565151496739382.png",
+        "9b224391-7e5c-4741-b132-4421e44ae0da-image-17.png",
+        "5e519625-b4af-482a-b925-c8addfe221ad-image-18.png",
+        "3ab6b327-eb6a-4db3-906f-0f03dfdfe1d6-image-19.png",
+        "8e5631b3-b226-48fd-9cdd-336081de17fa-image-20.png",
+        "82f4dac0-d917-4baa-a316-02eeb2f54d35-image-21.png",
+        "2766e9bd-9456-4053-860e-f73d3f0d4224-image-22.png",
+        "afc9dce1-20a9-4c27-a9bd-4beb44302a46-image-23.png",
+        "9a603fad-2ad1-48ae-b2c3-069b0ad2872d-image-24.png",
+        "0cad55cc-1a56-46dc-8cad-b19565e36066-image-25.png",
+        "1515a341-3ac1-4709-bd23-94f38273b80d-image-26.png",
+        "331192ce-73e3-491b-bf1d-bc8defa0b1b6-image-27.png"
+      ],
+      "domImageNames": [
+        "41594c7c-9762-43f5-b2e1-f8833f133b23-image.png",
+        "a5cbb2b0-b6e0-4720-8868-58a07ee65a53-image-1.png",
+        "255c2c4c-30e1-482d-85a4-79d14e7b12c3-image-2.png",
+        "4add3101-9ff4-4f06-a0f2-b9b2c43c8e17-image-3.png",
+        "f4476c97-20fe-4692-bbd4-32fed660c58d-image-4.png",
+        "74799cc2-5558-4d3f-bf67-15d3999cc6b9-image-5.png",
+        "1d44cc8b-e1c1-4daa-a701-e3ad1ccb9cd1-image-6.png",
+        "81b02ce1-55fc-48e7-8952-d52e615e58ed-image-7.png",
+        "aad10c9e-0645-4461-b660-ddf402141baa-image-8.png",
+        "bc836754-6ea9-43fd-9570-d85ded09ba43-image-9.png",
+        "784043e0-198e-44f0-9089-3a36bb3cac34-image-10.png",
+        "8932d875-2f6c-40df-9067-8867c871caaf-image-11.png",
+        "03732cc6-bc9c-4153-bcd4-be1e00a31386-image-12.png",
+        "9b014b9b-10e0-4790-a4f5-845dab84a66a-image-13.png",
+        "f9da0b04-4e88-4d47-bdef-0f73514aeb7c-image-14.png",
+        "9aec58c3-f17b-484c-9dbb-5a3f69e3a7ae-image-15.png",
+        "4e185201-0d0b-4ca7-a2d0-9ae44f752cfa-image-16.png",
+        "ba071aa1-79f0-4022-b488-3b2a835e1a2c-1792565151496739382.png",
+        "9b224391-7e5c-4741-b132-4421e44ae0da-image-17.png",
+        "5e519625-b4af-482a-b925-c8addfe221ad-image-18.png",
+        "3ab6b327-eb6a-4db3-906f-0f03dfdfe1d6-image-19.png",
+        "8e5631b3-b226-48fd-9cdd-336081de17fa-image-20.png",
+        "82f4dac0-d917-4baa-a316-02eeb2f54d35-image-21.png",
+        "2766e9bd-9456-4053-860e-f73d3f0d4224-image-22.png",
+        "afc9dce1-20a9-4c27-a9bd-4beb44302a46-image-23.png",
+        "9a603fad-2ad1-48ae-b2c3-069b0ad2872d-image-24.png",
+        "0cad55cc-1a56-46dc-8cad-b19565e36066-image-25.png",
+        "1515a341-3ac1-4709-bd23-94f38273b80d-image-26.png",
+        "331192ce-73e3-491b-bf1d-bc8defa0b1b6-image-27.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 20985,
+      "bodyBytes": 8935,
+      "flagPresent": true
+    },
+    {
+      "slug": "web-xmas-login",
+      "source": "https://claritys.web.id/writeups/web-xmas-login",
+      "title": "Xmas Login",
+      "competition": "Alpacahack",
+      "category": "Web",
+      "difficulty": "Easy",
+      "date": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "SQL Injection, but there's an input limit.",
+      "tags": [
+        "SQL INJECTION",
+        "SQLI"
+      ],
+      "status": 200,
+      "markdownBytes": 8264,
+      "flag": "Alpaca{M3rry_Xmas!_Th1s_is_4_g1ft_fr0m_santa!_and_Happy_N3w_Year_2026!!}",
+      "attachments": [],
+      "assetNames": [
+        "d75d2cc0-aa79-49cb-84df-6bdf64e22edd-image.png",
+        "80a09567-e711-4c3d-a022-2274a542e1b3-image-1.png",
+        "906d7092-5974-4d7c-acc0-429063df858c-image-2.png",
+        "f775a39b-c314-4f32-bee6-dbbd848d718a-image-3.png",
+        "1eb4c888-e84b-49bb-a506-d1a9f7da7d03-image-4.png",
+        "7c09bba9-f596-4818-90af-230d8d9ed4e5-image-5.png",
+        "d60a5bb1-fb6e-4cac-a8bc-6b3eb40167e7-image-6.png"
+      ],
+      "domImageNames": [
+        "d75d2cc0-aa79-49cb-84df-6bdf64e22edd-image.png",
+        "80a09567-e711-4c3d-a022-2274a542e1b3-image-1.png",
+        "906d7092-5974-4d7c-acc0-429063df858c-image-2.png",
+        "f775a39b-c314-4f32-bee6-dbbd848d718a-image-3.png",
+        "1eb4c888-e84b-49bb-a506-d1a9f7da7d03-image-4.png",
+        "7c09bba9-f596-4818-90af-230d8d9ed4e5-image-5.png",
+        "d60a5bb1-fb6e-4cac-a8bc-6b3eb40167e7-image-6.png"
+      ],
+      "externalImages": [],
+      "domArticleHtmlBytes": 39926,
+      "bodyBytes": 7810,
+      "flagPresent": true
+    }
+  ],
+  "assets": [
+    {
+      "filename": "01513f5c-2272-41b2-b28d-39569ae0c470-image-7.png",
+      "url": "https://claritys.web.id/api/public/uploads/01513f5c-2272-41b2-b28d-39569ae0c470-image-7.png",
+      "contentType": "image/png",
+      "size": 73969,
+      "sha256": "89cf35584ae698c90d210c55c6b6ce09c586a5873c57bb5f67cd28249c810584",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "029e3b31-9cb5-404b-addd-dc6ba5f0290d-image-2.png",
+      "url": "https://claritys.web.id/api/public/uploads/029e3b31-9cb5-404b-addd-dc6ba5f0290d-image-2.png",
+      "contentType": "image/png",
+      "size": 119090,
+      "sha256": "ca82625202409070e12b4536dd5aea0bb6112fdb119bcb8a66dc89f7ea05cf83",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "03732cc6-bc9c-4153-bcd4-be1e00a31386-image-12.png",
+      "url": "https://claritys.web.id/api/public/uploads/03732cc6-bc9c-4153-bcd4-be1e00a31386-image-12.png",
+      "contentType": "image/png",
+      "size": 68620,
+      "sha256": "0549e67f08c3836dde963223a5d5b4e3d24dbd727804a60d7b65dc683606e77e",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "0412050f-2c71-4dbf-944a-cb7eb9eff755-image-2.png",
+      "url": "https://claritys.web.id/api/public/uploads/0412050f-2c71-4dbf-944a-cb7eb9eff755-image-2.png",
+      "contentType": "image/png",
+      "size": 565262,
+      "sha256": "a19c45486762efb424ae7ca43ebb5f52631bbffd307dd3f1a468351b8453d0e8",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "06b80f4c-cee9-464a-8aff-9eb10e47976d-image-4.png",
+      "url": "https://claritys.web.id/api/public/uploads/06b80f4c-cee9-464a-8aff-9eb10e47976d-image-4.png",
+      "contentType": "image/png",
+      "size": 72687,
+      "sha256": "f992152627ff100ffb1ed1ac3e423ecd71d97651b7e055cafc281fc134d1e094",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "076c1dbb-54ed-45f2-b236-266a2ceb0115-screenshot_2026-08-24_10-55-43.png",
+      "url": "https://claritys.web.id/api/public/uploads/076c1dbb-54ed-45f2-b236-266a2ceb0115-screenshot_2026-08-24_10-55-43.png",
+      "contentType": "image/png",
+      "size": 48596,
+      "sha256": "bebf605345cfaad04afa9f94a6f6e520a59e94acec81f9ada8c9a97d9220da0b",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "08d4fafb-72b2-4f39-a6a5-0655133aed27-screenshot_2026-08-24_13-00-19.png",
+      "url": "https://claritys.web.id/api/public/uploads/08d4fafb-72b2-4f39-a6a5-0655133aed27-screenshot_2026-08-24_13-00-19.png",
+      "contentType": "image/png",
+      "size": 39679,
+      "sha256": "88971ffad9c61b814869aa4b568b3d211fdcf5f7db15873526cd49766fdaa604",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "093f5908-7fd0-4803-b001-a81c6e023969-image-18.png",
+      "url": "https://claritys.web.id/api/public/uploads/093f5908-7fd0-4803-b001-a81c6e023969-image-18.png",
+      "contentType": "image/png",
+      "size": 389654,
+      "sha256": "0915fc65621eaad0d0a44972bf58cd909587d9e7eecb1c7fe7432afff4222b0f",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "09e7fac2-229c-4b9d-af53-9614f6c1d0ca-image-13.png",
+      "url": "https://claritys.web.id/api/public/uploads/09e7fac2-229c-4b9d-af53-9614f6c1d0ca-image-13.png",
+      "contentType": "image/png",
+      "size": 21916,
+      "sha256": "4231d91d19c4d5e6519763137deea38cecbef26de6857ca70e78c2eb2cd41e45",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "0bd61361-062a-49df-bb6c-da1274421698-screenshot_2026-07-01_11-08-38.png",
+      "url": "https://claritys.web.id/api/public/uploads/0bd61361-062a-49df-bb6c-da1274421698-screenshot_2026-07-01_11-08-38.png",
+      "contentType": "image/png",
+      "size": 58627,
+      "sha256": "15cde79690fe041e0c7c3e54daa75d0a7d8682f76583d08da2244da5c4d5574e",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "0c6933ec-8975-4ca7-9458-f22ba2c3d98a-image-3.png",
+      "url": "https://claritys.web.id/api/public/uploads/0c6933ec-8975-4ca7-9458-f22ba2c3d98a-image-3.png",
+      "contentType": "image/png",
+      "size": 43279,
+      "sha256": "41d18cb624b83d8fe0dfd5e7a3bc73d6e330cc38df7ccbf1761f8eda25351aef",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "0cad55cc-1a56-46dc-8cad-b19565e36066-image-25.png",
+      "url": "https://claritys.web.id/api/public/uploads/0cad55cc-1a56-46dc-8cad-b19565e36066-image-25.png",
+      "contentType": "image/png",
+      "size": 61572,
+      "sha256": "1087766d56f1b930086d23408ba5c9ed96e4fc0e13528f5bd354e3871066d1f1",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "0fdff96f-4b41-435b-af1f-a21ee9a4f8be-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/0fdff96f-4b41-435b-af1f-a21ee9a4f8be-image.png",
+      "contentType": "image/png",
+      "size": 69776,
+      "sha256": "624659892dee1398fd8efa246a7fb35f4c3515368a65e004f054f94cd4cec5d6",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "11301d01-499e-4221-b3b1-237cbad9d2c7-image-31.png",
+      "url": "https://claritys.web.id/api/public/uploads/11301d01-499e-4221-b3b1-237cbad9d2c7-image-31.png",
+      "contentType": "image/png",
+      "size": 969285,
+      "sha256": "2b328f705dd46ff9c7751b28e03f5793222dec7b83f1e78402e264ce2556b2ff",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "14555b32-282b-43b2-8377-5d361cb5c808-image-5.png",
+      "url": "https://claritys.web.id/api/public/uploads/14555b32-282b-43b2-8377-5d361cb5c808-image-5.png",
+      "contentType": "image/png",
+      "size": 42399,
+      "sha256": "fa01662c8bd30175282074202be860d9c016a6900ed849d10f8327ba7948e638",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "14a26d55-f459-4581-8a50-af141d7c1704-image-7.png",
+      "url": "https://claritys.web.id/api/public/uploads/14a26d55-f459-4581-8a50-af141d7c1704-image-7.png",
+      "contentType": "image/png",
+      "size": 56921,
+      "sha256": "2a3a3d29dc4056acfb595d6f1af775c68bed5e71afe3f6abf205d03bfe3d9d01",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "15091af0-9f94-4064-bd5e-317f4b5e7403-a.txt",
+      "url": "https://claritys.web.id/api/public/uploads/15091af0-9f94-4064-bd5e-317f4b5e7403-a.txt",
+      "contentType": "text/plain",
+      "size": 2316,
+      "sha256": "59fef59b5a80c7d39a8ac57e4bcce992639a06d691c7da60abdb7ef421c2eb4c",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "1515a341-3ac1-4709-bd23-94f38273b80d-image-26.png",
+      "url": "https://claritys.web.id/api/public/uploads/1515a341-3ac1-4709-bd23-94f38273b80d-image-26.png",
+      "contentType": "image/png",
+      "size": 46087,
+      "sha256": "c2324b7168f782c86e96f656b83f623e91a98931840b346f3dd4c44f877467e1",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "18810e68-2746-4c34-b62f-aa5b6094c790-image-27.png",
+      "url": "https://claritys.web.id/api/public/uploads/18810e68-2746-4c34-b62f-aa5b6094c790-image-27.png",
+      "contentType": "image/png",
+      "size": 283824,
+      "sha256": "a61e825a1baa7fb992b5a4adb0401df7eaf188ad76057c65944535863954774c",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "19e0d23c-754f-48d9-b172-08f9bcd5a4d8-image-6.png",
+      "url": "https://claritys.web.id/api/public/uploads/19e0d23c-754f-48d9-b172-08f9bcd5a4d8-image-6.png",
+      "contentType": "image/png",
+      "size": 43685,
+      "sha256": "2ca8329941d66fcf03bd5eb3481e248d09c0fcaeb670d8b538237dc904ceddd0",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "1a3eb32e-fdb1-4786-9adf-e7fde8b7b6a3-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/1a3eb32e-fdb1-4786-9adf-e7fde8b7b6a3-image.png",
+      "contentType": "image/png",
+      "size": 187319,
+      "sha256": "3a0899a63cc6d1d9427b857e83154677cfebbabe430c8e00c6cae20a9469e8dc",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "1beb8ea6-c364-4960-8219-ee3444deb654-image-5.png",
+      "url": "https://claritys.web.id/api/public/uploads/1beb8ea6-c364-4960-8219-ee3444deb654-image-5.png",
+      "contentType": "image/png",
+      "size": 119684,
+      "sha256": "fbe6b3d11be12bd7a91413455f450ce63a24f1f1163a208e9670f21a74145ba5",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "1d44cc8b-e1c1-4daa-a701-e3ad1ccb9cd1-image-6.png",
+      "url": "https://claritys.web.id/api/public/uploads/1d44cc8b-e1c1-4daa-a701-e3ad1ccb9cd1-image-6.png",
+      "contentType": "image/png",
+      "size": 58556,
+      "sha256": "b186fe376314391f09b54f2e0b53a24554b6d3fc5fe73cc78cbb885a6ef2ea8a",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "1d7fa57c-6e7e-45c0-b375-68ae2b3451ce-image-1.png",
+      "url": "https://claritys.web.id/api/public/uploads/1d7fa57c-6e7e-45c0-b375-68ae2b3451ce-image-1.png",
+      "contentType": "image/png",
+      "size": 201755,
+      "sha256": "a0b7eba1c37d8328814b54ec1c963d9fdc1ce18ad7057fe31a7ea1b41600e142",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "1e03f4da-398f-41ea-8dc4-3ae75059319e-image-6.png",
+      "url": "https://claritys.web.id/api/public/uploads/1e03f4da-398f-41ea-8dc4-3ae75059319e-image-6.png",
+      "contentType": "image/png",
+      "size": 230241,
+      "sha256": "b8d1d84939308c22abaeff349367953ed6e78eee3ca1ca1af6f97dceae218e10",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "1eb4c888-e84b-49bb-a506-d1a9f7da7d03-image-4.png",
+      "url": "https://claritys.web.id/api/public/uploads/1eb4c888-e84b-49bb-a506-d1a9f7da7d03-image-4.png",
+      "contentType": "image/png",
+      "size": 99079,
+      "sha256": "44e6f93b2d73677b4086f962bcfb9ff0c1866c2abfaadc5b9c29680e24deceaa",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "1f887f7b-4d01-4374-a441-dfd6c5bcc2c6-image-6.png",
+      "url": "https://claritys.web.id/api/public/uploads/1f887f7b-4d01-4374-a441-dfd6c5bcc2c6-image-6.png",
+      "contentType": "image/png",
+      "size": 89409,
+      "sha256": "6871bb97a8836a9586ec03491bf9601003bc16032a76dd4f0557213110b920a9",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "1fe38bcc-6dc6-424b-81eb-e06f08841710-image-8.png",
+      "url": "https://claritys.web.id/api/public/uploads/1fe38bcc-6dc6-424b-81eb-e06f08841710-image-8.png",
+      "contentType": "image/png",
+      "size": 51545,
+      "sha256": "4c84d6d25a9a9434ab5094350dceaf3c1a556c05c0a44a6f0caefee27267163b",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "2199483f-25af-4ec6-9d11-cb32f637486d-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/2199483f-25af-4ec6-9d11-cb32f637486d-image.png",
+      "contentType": "image/png",
+      "size": 282838,
+      "sha256": "d99f2ec76587321501fc0449df5a8bdc8e906a978b0b82e444237d7578dd4785",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "24e81a8a-2861-4173-819d-e32f50174104-image-2.png",
+      "url": "https://claritys.web.id/api/public/uploads/24e81a8a-2861-4173-819d-e32f50174104-image-2.png",
+      "contentType": "image/png",
+      "size": 434324,
+      "sha256": "e796e4032e66d1faf76dbbe52560421d917878cc026f7ac0dbc8236e6293732b",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "255c2c4c-30e1-482d-85a4-79d14e7b12c3-image-2.png",
+      "url": "https://claritys.web.id/api/public/uploads/255c2c4c-30e1-482d-85a4-79d14e7b12c3-image-2.png",
+      "contentType": "image/png",
+      "size": 59129,
+      "sha256": "350faf99bdd59240a7412e2d0da8714f9188b238bf17625e2f340da9f06f9aac",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "26afd201-2898-4337-b0e6-ed54259b3ca4-image-1.png",
+      "url": "https://claritys.web.id/api/public/uploads/26afd201-2898-4337-b0e6-ed54259b3ca4-image-1.png",
+      "contentType": "image/png",
+      "size": 145570,
+      "sha256": "10e9456adc79562a7e807d9be91a3496624134f97cbd9cfd8c7cc40f07729951",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "2766e9bd-9456-4053-860e-f73d3f0d4224-image-22.png",
+      "url": "https://claritys.web.id/api/public/uploads/2766e9bd-9456-4053-860e-f73d3f0d4224-image-22.png",
+      "contentType": "image/png",
+      "size": 174664,
+      "sha256": "42899c210b739adf45e6e3524ee2cd62b2d90d8575ea558c22714c46b8eb79bd",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "27e1abc8-7457-4700-9893-0ab8564ecca4-image-1.png",
+      "url": "https://claritys.web.id/api/public/uploads/27e1abc8-7457-4700-9893-0ab8564ecca4-image-1.png",
+      "contentType": "image/png",
+      "size": 79314,
+      "sha256": "8487377e3d131e06e54b73b6d58c223b294035c3f7be3894f44ff531a95ac455",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "27f0ccef-6abf-4acc-83da-8d09f24bebab-image-19.png",
+      "url": "https://claritys.web.id/api/public/uploads/27f0ccef-6abf-4acc-83da-8d09f24bebab-image-19.png",
+      "contentType": "image/png",
+      "size": 42852,
+      "sha256": "1b208ad76ee3198896b7b1bf5602564e9e28880a3da3d1910bf023de019a5d5c",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "293a1d0d-e438-426c-8ceb-f63586ac5d9d-image-3.png",
+      "url": "https://claritys.web.id/api/public/uploads/293a1d0d-e438-426c-8ceb-f63586ac5d9d-image-3.png",
+      "contentType": "image/png",
+      "size": 13522,
+      "sha256": "59b1897db197120da2d23620873c9599cf44e745e3b31cbad0e4eb1ef7023aa6",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "2a897492-32d8-4738-80cc-b13b778a5a56-screenshot_2026-08-24_13-11-05.png",
+      "url": "https://claritys.web.id/api/public/uploads/2a897492-32d8-4738-80cc-b13b778a5a56-screenshot_2026-08-24_13-11-05.png",
+      "contentType": "image/png",
+      "size": 60997,
+      "sha256": "7b24f50afb909b5c7699ade1d7d6dd114d02202171009a562d847077549bf0e0",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "2c65acd4-c29b-495e-9a85-e49804f5c8a1-image-23.png",
+      "url": "https://claritys.web.id/api/public/uploads/2c65acd4-c29b-495e-9a85-e49804f5c8a1-image-23.png",
+      "contentType": "image/png",
+      "size": 24762,
+      "sha256": "509ed145cbb45c18d07b350ab4956af2ef2f72c4a0f1c64d16e3527b0f80555b",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "2cd10599-8ad0-4932-aec3-0625e409fdf1-image-17.png",
+      "url": "https://claritys.web.id/api/public/uploads/2cd10599-8ad0-4932-aec3-0625e409fdf1-image-17.png",
+      "contentType": "image/png",
+      "size": 26641,
+      "sha256": "cd4b2294d88eef8d4b4648a1bea4f3f20ebd15bda4a6918af8446c5f6730ff53",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "2dbd9de0-5243-40ff-ac46-247abd7640ae-image-16.png",
+      "url": "https://claritys.web.id/api/public/uploads/2dbd9de0-5243-40ff-ac46-247abd7640ae-image-16.png",
+      "contentType": "image/png",
+      "size": 46312,
+      "sha256": "5eefe9467721f38db64208a10249e2b26fd5fd3232b94e197a3760e6437d1b3b",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "2ee9d131-f766-4553-a5e1-771f7dabacc7-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/2ee9d131-f766-4553-a5e1-771f7dabacc7-image.png",
+      "contentType": "image/png",
+      "size": 19920,
+      "sha256": "f7ef50617abaab515f7330fb328f5818fe45994f110d30329f4572f642a689f4",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "2f5e1ae4-27c0-42a6-a8c1-c15cca8adace-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/2f5e1ae4-27c0-42a6-a8c1-c15cca8adace-image.png",
+      "contentType": "image/png",
+      "size": 195140,
+      "sha256": "4f0405311185714c125de562bca2d23d1106e34d0ec74415b7bf840ae816113f",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "30c1d690-a74f-40ac-8a6e-30bafbf13b4c-image-9.png",
+      "url": "https://claritys.web.id/api/public/uploads/30c1d690-a74f-40ac-8a6e-30bafbf13b4c-image-9.png",
+      "contentType": "image/png",
+      "size": 159254,
+      "sha256": "4beef8904c33f2727d3bee54c5f5c390afde7ac01f87cc679f82c6c344194c4c",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "30ff98d3-8b38-4397-b943-8551df5f003a-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/30ff98d3-8b38-4397-b943-8551df5f003a-image.png",
+      "contentType": "image/png",
+      "size": 36652,
+      "sha256": "21c18e5ed66ecc3355d61a183ee848b763016f515e1e1820f70d961be80a8f41",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "31fcb80b-4a40-4a96-9fce-65c603794040-image-20.png",
+      "url": "https://claritys.web.id/api/public/uploads/31fcb80b-4a40-4a96-9fce-65c603794040-image-20.png",
+      "contentType": "image/png",
+      "size": 51690,
+      "sha256": "5ccc259c3e04608ea5be1ed1de8df9c77d5203eed9102c8ff09e9815e2935484",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "320f9c67-34f6-42f1-bc47-190a08864063-image-2.png",
+      "url": "https://claritys.web.id/api/public/uploads/320f9c67-34f6-42f1-bc47-190a08864063-image-2.png",
+      "contentType": "image/png",
+      "size": 848074,
+      "sha256": "398da1737c871ee104f020f4dac7a1c8076bf3010af6ade7cd6dc50c9c34b6f6",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "324a3b3d-30c2-4e8e-9496-b656b2c56447-image-2.png",
+      "url": "https://claritys.web.id/api/public/uploads/324a3b3d-30c2-4e8e-9496-b656b2c56447-image-2.png",
+      "contentType": "image/png",
+      "size": 216030,
+      "sha256": "d962d529efa3b0f013cdf20e3c8855f34eea5a1753fb6634740a7f213bcfd183",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "331192ce-73e3-491b-bf1d-bc8defa0b1b6-image-27.png",
+      "url": "https://claritys.web.id/api/public/uploads/331192ce-73e3-491b-bf1d-bc8defa0b1b6-image-27.png",
+      "contentType": "image/png",
+      "size": 171006,
+      "sha256": "36451fe1892fb482569ef049b666458dbc58eabcb3ebf531883dd995b7a72de0",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "35020000-1718-4f49-8226-07cfb66b472c-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/35020000-1718-4f49-8226-07cfb66b472c-image.png",
+      "contentType": "image/png",
+      "size": 696875,
+      "sha256": "5a375353b19e1b7d507788a23e1ca7419c7973ef49ebfad261471b0dd0c1be9c",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "35db3f18-a284-48e4-ac47-13dca3d4f810-image-7.png",
+      "url": "https://claritys.web.id/api/public/uploads/35db3f18-a284-48e4-ac47-13dca3d4f810-image-7.png",
+      "contentType": "image/png",
+      "size": 60233,
+      "sha256": "42277c3549e66bfef1fc854f2f6eece177eb0b9cdfa3a01d264e0ce90c47b946",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "383f96db-caee-4046-b4ea-be6afe028343-screenshot_2026-08-18_12-52-35.png",
+      "url": "https://claritys.web.id/api/public/uploads/383f96db-caee-4046-b4ea-be6afe028343-screenshot_2026-08-18_12-52-35.png",
+      "contentType": "image/png",
+      "size": 32179,
+      "sha256": "c25e4c37970dce1981c796c679366898365984c72e412e5c2bf760c34b98ac8f",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "388f3f8d-7bee-494d-be8e-3b9b2e77271c-bank_vault.zip",
+      "url": "https://claritys.web.id/api/public/uploads/388f3f8d-7bee-494d-be8e-3b9b2e77271c-bank_vault.zip",
+      "contentType": "application/octet-stream",
+      "size": 2450,
+      "sha256": "1a6f520edeca1229d00955ac078f770d375e42b200af7383dbb0929691015f54",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "39008146-b7ac-419e-b94d-c1c3f31ce78b-image-1.png",
+      "url": "https://claritys.web.id/api/public/uploads/39008146-b7ac-419e-b94d-c1c3f31ce78b-image-1.png",
+      "contentType": "image/png",
+      "size": 120147,
+      "sha256": "deda34af9ff7c5b4ad7c73e2a59146a4b4eb037c5e1255965a38fdc60e60dd60",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "3ab6b327-eb6a-4db3-906f-0f03dfdfe1d6-image-19.png",
+      "url": "https://claritys.web.id/api/public/uploads/3ab6b327-eb6a-4db3-906f-0f03dfdfe1d6-image-19.png",
+      "contentType": "image/png",
+      "size": 178237,
+      "sha256": "dbae5122714e28f6f5404892cdb6c73477b34aae64c43d40041226f4f1e33839",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "3ade3826-885a-4fcb-ad32-c51ba731f03b-screenshot_2026-08-24_13-09-17.png",
+      "url": "https://claritys.web.id/api/public/uploads/3ade3826-885a-4fcb-ad32-c51ba731f03b-screenshot_2026-08-24_13-09-17.png",
+      "contentType": "image/png",
+      "size": 45387,
+      "sha256": "26f3a94b922e0f6eb4379c36e8c312e69a1616c420799a783eff94f8df4d6ce5",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "3b6effec-324b-4179-b86c-33de9a518e64-f9f56441-c963-48e7-83f0-68f4636ac55c.png",
+      "url": "https://claritys.web.id/api/public/uploads/3b6effec-324b-4179-b86c-33de9a518e64-f9f56441-c963-48e7-83f0-68f4636ac55c.png",
+      "contentType": "image/png",
+      "size": 714287,
+      "sha256": "cfc25a4f784280840e4305d78cf3f61ecaa7ae82f9b566490688e4024dd7d8c4",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "3d85aed2-9b62-4ecd-83f0-852c4eb1bf94-image-4.png",
+      "url": "https://claritys.web.id/api/public/uploads/3d85aed2-9b62-4ecd-83f0-852c4eb1bf94-image-4.png",
+      "contentType": "image/png",
+      "size": 307993,
+      "sha256": "9d2a0093171279b150162bec7b31a168685ba3c265f4b55369126e3368b9d581",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "406435ed-e223-4218-8109-c919456b7bdd-image-1.png",
+      "url": "https://claritys.web.id/api/public/uploads/406435ed-e223-4218-8109-c919456b7bdd-image-1.png",
+      "contentType": "image/png",
+      "size": 15692,
+      "sha256": "53cbb4355deccda47c063d721eb38277f46450f66f9c3e8fe0b6cfbd90d452b4",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "41594c7c-9762-43f5-b2e1-f8833f133b23-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/41594c7c-9762-43f5-b2e1-f8833f133b23-image.png",
+      "contentType": "image/png",
+      "size": 252656,
+      "sha256": "554ff655b1d7b7361c6188c146274aac21a5dda659abaf9a32836305a9320ec6",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "431b611c-d8d5-4c4f-b709-80dcf539bf60-image-26.png",
+      "url": "https://claritys.web.id/api/public/uploads/431b611c-d8d5-4c4f-b709-80dcf539bf60-image-26.png",
+      "contentType": "image/png",
+      "size": 341232,
+      "sha256": "96ae38842518f5cea45f10183ae896a8dec5f2d22196ec107ab502a711dd63bf",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "44235f11-7721-4d50-91dc-60b1cecf1862-image-30.png",
+      "url": "https://claritys.web.id/api/public/uploads/44235f11-7721-4d50-91dc-60b1cecf1862-image-30.png",
+      "contentType": "image/png",
+      "size": 1124906,
+      "sha256": "731039b80eae9c35cf21473c237831e0773a099ee195f08f4d15c3dffbe6d3eb",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "45c7309c-7e1b-4d02-bf45-32fe57ce296f-image-2.png",
+      "url": "https://claritys.web.id/api/public/uploads/45c7309c-7e1b-4d02-bf45-32fe57ce296f-image-2.png",
+      "contentType": "image/png",
+      "size": 172767,
+      "sha256": "4d7c47a4ec4ac0897e0c4e66ed9e7e081f5a112afb25b722d460b7faab9d8510",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "48985555-4b52-44cf-b821-aff0f3126777-image-21.png",
+      "url": "https://claritys.web.id/api/public/uploads/48985555-4b52-44cf-b821-aff0f3126777-image-21.png",
+      "contentType": "image/png",
+      "size": 175880,
+      "sha256": "56d180cd58fec5dda57a32c123d7b871b61175170695f26aa1639465e8b416cf",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "48c3193b-d321-46e2-9717-0deb835179c2-recovered_qr_from_secret_evidence.png",
+      "url": "https://claritys.web.id/api/public/uploads/48c3193b-d321-46e2-9717-0deb835179c2-recovered_qr_from_secret_evidence.png",
+      "contentType": "image/png",
+      "size": 2858,
+      "sha256": "5123c3afdcb7111359842d83df1ad2b7142a4ea97a0470fa1a2e32839f25b9ad",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "4add3101-9ff4-4f06-a0f2-b9b2c43c8e17-image-3.png",
+      "url": "https://claritys.web.id/api/public/uploads/4add3101-9ff4-4f06-a0f2-b9b2c43c8e17-image-3.png",
+      "contentType": "image/png",
+      "size": 138585,
+      "sha256": "0ce1f62e773d1d5c11b15c0ebc3b443fc4826cb0bfe32fd550e252022e5a0aca",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "4e185201-0d0b-4ca7-a2d0-9ae44f752cfa-image-16.png",
+      "url": "https://claritys.web.id/api/public/uploads/4e185201-0d0b-4ca7-a2d0-9ae44f752cfa-image-16.png",
+      "contentType": "image/png",
+      "size": 70446,
+      "sha256": "b272a1e1687ccadbaace7feea4da78b722f18a79e67fed02bd2002b909a89dbb",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "5089feee-9d83-4d20-8a06-9ab710232a8d-image-3.png",
+      "url": "https://claritys.web.id/api/public/uploads/5089feee-9d83-4d20-8a06-9ab710232a8d-image-3.png",
+      "contentType": "image/png",
+      "size": 390760,
+      "sha256": "cfff9589eb2cfd0abe2be6c14efc1c286f127fde37da00f0c4994b61be61a8f6",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "50e33b4f-d2ff-4481-9b84-6a46bba47c4b-image-2.png",
+      "url": "https://claritys.web.id/api/public/uploads/50e33b4f-d2ff-4481-9b84-6a46bba47c4b-image-2.png",
+      "contentType": "image/png",
+      "size": 11832,
+      "sha256": "b046ca77819eb40bbb0962d851dac0d4d73acb80bc7fba98cfa29a3fba1b964c",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "5339f09e-38c0-455a-b775-9ec7df8cc066-image-1.png",
+      "url": "https://claritys.web.id/api/public/uploads/5339f09e-38c0-455a-b775-9ec7df8cc066-image-1.png",
+      "contentType": "image/png",
+      "size": 196304,
+      "sha256": "9eb2ccd4dbc9f9df361b3169cc1c7744004f418c3069bb8887e3fffff1b3f7a3",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "599c8e44-cd73-4f7a-9c88-173ceb78c4a4-screenshot_2026-07-09_16-35-20.png",
+      "url": "https://claritys.web.id/api/public/uploads/599c8e44-cd73-4f7a-9c88-173ceb78c4a4-screenshot_2026-07-09_16-35-20.png",
+      "contentType": "image/png",
+      "size": 1883151,
+      "sha256": "3d2293e196b620457dd910c140a481ef2711dc58a72d11b64ff768a5618f5f43",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "5a454e7a-395b-4cf9-9e7c-792d59316247-screenshot_2026-07-01_11-04-48.png",
+      "url": "https://claritys.web.id/api/public/uploads/5a454e7a-395b-4cf9-9e7c-792d59316247-screenshot_2026-07-01_11-04-48.png",
+      "contentType": "image/png",
+      "size": 45469,
+      "sha256": "d9b20b70f2a147a39e05969a5088e23c40dd3ef83e9389daffdd9f02e60fbf0b",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "5b5c1890-4045-4de6-a37b-cf370e193ca7-image-3.png",
+      "url": "https://claritys.web.id/api/public/uploads/5b5c1890-4045-4de6-a37b-cf370e193ca7-image-3.png",
+      "contentType": "image/png",
+      "size": 69188,
+      "sha256": "b197e823e2802d9bf81beb96441beb2825f3b57c106c9c26047237f7705aa054",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "5c1654ac-69af-4a97-8ddd-2b2e9dbf54f3-screenshot_2026-07-01_11-14-35.png",
+      "url": "https://claritys.web.id/api/public/uploads/5c1654ac-69af-4a97-8ddd-2b2e9dbf54f3-screenshot_2026-07-01_11-14-35.png",
+      "contentType": "image/png",
+      "size": 62843,
+      "sha256": "3f6c374e357ba353b365083de326972b27925a12fde380bd183dbe1ae90e3fde",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "5e519625-b4af-482a-b925-c8addfe221ad-image-18.png",
+      "url": "https://claritys.web.id/api/public/uploads/5e519625-b4af-482a-b925-c8addfe221ad-image-18.png",
+      "contentType": "image/png",
+      "size": 251927,
+      "sha256": "4f9d93e96af204160849ef0d07e79c2da73d8ed6168d585c2175ccd008892040",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "605be242-2e5a-468b-8005-ed9b8f195998-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/605be242-2e5a-468b-8005-ed9b8f195998-image.png",
+      "contentType": "image/png",
+      "size": 674970,
+      "sha256": "2cc420b04fcc3f8ee4c4ce656e79b016a799355f67f8f7842816b0a006cba85d",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "6064dadb-2e28-4bfe-b25f-49b857817f80-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/6064dadb-2e28-4bfe-b25f-49b857817f80-image.png",
+      "contentType": "image/png",
+      "size": 283927,
+      "sha256": "4615000219ad29bf6e6abc9957309171fb380ab872c366661eb0328161a3a14a",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "63057fe6-c68b-42ef-a52e-c0ca0e541d82-image-9.png",
+      "url": "https://claritys.web.id/api/public/uploads/63057fe6-c68b-42ef-a52e-c0ca0e541d82-image-9.png",
+      "contentType": "image/png",
+      "size": 151269,
+      "sha256": "4275d8919312d0b7edd506d88b6571e97df0d5a91f4f6d2366155c9f5b783c1c",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "63b4a944-2be5-405c-bff0-c048bf934f53-image-20.png",
+      "url": "https://claritys.web.id/api/public/uploads/63b4a944-2be5-405c-bff0-c048bf934f53-image-20.png",
+      "contentType": "image/png",
+      "size": 15203,
+      "sha256": "e3b62069d2cc1b348a6c6c8b33a21dfd684375746eb6dbc7ebae40e19db6f093",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "688a9423-a6cc-4000-8df8-73a3ee963a16-screenshot_2026-07-01_10-57-04.png",
+      "url": "https://claritys.web.id/api/public/uploads/688a9423-a6cc-4000-8df8-73a3ee963a16-screenshot_2026-07-01_10-57-04.png",
+      "contentType": "image/png",
+      "size": 95719,
+      "sha256": "ea815c4e1d5beb3e0a2c8aa8f8ee9df8dcb11ab0fa6504bf7b5314281757e6fe",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "6975f0a2-38ab-4e98-a86b-7c37585f184f-image-12.png",
+      "url": "https://claritys.web.id/api/public/uploads/6975f0a2-38ab-4e98-a86b-7c37585f184f-image-12.png",
+      "contentType": "image/png",
+      "size": 60356,
+      "sha256": "8c2956a2e1ab47e223faf41906b0bcabe8536bd609687fd65aa91f28b4508f30",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "698e7fe2-7f72-44fe-a6d7-b2542ca91361-image-8.png",
+      "url": "https://claritys.web.id/api/public/uploads/698e7fe2-7f72-44fe-a6d7-b2542ca91361-image-8.png",
+      "contentType": "image/png",
+      "size": 18752,
+      "sha256": "30b3146cbcc854952991c62ab3fa9d78d447bcd5e7fcbfd2256673c73f44437f",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "6d70fa20-0acb-4778-8e02-6cd22ecf91fc-a0a3c637-9fa7-43d8-8cb8-e6c629364476.png",
+      "url": "https://claritys.web.id/api/public/uploads/6d70fa20-0acb-4778-8e02-6cd22ecf91fc-a0a3c637-9fa7-43d8-8cb8-e6c629364476.png",
+      "contentType": "image/png",
+      "size": 44015,
+      "sha256": "37dd5c4a6e4910884c98f88938dff555e6137c9d64b2d5dd3b59c807aa5de06c",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "6e464511-a13e-42da-bdc6-e683285a461d-koperasi",
+      "url": "https://claritys.web.id/api/public/uploads/6e464511-a13e-42da-bdc6-e683285a461d-koperasi",
+      "contentType": "application/octet-stream",
+      "size": 14472,
+      "sha256": "cbb28f3e8bf07e55d92df8bd88ad2d0083435b0ba58ca665f7d9b6ed31650942",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "6f3091f6-614b-42c3-b0e8-e5fa63cba37c-image-4.png",
+      "url": "https://claritys.web.id/api/public/uploads/6f3091f6-614b-42c3-b0e8-e5fa63cba37c-image-4.png",
+      "contentType": "image/png",
+      "size": 87221,
+      "sha256": "4d4b9508afc983111455edca7a4993e824a339b4fbe3e24e55644f9866002c7c",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "6f5178be-7d15-416f-9ede-fc74f6a45636-image-1.png",
+      "url": "https://claritys.web.id/api/public/uploads/6f5178be-7d15-416f-9ede-fc74f6a45636-image-1.png",
+      "contentType": "image/png",
+      "size": 160019,
+      "sha256": "b28280a4cf11cb0fc1f527c70d0047bb8238978e9e06ae930086f8a643ba6b4f",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "708a7dde-66e6-4665-ab26-cb64a9d1206c-image-4.png",
+      "url": "https://claritys.web.id/api/public/uploads/708a7dde-66e6-4665-ab26-cb64a9d1206c-image-4.png",
+      "contentType": "image/png",
+      "size": 16735,
+      "sha256": "aba84d146f618c570d29a284085a5c84d5cbdb857c477326c67c39409d32bb7d",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "70e39a2e-e4eb-4a3f-b00e-24786d3a8cc7-image-1.png",
+      "url": "https://claritys.web.id/api/public/uploads/70e39a2e-e4eb-4a3f-b00e-24786d3a8cc7-image-1.png",
+      "contentType": "image/png",
+      "size": 172806,
+      "sha256": "c904b218389012959cbaeb37745cd049ba1cef9aeecae27b98e6559ec8c45956",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "71283e80-a9d1-4168-89c9-99ef1c89bbea-image-16.png",
+      "url": "https://claritys.web.id/api/public/uploads/71283e80-a9d1-4168-89c9-99ef1c89bbea-image-16.png",
+      "contentType": "image/png",
+      "size": 28908,
+      "sha256": "621aa8a40764858921e8da4c9a1fd0820c35ec0de98dcdedefb328a06fa10b37",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "72821544-6039-496e-b22f-e2adcef76b3d-image-19.png",
+      "url": "https://claritys.web.id/api/public/uploads/72821544-6039-496e-b22f-e2adcef76b3d-image-19.png",
+      "contentType": "image/png",
+      "size": 188374,
+      "sha256": "4728007f666ebcf3ade8abc6308844613c4f446538e2161aa08f2d38d0fe3f23",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "73397635-e816-4fdc-9c8a-8a86340b70e5-screenshot_2026-07-01_10-53-47.png",
+      "url": "https://claritys.web.id/api/public/uploads/73397635-e816-4fdc-9c8a-8a86340b70e5-screenshot_2026-07-01_10-53-47.png",
+      "contentType": "image/png",
+      "size": 131254,
+      "sha256": "b6c6d84d4a70987f445932e490c467c7b73277d128f2df97425f2f3eb9e28d30",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "74799cc2-5558-4d3f-bf67-15d3999cc6b9-image-5.png",
+      "url": "https://claritys.web.id/api/public/uploads/74799cc2-5558-4d3f-bf67-15d3999cc6b9-image-5.png",
+      "contentType": "image/png",
+      "size": 35503,
+      "sha256": "0f3bb480c8982642f67526596ca86b25d50e927a576cff8fb0834e1eb66a6ef1",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "750e6019-4fa3-4937-8c4f-fa8f01ab9917-image-8.png",
+      "url": "https://claritys.web.id/api/public/uploads/750e6019-4fa3-4937-8c4f-fa8f01ab9917-image-8.png",
+      "contentType": "image/png",
+      "size": 953957,
+      "sha256": "9412d220586da6551742ba3512b5dc6065d94f9949cabaabef120bcb34bafed7",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "7564d165-fd62-4889-8531-74b363651849-screenshot_2026-07-01_10-54-52.png",
+      "url": "https://claritys.web.id/api/public/uploads/7564d165-fd62-4889-8531-74b363651849-screenshot_2026-07-01_10-54-52.png",
+      "contentType": "image/png",
+      "size": 259456,
+      "sha256": "35274fd702b5db570d5f73f2c3c8249d528c041745f6c43a6310a1b586e35040",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "784043e0-198e-44f0-9089-3a36bb3cac34-image-10.png",
+      "url": "https://claritys.web.id/api/public/uploads/784043e0-198e-44f0-9089-3a36bb3cac34-image-10.png",
+      "contentType": "image/png",
+      "size": 21348,
+      "sha256": "5a39c9209ee4a59e2b50795f6b3e91709b1f00d26fe42b871614a058564c3652",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "788c0054-2f0c-4e0e-a0e3-1273cc785ba2-round_robin.zip",
+      "url": "https://claritys.web.id/api/public/uploads/788c0054-2f0c-4e0e-a0e3-1273cc785ba2-round_robin.zip",
+      "contentType": "application/octet-stream",
+      "size": 3231,
+      "sha256": "7429fa1c823d05c183ccd57175cd6ebd14372f03ec55088371dccee7277d3f52",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "788d6344-0360-4173-a53c-18528fae6319-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/788d6344-0360-4173-a53c-18528fae6319-image.png",
+      "contentType": "image/png",
+      "size": 81467,
+      "sha256": "6cf33b4af4ddb03dc5718881559814503e38e3d62527cb769063c541a53e4852",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "78ee0ebc-732f-4239-b575-338b3744f893-image-10.png",
+      "url": "https://claritys.web.id/api/public/uploads/78ee0ebc-732f-4239-b575-338b3744f893-image-10.png",
+      "contentType": "image/png",
+      "size": 158129,
+      "sha256": "889cb894f760f002c2a3098ac301c9d0bc3d933c093532bcfe42b026896f3709",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "7b1c15e3-6174-43fe-8796-67f6818ad43f-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/7b1c15e3-6174-43fe-8796-67f6818ad43f-image.png",
+      "contentType": "image/png",
+      "size": 107182,
+      "sha256": "afe7a6a933a49712ba2cd85fc812817d751ce63fa2938c0fde6607197c20b610",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "7c09bba9-f596-4818-90af-230d8d9ed4e5-image-5.png",
+      "url": "https://claritys.web.id/api/public/uploads/7c09bba9-f596-4818-90af-230d8d9ed4e5-image-5.png",
+      "contentType": "image/png",
+      "size": 98748,
+      "sha256": "615c63d6e5f366ac8496298cacb3791fee7edda12ad1005c4d8de8b44a618daa",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "7cf7a9ca-ef0c-4ab1-8194-3666729fa48a-image-9.png",
+      "url": "https://claritys.web.id/api/public/uploads/7cf7a9ca-ef0c-4ab1-8194-3666729fa48a-image-9.png",
+      "contentType": "image/png",
+      "size": 18834,
+      "sha256": "2184b8fcc24174050f0ee58b5faf22f52312bab3d5241b3b7bb7bb346ffd0369",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "7e8dedad-73d5-4e0a-a9a6-830105b08c60-image-4.png",
+      "url": "https://claritys.web.id/api/public/uploads/7e8dedad-73d5-4e0a-a9a6-830105b08c60-image-4.png",
+      "contentType": "image/png",
+      "size": 122132,
+      "sha256": "259cb5e1a5f31f7daed0b1524f5c02046fb31ed4a97228f2ab589ee3fd2b79cb",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "80897c2b-dec8-4a03-a379-7ac82d443be0-vuln",
+      "url": "https://claritys.web.id/api/public/uploads/80897c2b-dec8-4a03-a379-7ac82d443be0-vuln",
+      "contentType": "application/octet-stream",
+      "size": 15392,
+      "sha256": "b1d82a706fcb493ae2dee04f148dec9f96c1ef0c1d34572a348f155e8a956a25",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "80a09567-e711-4c3d-a022-2274a542e1b3-image-1.png",
+      "url": "https://claritys.web.id/api/public/uploads/80a09567-e711-4c3d-a022-2274a542e1b3-image-1.png",
+      "contentType": "image/png",
+      "size": 100675,
+      "sha256": "dc9cd10befcd8c8b1bfad0611e4188554f7612ba8e96f6c92fbb99c77677341c",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "80ab0be6-4c2d-4f96-921e-413a8fb5f3cf-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/80ab0be6-4c2d-4f96-921e-413a8fb5f3cf-image.png",
+      "contentType": "image/png",
+      "size": 421866,
+      "sha256": "781b360503a2da3cfa4fc1d5856eb21e9cfc4d59e88a8062cf06d8e8f8a5c048",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "80c8b1a9-537c-49b0-8c88-3c17d4ee8d5e-image-2.png",
+      "url": "https://claritys.web.id/api/public/uploads/80c8b1a9-537c-49b0-8c88-3c17d4ee8d5e-image-2.png",
+      "contentType": "image/png",
+      "size": 536006,
+      "sha256": "c266ca08b27839dbb87191cfb9f2b653bf53563e602c3c2dc98d7bbe71bc66ca",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "81b02ce1-55fc-48e7-8952-d52e615e58ed-image-7.png",
+      "url": "https://claritys.web.id/api/public/uploads/81b02ce1-55fc-48e7-8952-d52e615e58ed-image-7.png",
+      "contentType": "image/png",
+      "size": 47593,
+      "sha256": "6a633bb7562f78331a61ca29f84b2790678ce3c7603c0c0f1dbbb7bad928888c",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "81ce6bef-9f31-430e-933c-a793730500df-screenshot_2026-07-01_10-49-00.png",
+      "url": "https://claritys.web.id/api/public/uploads/81ce6bef-9f31-430e-933c-a793730500df-screenshot_2026-07-01_10-49-00.png",
+      "contentType": "image/png",
+      "size": 136878,
+      "sha256": "835dc964b56484da0a583bdfe7d595dc5baea263ed19bd1bb947b114d6dfe975",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "82f4dac0-d917-4baa-a316-02eeb2f54d35-image-21.png",
+      "url": "https://claritys.web.id/api/public/uploads/82f4dac0-d917-4baa-a316-02eeb2f54d35-image-21.png",
+      "contentType": "image/png",
+      "size": 29629,
+      "sha256": "9cb8aeb55b6faf8132b4d82f109ba30fe5c943067a323b46ba372bfd2fda189e",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "85928f0b-e0f3-4a75-9f19-cbbf4f7d5462-image-3.png",
+      "url": "https://claritys.web.id/api/public/uploads/85928f0b-e0f3-4a75-9f19-cbbf4f7d5462-image-3.png",
+      "contentType": "image/png",
+      "size": 829357,
+      "sha256": "d8e5cefca18c5fe43428fc9ccc744e5c4f246345b2de923e190ce2531614914b",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "88150c90-a1b2-4a4b-b6e4-7b23d2deb042-image-6.png",
+      "url": "https://claritys.web.id/api/public/uploads/88150c90-a1b2-4a4b-b6e4-7b23d2deb042-image-6.png",
+      "contentType": "image/png",
+      "size": 990150,
+      "sha256": "9568eecaac2bf7fb9d9b199761f79b037ed42e8626a55205c3faad47e870c680",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "8878f200-95a3-4ced-b144-1770fecebe5c-image-1.png",
+      "url": "https://claritys.web.id/api/public/uploads/8878f200-95a3-4ced-b144-1770fecebe5c-image-1.png",
+      "contentType": "image/png",
+      "size": 589824,
+      "sha256": "b8e302116e0e7e29831e9c17c1431ad1230dbdbc7aca0a5dd31042534e231e5a",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "8932d875-2f6c-40df-9067-8867c871caaf-image-11.png",
+      "url": "https://claritys.web.id/api/public/uploads/8932d875-2f6c-40df-9067-8867c871caaf-image-11.png",
+      "contentType": "image/png",
+      "size": 62892,
+      "sha256": "9f18305c2b89e1a317c4b842cff86cf1d09664b76e0127a25fd13bb9f89847d9",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "89cfc4c5-137c-446f-ab61-55427808aa3a-image-17.png",
+      "url": "https://claritys.web.id/api/public/uploads/89cfc4c5-137c-446f-ab61-55427808aa3a-image-17.png",
+      "contentType": "image/png",
+      "size": 878810,
+      "sha256": "896a82f8106f2234fb16750d81664c118c880b2f1796e28208699cfcfc98598a",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "8ccbcd16-f840-4648-bc8e-d5623e510622-screenshot_2026-07-01_10-50-49.png",
+      "url": "https://claritys.web.id/api/public/uploads/8ccbcd16-f840-4648-bc8e-d5623e510622-screenshot_2026-07-01_10-50-49.png",
+      "contentType": "image/png",
+      "size": 279776,
+      "sha256": "40737153bdfd698952c534ae1d623d41dfb854a565a477086ab7217310b4fdba",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "8dabcca2-2c7f-4da9-a6bf-be561cf0533a-image-3.png",
+      "url": "https://claritys.web.id/api/public/uploads/8dabcca2-2c7f-4da9-a6bf-be561cf0533a-image-3.png",
+      "contentType": "image/png",
+      "size": 551306,
+      "sha256": "cebe98986325e19bfafe184aada3e8f231c183e6dfac90fa0d4d6927f4e71c29",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "8e515604-3bbe-48c2-ad68-2cb88c82cfe2-image-1.png",
+      "url": "https://claritys.web.id/api/public/uploads/8e515604-3bbe-48c2-ad68-2cb88c82cfe2-image-1.png",
+      "contentType": "image/png",
+      "size": 110049,
+      "sha256": "42e00dc2236eb80c32f5a205281288b8d55bdf037550d6571b893b45ad33cc7b",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "8e5631b3-b226-48fd-9cdd-336081de17fa-image-20.png",
+      "url": "https://claritys.web.id/api/public/uploads/8e5631b3-b226-48fd-9cdd-336081de17fa-image-20.png",
+      "contentType": "image/png",
+      "size": 467828,
+      "sha256": "c771c8e7841733b6e54f99521aef2f1a54e290e008f255cbd9ea096355563554",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "8ed5d5a5-e3e5-4db2-9b20-fa5d68d78b5f-image-14.png",
+      "url": "https://claritys.web.id/api/public/uploads/8ed5d5a5-e3e5-4db2-9b20-fa5d68d78b5f-image-14.png",
+      "contentType": "image/png",
+      "size": 96891,
+      "sha256": "1cd677a44f83ca9ca102654966b3e5804b69158886b2688288022fbdf1521eea",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "906d7092-5974-4d7c-acc0-429063df858c-image-2.png",
+      "url": "https://claritys.web.id/api/public/uploads/906d7092-5974-4d7c-acc0-429063df858c-image-2.png",
+      "contentType": "image/png",
+      "size": 97894,
+      "sha256": "0e9c9fc9f7008f3bd9aeca9cea12ad754d9dc5a86a10e9c977eb8638de6363b6",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "945a7ccc-1d99-445d-8782-38ddb52dce33-image-5.png",
+      "url": "https://claritys.web.id/api/public/uploads/945a7ccc-1d99-445d-8782-38ddb52dce33-image-5.png",
+      "contentType": "image/png",
+      "size": 95556,
+      "sha256": "aea257a67e5e1d51068896cc77ffad4aa021b6bc7f28bc36024d18de98df8fb0",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "9517698c-f88d-42ae-a49d-ce42eb1d4923-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/9517698c-f88d-42ae-a49d-ce42eb1d4923-image.png",
+      "contentType": "image/png",
+      "size": 66551,
+      "sha256": "2ac59cbbbc4d7320d05b13888f446159792fc756b808a3fc37fb8a118a91c26b",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "97fa0cca-b4e3-4ca6-b41f-ac879755f64e-image-11.png",
+      "url": "https://claritys.web.id/api/public/uploads/97fa0cca-b4e3-4ca6-b41f-ac879755f64e-image-11.png",
+      "contentType": "image/png",
+      "size": 58631,
+      "sha256": "8aafd65cdd3e6f73bfef31dcba75c5fd45b64b1c701830ad185580cdc598ca5c",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "9a603fad-2ad1-48ae-b2c3-069b0ad2872d-image-24.png",
+      "url": "https://claritys.web.id/api/public/uploads/9a603fad-2ad1-48ae-b2c3-069b0ad2872d-image-24.png",
+      "contentType": "image/png",
+      "size": 377799,
+      "sha256": "6127aa041be4be4b7c403c27cd6076a857790d7c1625906ad235386406d95832",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "9aec58c3-f17b-484c-9dbb-5a3f69e3a7ae-image-15.png",
+      "url": "https://claritys.web.id/api/public/uploads/9aec58c3-f17b-484c-9dbb-5a3f69e3a7ae-image-15.png",
+      "contentType": "image/png",
+      "size": 68358,
+      "sha256": "d76aebbf4316587f462b872cd268d5818be691f84d0f28921798c5fd88124a30",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "9b014b9b-10e0-4790-a4f5-845dab84a66a-image-13.png",
+      "url": "https://claritys.web.id/api/public/uploads/9b014b9b-10e0-4790-a4f5-845dab84a66a-image-13.png",
+      "contentType": "image/png",
+      "size": 72180,
+      "sha256": "87852d5a3e7c4dd800ccf3fea12bab17ed5e052a3ce395ce1fd2eb9d3b2e18b5",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "9b224391-7e5c-4741-b132-4421e44ae0da-image-17.png",
+      "url": "https://claritys.web.id/api/public/uploads/9b224391-7e5c-4741-b132-4421e44ae0da-image-17.png",
+      "contentType": "image/png",
+      "size": 46438,
+      "sha256": "35b55a88a5a78c53d353e62b75c68dbaa10abd176557db3c78a9fc1c79eb5c33",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "9deb312a-9cde-4812-a56e-924fe5878f70-image-9.png",
+      "url": "https://claritys.web.id/api/public/uploads/9deb312a-9cde-4812-a56e-924fe5878f70-image-9.png",
+      "contentType": "image/png",
+      "size": 50035,
+      "sha256": "8b846d5244b9664aad656576780511972d6d7958e7a75c9c0e5f52434d9e396d",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "9f553bdf-2a0b-4a5f-86b6-612f930eeb06-image-3.png",
+      "url": "https://claritys.web.id/api/public/uploads/9f553bdf-2a0b-4a5f-86b6-612f930eeb06-image-3.png",
+      "contentType": "image/png",
+      "size": 220096,
+      "sha256": "d6ac0a161a88498e162dd3d73cdfb71a812476d7169c2264196299daa64dc746",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "a04ea2d4-24e1-4b29-8858-d7585e86a5ad-image-2.png",
+      "url": "https://claritys.web.id/api/public/uploads/a04ea2d4-24e1-4b29-8858-d7585e86a5ad-image-2.png",
+      "contentType": "image/png",
+      "size": 83502,
+      "sha256": "3153c4a034d56f43f38f7964cad47511709c1f1f5b9072775336f6a046a4c739",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "a0d08951-b8fb-422d-8b87-149f2154b52a-image-10.png",
+      "url": "https://claritys.web.id/api/public/uploads/a0d08951-b8fb-422d-8b87-149f2154b52a-image-10.png",
+      "contentType": "image/png",
+      "size": 28357,
+      "sha256": "d32f2277b6df7041347bb96ac2960fe1a8281e8321d34ea72fdade65a66b35d9",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "a1023e60-fd02-4656-8f8b-f616934738b5-image-6.png",
+      "url": "https://claritys.web.id/api/public/uploads/a1023e60-fd02-4656-8f8b-f616934738b5-image-6.png",
+      "contentType": "image/png",
+      "size": 993857,
+      "sha256": "325ffd6477cdba3d112691f6bad1e4dd63c738b887f63661f163f5fd57285b05",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "a12a835b-289b-40e4-8465-f6f97d7ea361-screenshot_2026-08-24_10-19-03.png",
+      "url": "https://claritys.web.id/api/public/uploads/a12a835b-289b-40e4-8465-f6f97d7ea361-screenshot_2026-08-24_10-19-03.png",
+      "contentType": "image/png",
+      "size": 41451,
+      "sha256": "db82601257089144c1eae1131e3d4599aa67fc9d76902200a4390eff6ab9a7b1",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "a140e995-59ec-489a-bef5-827c3ffed0a3-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/a140e995-59ec-489a-bef5-827c3ffed0a3-image.png",
+      "contentType": "image/png",
+      "size": 807630,
+      "sha256": "6646b3155ffe311b2ad14aece53aee25239a0da3be8e16cfcc5c73172455c497",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "a3725093-e4ad-4dde-acf2-0c32563f56c7-screenshot_2026-07-09_16-33-18.png",
+      "url": "https://claritys.web.id/api/public/uploads/a3725093-e4ad-4dde-acf2-0c32563f56c7-screenshot_2026-07-09_16-33-18.png",
+      "contentType": "image/png",
+      "size": 1800298,
+      "sha256": "bd98adf7095b3a5568c29a67107ab2b7ba39076ec178169ff18b2539694684f3",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "a3eeec3a-f122-42f2-a0de-a20c8227f2db-image-2.png",
+      "url": "https://claritys.web.id/api/public/uploads/a3eeec3a-f122-42f2-a0de-a20c8227f2db-image-2.png",
+      "contentType": "image/png",
+      "size": 29120,
+      "sha256": "e064c006f2b268c5e79ac288b6ec096d37960c418cc653697d04b60b33ddf0ed",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "a5cbb2b0-b6e0-4720-8868-58a07ee65a53-image-1.png",
+      "url": "https://claritys.web.id/api/public/uploads/a5cbb2b0-b6e0-4720-8868-58a07ee65a53-image-1.png",
+      "contentType": "image/png",
+      "size": 178304,
+      "sha256": "3b5514276e81e1dd4f79954fa1f2ca8b66c61244e2c5d86920b3f5d7d1911886",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "a6e12626-bd04-41bc-ac2a-16dd75e4480b-image-29.png",
+      "url": "https://claritys.web.id/api/public/uploads/a6e12626-bd04-41bc-ac2a-16dd75e4480b-image-29.png",
+      "contentType": "image/png",
+      "size": 149650,
+      "sha256": "23499dd69b547c45dc78643c54e8189df64bef1380be96485dfffe152f3c27d1",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "a72817c0-ab07-4499-a8b6-0765dc1f9e14-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/a72817c0-ab07-4499-a8b6-0765dc1f9e14-image.png",
+      "contentType": "image/png",
+      "size": 510708,
+      "sha256": "6c3c37a2d61c6fae6fa0d95e3533d2db991d18d7d78af45942261d81b179cb4a",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "a888a4db-66e0-4ff3-9faa-27dff968e319-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/a888a4db-66e0-4ff3-9faa-27dff968e319-image.png",
+      "contentType": "image/png",
+      "size": 131537,
+      "sha256": "b85e26cfa35e1cf99be1c9a5598fd7c6c835d3c4b50ef283e907400c8104ea11",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "aa45d41b-2ccb-437d-bb1e-19e64b9250a6-image-8.png",
+      "url": "https://claritys.web.id/api/public/uploads/aa45d41b-2ccb-437d-bb1e-19e64b9250a6-image-8.png",
+      "contentType": "image/png",
+      "size": 59035,
+      "sha256": "f38fc1c24116eaf536c712a27a6c3711529cf70f9f6ead0c312dae38ae07eef4",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "aad10c9e-0645-4461-b660-ddf402141baa-image-8.png",
+      "url": "https://claritys.web.id/api/public/uploads/aad10c9e-0645-4461-b660-ddf402141baa-image-8.png",
+      "contentType": "image/png",
+      "size": 42476,
+      "sha256": "04ea34a2563192f45ccd8490cbd183ed0c2d42b872dc443c0c5421daedcfe666",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "acc00cd1-538d-469a-af08-3fb486c4a4e6-screenshot_2026-07-01_11-07-46.png",
+      "url": "https://claritys.web.id/api/public/uploads/acc00cd1-538d-469a-af08-3fb486c4a4e6-screenshot_2026-07-01_11-07-46.png",
+      "contentType": "image/png",
+      "size": 78120,
+      "sha256": "be7c549d619e0a16c0321fe17455107005479abed9394ad8a9d24281ce4dce20",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "ad3537bc-2d1c-4669-bd64-2f64245480cc-image-14.png",
+      "url": "https://claritys.web.id/api/public/uploads/ad3537bc-2d1c-4669-bd64-2f64245480cc-image-14.png",
+      "contentType": "image/png",
+      "size": 158341,
+      "sha256": "0fd33dc2cefe59002dbd2a2aa425f3ec0c9cb647f8f27429bd6f45cbd45fad8a",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "adf99911-ec23-43d5-84b4-78ea9a0f7236-image-3.png",
+      "url": "https://claritys.web.id/api/public/uploads/adf99911-ec23-43d5-84b4-78ea9a0f7236-image-3.png",
+      "contentType": "image/png",
+      "size": 206624,
+      "sha256": "b9d8b006697f87fb6c74428725425d3c8c5e03ec898e52613042b8177efe2b00",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "ae71e611-bd46-42ae-b28e-be5536db16c7-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/ae71e611-bd46-42ae-b28e-be5536db16c7-image.png",
+      "contentType": "image/png",
+      "size": 30063,
+      "sha256": "5d959603cd5fc698c813854d059a3334a63b0a622fe1b6ace99cff1274177324",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "afc9dce1-20a9-4c27-a9bd-4beb44302a46-image-23.png",
+      "url": "https://claritys.web.id/api/public/uploads/afc9dce1-20a9-4c27-a9bd-4beb44302a46-image-23.png",
+      "contentType": "image/png",
+      "size": 42385,
+      "sha256": "65804161f93647410c8621d57fc7e0482f12549a9d1da6da2824a5afefd6916e",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "aff974dd-b323-489c-a6f3-0a07a9c7230b-image-13.png",
+      "url": "https://claritys.web.id/api/public/uploads/aff974dd-b323-489c-a6f3-0a07a9c7230b-image-13.png",
+      "contentType": "image/png",
+      "size": 126801,
+      "sha256": "b9326bb0f6db4c9a676e9393f471153635cb7ed65b4ca0348c93f8ec0132a34b",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "b2851694-cc3d-44eb-8b15-9db165bbd0e5-image-10.png",
+      "url": "https://claritys.web.id/api/public/uploads/b2851694-cc3d-44eb-8b15-9db165bbd0e5-image-10.png",
+      "contentType": "image/png",
+      "size": 50802,
+      "sha256": "f123e5094523ea1bd17d95a8db5a4458bb035a2b1188b9ffbdefb71692ec4a2a",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "b48a2e78-cd67-435f-81bf-9957006b8a96-screenshot_2026-07-01_10-32-50.png",
+      "url": "https://claritys.web.id/api/public/uploads/b48a2e78-cd67-435f-81bf-9957006b8a96-screenshot_2026-07-01_10-32-50.png",
+      "contentType": "image/png",
+      "size": 150323,
+      "sha256": "b82768f60911d19cb9e9d3b124536aec10f5b57159ea8cfb528fd22d973cf812",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "b5033137-9369-4289-b792-b73c72967a2d-image-7.png",
+      "url": "https://claritys.web.id/api/public/uploads/b5033137-9369-4289-b792-b73c72967a2d-image-7.png",
+      "contentType": "image/png",
+      "size": 1001035,
+      "sha256": "65bfde714708cd0393f15cb82deeb4d078c054d4d619b806addb8f4971e990dc",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "b5faa171-eb28-4d3e-833f-6aeadb88cde7-image-3.png",
+      "url": "https://claritys.web.id/api/public/uploads/b5faa171-eb28-4d3e-833f-6aeadb88cde7-image-3.png",
+      "contentType": "image/png",
+      "size": 272012,
+      "sha256": "aae8376b8ba7f7c2a52d7bf0be24f711f3a9fc4c3d559464194a95be78d34aac",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "b60ceb95-0960-4ab8-8566-9e9e63f6b039-image-15.png",
+      "url": "https://claritys.web.id/api/public/uploads/b60ceb95-0960-4ab8-8566-9e9e63f6b039-image-15.png",
+      "contentType": "image/png",
+      "size": 92257,
+      "sha256": "81200f2a9f8bd75b90759ccb76b87136acf2b4ffa422cd64980fb09af16180e1",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "b61fcfaf-d7ee-4e2f-bfdd-2bfea2184900-image-4.png",
+      "url": "https://claritys.web.id/api/public/uploads/b61fcfaf-d7ee-4e2f-bfdd-2bfea2184900-image-4.png",
+      "contentType": "image/png",
+      "size": 41187,
+      "sha256": "755f4d6723167a7bd71bf15f38ebb6598222981e77b432d4d700295de295297f",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "ba071aa1-79f0-4022-b488-3b2a835e1a2c-1792565151496739382.png",
+      "url": "https://claritys.web.id/api/public/uploads/ba071aa1-79f0-4022-b488-3b2a835e1a2c-1792565151496739382.png",
+      "contentType": "image/png",
+      "size": 71494,
+      "sha256": "8b2ce021f6ac7edf291d3925c3504943494a58ea91dfd5bee335973ddfa20f6d",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "ba1c3031-01bc-4a38-8d90-30eaa7a9c506-image-24.png",
+      "url": "https://claritys.web.id/api/public/uploads/ba1c3031-01bc-4a38-8d90-30eaa7a9c506-image-24.png",
+      "contentType": "image/png",
+      "size": 108407,
+      "sha256": "f4c8c55d76585e9c8d29b687712352d1afedc4795cf210128c7ca8e1f8883590",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "ba3eaf5d-e7e6-4258-a8a5-b046068a7224-image-1.png",
+      "url": "https://claritys.web.id/api/public/uploads/ba3eaf5d-e7e6-4258-a8a5-b046068a7224-image-1.png",
+      "contentType": "image/png",
+      "size": 226619,
+      "sha256": "7662c4078dc0554532d8bb36508e85544e9e1e58fca143d7cafb027df6fead03",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "bb331974-1053-420e-830d-420401a9476b-image-3.png",
+      "url": "https://claritys.web.id/api/public/uploads/bb331974-1053-420e-830d-420401a9476b-image-3.png",
+      "contentType": "image/png",
+      "size": 149517,
+      "sha256": "0a0f30e0b6f7c902f0e6b68db655ffcc586f677b372dc67511faf6c0e1fc347a",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "bc836754-6ea9-43fd-9570-d85ded09ba43-image-9.png",
+      "url": "https://claritys.web.id/api/public/uploads/bc836754-6ea9-43fd-9570-d85ded09ba43-image-9.png",
+      "contentType": "image/png",
+      "size": 67293,
+      "sha256": "da2eda9df9e63fdbf1cdf164b5d1d683bda48b6d0dcb1e1291b1cb7ad96153e2",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "c009dc06-e8ce-4bdd-9e82-5f9de73f86ce-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/c009dc06-e8ce-4bdd-9e82-5f9de73f86ce-image.png",
+      "contentType": "image/png",
+      "size": 25137,
+      "sha256": "123472cc4854607726cd10a9acd4902b13bad87a32a8d188a11010ed492609f2",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "c1906528-94b0-40d0-a77d-64a9bbe31a93-image-18.png",
+      "url": "https://claritys.web.id/api/public/uploads/c1906528-94b0-40d0-a77d-64a9bbe31a93-image-18.png",
+      "contentType": "image/png",
+      "size": 43667,
+      "sha256": "51b744f45ac41f5c3b7706f617157f54233ab2902a0bced072978055ed9e40b8",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "c2e7adfc-d23a-414c-84f7-9cf681a6b30d-image-11.png",
+      "url": "https://claritys.web.id/api/public/uploads/c2e7adfc-d23a-414c-84f7-9cf681a6b30d-image-11.png",
+      "contentType": "image/png",
+      "size": 141096,
+      "sha256": "e3d9e481fdec62a500bca78fcbc78d8ea11395f378632b98bafe9fdd120e829e",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "c45f5ea6-6439-4693-ac1d-7eb1e87ae40c-1787457035691946629.png",
+      "url": "https://claritys.web.id/api/public/uploads/c45f5ea6-6439-4693-ac1d-7eb1e87ae40c-1787457035691946629.png",
+      "contentType": "image/png",
+      "size": 113793,
+      "sha256": "59b27e1bb0ecd37e59ecbb46fadfc845e5966165c1fb13ec9cf117e9035d228f",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "c648dfe3-d2f8-49f9-9b90-29d89588b4f9-image-5.png",
+      "url": "https://claritys.web.id/api/public/uploads/c648dfe3-d2f8-49f9-9b90-29d89588b4f9-image-5.png",
+      "contentType": "image/png",
+      "size": 71244,
+      "sha256": "c9d087d5b90fd2ce4e1bc59994ffe87feebcbe646b3085c65e4b1aa1c564e333",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "cab9608d-e98b-408b-8c29-6d9141efdfa2-image-7.png",
+      "url": "https://claritys.web.id/api/public/uploads/cab9608d-e98b-408b-8c29-6d9141efdfa2-image-7.png",
+      "contentType": "image/png",
+      "size": 133509,
+      "sha256": "21d79594d76acc412ee276a5d1268991a57aa3e7eb125177050e3eacb43d63b6",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "cc6eb707-1d0f-41a2-a521-fb3bfc55e228-image-5.png",
+      "url": "https://claritys.web.id/api/public/uploads/cc6eb707-1d0f-41a2-a521-fb3bfc55e228-image-5.png",
+      "contentType": "image/png",
+      "size": 161801,
+      "sha256": "8cf368925a25b5b41d27db298cd288ad685e41c0c6a232ea0330155545013437",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "ce7e0ecd-31fc-452a-9c05-22994bb4458f-image-15.png",
+      "url": "https://claritys.web.id/api/public/uploads/ce7e0ecd-31fc-452a-9c05-22994bb4458f-image-15.png",
+      "contentType": "image/png",
+      "size": 12240,
+      "sha256": "26d93806597849c66e491590ee04466c36873639c65f45ff2a31945243a0d88a",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "ce86447d-70fe-4258-bed7-991bc013509f-image-1.png",
+      "url": "https://claritys.web.id/api/public/uploads/ce86447d-70fe-4258-bed7-991bc013509f-image-1.png",
+      "contentType": "image/png",
+      "size": 30519,
+      "sha256": "4d67069fb44cdee0bb5559427f1cd5721f2b479d5ad7b9b1cd080439c0871030",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "cf3c3889-45df-4e9b-8c13-10600628393b-image-25.png",
+      "url": "https://claritys.web.id/api/public/uploads/cf3c3889-45df-4e9b-8c13-10600628393b-image-25.png",
+      "contentType": "image/png",
+      "size": 545593,
+      "sha256": "428191f432511afb7416b5cee69bdf62067fe7e5237c2f2fb9b30447cff620c2",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "cfcd6dbb-bc88-4fd1-bbb6-986067371a47-image-1.png",
+      "url": "https://claritys.web.id/api/public/uploads/cfcd6dbb-bc88-4fd1-bbb6-986067371a47-image-1.png",
+      "contentType": "image/png",
+      "size": 82766,
+      "sha256": "d776a7aef605df25df28cb2cdd021333632e0d138d6d965077bebccfb67ef8b9",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "d300ddba-de71-4037-9f41-44b101376be4-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/d300ddba-de71-4037-9f41-44b101376be4-image.png",
+      "contentType": "image/png",
+      "size": 109661,
+      "sha256": "898195ecb7cd4245c07bd1a7f23f042ec8258f41864237dded8edb9cf451263c",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "d35370d1-1887-4e12-bd5d-5059ef5c4a8d-image-2.png",
+      "url": "https://claritys.web.id/api/public/uploads/d35370d1-1887-4e12-bd5d-5059ef5c4a8d-image-2.png",
+      "contentType": "image/png",
+      "size": 248561,
+      "sha256": "2081eade6356c5a9a40b80f10f058ab0ab547483155997103b8dda15dec457d4",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "d591f01b-d4aa-4e2e-8a57-48f894fe2970-abbys",
+      "url": "https://claritys.web.id/api/public/uploads/d591f01b-d4aa-4e2e-8a57-48f894fe2970-abbys",
+      "contentType": "application/octet-stream",
+      "size": 14488,
+      "sha256": "bb5995e7c40faef69dc8a72ddd58479e73655af08bc0d533a1a976ae62b4b3a3",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "d5a11b89-4fee-4842-96e5-dbdedb6703fc-image-4.png",
+      "url": "https://claritys.web.id/api/public/uploads/d5a11b89-4fee-4842-96e5-dbdedb6703fc-image-4.png",
+      "contentType": "image/png",
+      "size": 82316,
+      "sha256": "ebf47ad7a7ef54ee1a8cd44057703f213fc5660e2d0b09cf6cfd33c008ff03db",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "d60a5bb1-fb6e-4cac-a8bc-6b3eb40167e7-image-6.png",
+      "url": "https://claritys.web.id/api/public/uploads/d60a5bb1-fb6e-4cac-a8bc-6b3eb40167e7-image-6.png",
+      "contentType": "image/png",
+      "size": 103332,
+      "sha256": "110d877d0412c4cd62e3dc7bf5bbb765ddd83b29e1beece5e05f610df2cdb1c1",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "d61dcd74-dc44-4493-9967-8a7a8d8301ff-Screenshot_2026-07-03_150725.png",
+      "url": "https://claritys.web.id/api/public/uploads/d61dcd74-dc44-4493-9967-8a7a8d8301ff-Screenshot_2026-07-03_150725.png",
+      "contentType": "image/png",
+      "size": 123731,
+      "sha256": "b86dbc4d59b00377c00861d0263c606ab16edf6d1d9b5391794972564025cab2",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "d75d2cc0-aa79-49cb-84df-6bdf64e22edd-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/d75d2cc0-aa79-49cb-84df-6bdf64e22edd-image.png",
+      "contentType": "image/png",
+      "size": 97976,
+      "sha256": "952f8d0675ea835ce2faab383f8138ce2953466fe4ae92c33f088113bfcd9c5b",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "d9131b7b-c24b-4c66-a85f-dcce503c4ec7-image-12.png",
+      "url": "https://claritys.web.id/api/public/uploads/d9131b7b-c24b-4c66-a85f-dcce503c4ec7-image-12.png",
+      "contentType": "image/png",
+      "size": 127876,
+      "sha256": "dd634f500d7c229677778887f24245ffb9808948755b682c8abf876f54099553",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "dcd372de-1205-43b4-9433-8eb0143764ad-image-1.png",
+      "url": "https://claritys.web.id/api/public/uploads/dcd372de-1205-43b4-9433-8eb0143764ad-image-1.png",
+      "contentType": "image/png",
+      "size": 666878,
+      "sha256": "b2d2063bdd5c46119e1f6ad127ba64576e92e7e113591ffebb45c27152d6d41f",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "dd4c0ddc-9ccf-40ad-a4dd-1876649a8ca2-screenshot_2026-07-01_11-02-33.png",
+      "url": "https://claritys.web.id/api/public/uploads/dd4c0ddc-9ccf-40ad-a4dd-1876649a8ca2-screenshot_2026-07-01_11-02-33.png",
+      "contentType": "image/png",
+      "size": 88730,
+      "sha256": "97ece88aa6fd253df0c7a8435159be5aeeb331e2747bdcf46c8f5c0b55884775",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "ddc78159-7401-4c8e-893f-4df214945d73-image-8.png",
+      "url": "https://claritys.web.id/api/public/uploads/ddc78159-7401-4c8e-893f-4df214945d73-image-8.png",
+      "contentType": "image/png",
+      "size": 73677,
+      "sha256": "fc2cbe645c94e184cdcf3e33e7787da0321fa66f9ef15139346588856eb13ef2",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "deda0794-a298-44c9-862e-e8d9a711891d-image-1.png",
+      "url": "https://claritys.web.id/api/public/uploads/deda0794-a298-44c9-862e-e8d9a711891d-image-1.png",
+      "contentType": "image/png",
+      "size": 106719,
+      "sha256": "dc1011aa41fe3aebfb9f174feb9d36a521fcfc43c21afde9cb8fc37683771ad6",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "e13ac486-4566-40ff-8f4f-0f804622ec74-image-28.png",
+      "url": "https://claritys.web.id/api/public/uploads/e13ac486-4566-40ff-8f4f-0f804622ec74-image-28.png",
+      "contentType": "image/png",
+      "size": 76226,
+      "sha256": "e35a6d94bd921da542bafe623f20dbc849b8c36e844a1af87001be0be3d16419",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "e3a642c7-001f-4127-be5a-ead444dec255-image-1.png",
+      "url": "https://claritys.web.id/api/public/uploads/e3a642c7-001f-4127-be5a-ead444dec255-image-1.png",
+      "contentType": "image/png",
+      "size": 105936,
+      "sha256": "753e98a739f367ed915f4625bb5fc5cd2bd24da4ffefc9c904b826e03e8247c8",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "e486f7a6-fe5e-4030-a33c-d7cd2c344ea6-image-22.png",
+      "url": "https://claritys.web.id/api/public/uploads/e486f7a6-fe5e-4030-a33c-d7cd2c344ea6-image-22.png",
+      "contentType": "image/png",
+      "size": 231093,
+      "sha256": "e26d2687e3d2728e6306530cb6b29665fc53ad378d44c5c1d53d61af1f012e97",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "e6ec052f-4671-4b75-8119-3cf7da6810f3-screenshot_2026-07-01_10-52-18.png",
+      "url": "https://claritys.web.id/api/public/uploads/e6ec052f-4671-4b75-8119-3cf7da6810f3-screenshot_2026-07-01_10-52-18.png",
+      "contentType": "image/png",
+      "size": 142798,
+      "sha256": "281a998f9d36cbc4b959fa6c762df893d26b50efa0e12535e88592035a3969d3",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "e865623b-8570-40c9-a182-0cd3e50f2eaa-image-5.png",
+      "url": "https://claritys.web.id/api/public/uploads/e865623b-8570-40c9-a182-0cd3e50f2eaa-image-5.png",
+      "contentType": "image/png",
+      "size": 17240,
+      "sha256": "64b56ad3fbf9c8c2fdc3863816d2f22389539010f4dc7e5dcf6c92d7ddf6c7d7",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "ea50a8f6-10c9-4a8c-8d93-d1bca76527d2-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/ea50a8f6-10c9-4a8c-8d93-d1bca76527d2-image.png",
+      "contentType": "image/png",
+      "size": 15979,
+      "sha256": "c68ecbdf0618d514494749d8e368bfad45feceadf2008e875479b0e3e8a3feeb",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "eba38d8c-9889-4d24-9fbc-c394810ef22e-image-3.png",
+      "url": "https://claritys.web.id/api/public/uploads/eba38d8c-9889-4d24-9fbc-c394810ef22e-image-3.png",
+      "contentType": "image/png",
+      "size": 68247,
+      "sha256": "51d46c921db5a297a9e9a0d4d7708a4ec22d49e61b49329d99b867ae2cd3afbb",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "ec4a588e-7e12-46ba-b24d-78c21b763a02-image-1.png",
+      "url": "https://claritys.web.id/api/public/uploads/ec4a588e-7e12-46ba-b24d-78c21b763a02-image-1.png",
+      "contentType": "image/png",
+      "size": 68549,
+      "sha256": "49206a6430adcacf87a8d0213a78db55c65e2409ab630921a9e4ae789a977bd3",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "ec9ecc26-dafe-4a57-9468-6c60dfcb24e8-secret_evidence.png",
+      "url": "https://claritys.web.id/api/public/uploads/ec9ecc26-dafe-4a57-9468-6c60dfcb24e8-secret_evidence.png",
+      "contentType": "image/png",
+      "size": 5049,
+      "sha256": "5d6e0f880d67f5509c02f4ee3e8ab7acb3b73c985f1ba5372bc42a1a36d1d29f",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "ed17d4c9-c3d8-47de-abaa-2ae53f7ae470-image-2.png",
+      "url": "https://claritys.web.id/api/public/uploads/ed17d4c9-c3d8-47de-abaa-2ae53f7ae470-image-2.png",
+      "contentType": "image/png",
+      "size": 272225,
+      "sha256": "dff6464bb1b8d042f5b7497a2c8e7a291f80b70257973e89e27ab62bfd2e4e42",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "f0830ad2-c27b-41e7-aff8-48114e0315c6-screenshot_2026-07-01_10-55-56.png",
+      "url": "https://claritys.web.id/api/public/uploads/f0830ad2-c27b-41e7-aff8-48114e0315c6-screenshot_2026-07-01_10-55-56.png",
+      "contentType": "image/png",
+      "size": 209947,
+      "sha256": "3f290fadd02045032e64cd7a944e47a9851e5e99b7e964aa8a790fca3d50a3d7",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "f4476c97-20fe-4692-bbd4-32fed660c58d-image-4.png",
+      "url": "https://claritys.web.id/api/public/uploads/f4476c97-20fe-4692-bbd4-32fed660c58d-image-4.png",
+      "contentType": "image/png",
+      "size": 77498,
+      "sha256": "100620749bd4e33712374c6330fe5780e04ff66c826f18df594574571e20a012",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "f611f0ed-c2c3-474e-8196-6ae1f2870e23-image-11.png",
+      "url": "https://claritys.web.id/api/public/uploads/f611f0ed-c2c3-474e-8196-6ae1f2870e23-image-11.png",
+      "contentType": "image/png",
+      "size": 236911,
+      "sha256": "2b32c315ef3392b8d42c5a8f36415da7c9f19aff9bf8badc7899f4e45a2032ae",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "f6774b88-42fa-4cca-976c-b8625329aa98-1794213639235187297.png",
+      "url": "https://claritys.web.id/api/public/uploads/f6774b88-42fa-4cca-976c-b8625329aa98-1794213639235187297.png",
+      "contentType": "image/png",
+      "size": 39571,
+      "sha256": "83c9ca1a7bb296d9e3a7411ce3f47d0cf3b6fa9090d0807cb68b809d2d694c1e",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "f775a39b-c314-4f32-bee6-dbbd848d718a-image-3.png",
+      "url": "https://claritys.web.id/api/public/uploads/f775a39b-c314-4f32-bee6-dbbd848d718a-image-3.png",
+      "contentType": "image/png",
+      "size": 99814,
+      "sha256": "8415f06b39e29ae851ce9311b26575a1ff42682f9f3e0cc95fbcde7bf5bc42b8",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "f796462a-d8ed-4492-b4e9-d788ce50514b-image-4.png",
+      "url": "https://claritys.web.id/api/public/uploads/f796462a-d8ed-4492-b4e9-d788ce50514b-image-4.png",
+      "contentType": "image/png",
+      "size": 9435,
+      "sha256": "575dc5cd450bcac1cf51d2bd2200654dbc5235f1f078c13f8bfd6cf8f06a42b6",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "f7ed4987-5b73-435a-bfdc-e3780ed6fda0-image-10.png",
+      "url": "https://claritys.web.id/api/public/uploads/f7ed4987-5b73-435a-bfdc-e3780ed6fda0-image-10.png",
+      "contentType": "image/png",
+      "size": 213110,
+      "sha256": "99dac61bd95323ef3f37040051ed4611737deb55c319a90e59b3cef090053076",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "f800a3c2-f2bd-45fd-b9d3-b0dd8ea99d2c-image-5.png",
+      "url": "https://claritys.web.id/api/public/uploads/f800a3c2-f2bd-45fd-b9d3-b0dd8ea99d2c-image-5.png",
+      "contentType": "image/png",
+      "size": 989217,
+      "sha256": "7bcce55653e0dcaa4acbcaf2bbbeada297a8ba2ce0a93bc992a7fc0a0c264c68",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "f84a6866-4c12-428a-9722-65d198e467b5-1794213593155945300.png",
+      "url": "https://claritys.web.id/api/public/uploads/f84a6866-4c12-428a-9722-65d198e467b5-1794213593155945300.png",
+      "contentType": "image/png",
+      "size": 69360,
+      "sha256": "539d0aa16f0c983ed05e1848fa1138bb66c136795a117ae83f4cd64323526f57",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "f9b9e5db-b189-4b81-b268-0e489525cd68-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/f9b9e5db-b189-4b81-b268-0e489525cd68-image.png",
+      "contentType": "image/png",
+      "size": 117215,
+      "sha256": "72e6743d7b895444ddac7a03999483e49f98d07521d2436876113e34d75b5341",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "f9da0b04-4e88-4d47-bdef-0f73514aeb7c-image-14.png",
+      "url": "https://claritys.web.id/api/public/uploads/f9da0b04-4e88-4d47-bdef-0f73514aeb7c-image-14.png",
+      "contentType": "image/png",
+      "size": 71948,
+      "sha256": "72726c5b0b0149197002b535041f9585014809ebe7ba1df69731dbd311296546",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "f9ddf70f-0b86-4e42-83af-80a675a98992-image-2.png",
+      "url": "https://claritys.web.id/api/public/uploads/f9ddf70f-0b86-4e42-83af-80a675a98992-image-2.png",
+      "contentType": "image/png",
+      "size": 74478,
+      "sha256": "b19548221a481400e4b0c1f4f1d5fd6c1540fdd01f19a84f88b3a1dbe34948e0",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "fbe4fed3-06e3-47ac-9bc1-ba50a752d425-image-2.png",
+      "url": "https://claritys.web.id/api/public/uploads/fbe4fed3-06e3-47ac-9bc1-ba50a752d425-image-2.png",
+      "contentType": "image/png",
+      "size": 149676,
+      "sha256": "40cafb0cb2aef31bfa7263cdc898a9e8c661eee5abb1603ba3b4f956cad11e79",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "fd49b05d-e710-42c9-9584-825aad8da244-image-3.png",
+      "url": "https://claritys.web.id/api/public/uploads/fd49b05d-e710-42c9-9584-825aad8da244-image-3.png",
+      "contentType": "image/png",
+      "size": 322876,
+      "sha256": "cb3a013f4da1cb5dbea7370734e6c5b2b11f1b24dacef8a98319439e4502a97a",
+      "localExists": false,
+      "localMatches": false
+    },
+    {
+      "filename": "fdf7d362-019b-4e64-99df-cb041bed6463-image.png",
+      "url": "https://claritys.web.id/api/public/uploads/fdf7d362-019b-4e64-99df-cb041bed6463-image.png",
+      "contentType": "image/png",
+      "size": 410932,
+      "sha256": "be84465b471ca0821d034633d53a120d7b0145297a99248b6795a549fdb3ed4b",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "ffbcaea9-ef08-46f1-b58b-9ded5eede0a8-image-1.png",
+      "url": "https://claritys.web.id/api/public/uploads/ffbcaea9-ef08-46f1-b58b-9ded5eede0a8-image-1.png",
+      "contentType": "image/png",
+      "size": 335098,
+      "sha256": "1c4f5c0738912ec83244d8432dba5850044132905848beafcee03787f8a2691e",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-07846031-7d34-4dc7-9a40-db283d202c84.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-07846031-7d34-4dc7-9a40-db283d202c84.png",
+      "contentType": "image/png",
+      "size": 102598,
+      "sha256": "8deb9b39cca35a7abdce8b3b9547bef28cfe471fc7c2f8b1b8e8255e1e43958b",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-08dba8a4-b648-4d97-b50a-dfcaf7862ce1.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-08dba8a4-b648-4d97-b50a-dfcaf7862ce1.png",
+      "contentType": "image/png",
+      "size": 271310,
+      "sha256": "ec0ea4208ed89ba32201b2f6648b5178664fd7984b4636936f9f0ae6b1108a75",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-0afecfba-af46-4179-973b-0d7e8a03a84a.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-0afecfba-af46-4179-973b-0d7e8a03a84a.png",
+      "contentType": "image/png",
+      "size": 68026,
+      "sha256": "a6baa5c4bd08a022ce380d72e32f537838d2eb4376211e83abdca5a633ea7ae1",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-13484b9d-ed9d-4752-8641-0d95b200e855.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-13484b9d-ed9d-4752-8641-0d95b200e855.png",
+      "contentType": "image/png",
+      "size": 91035,
+      "sha256": "b5837b14e9a69d119edfc1afe6d472feac37fcdca128f73310dd902ddf6cb59a",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-198ff9fd-45be-49be-b711-6f6f254e1eee.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-198ff9fd-45be-49be-b711-6f6f254e1eee.png",
+      "contentType": "image/png",
+      "size": 69393,
+      "sha256": "21af24e46f30ccb2340e97342b91bee919ce1abb67b843611e364664b0249422",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-19e52a9d-7dc3-4ada-99e6-31fdef271442.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-19e52a9d-7dc3-4ada-99e6-31fdef271442.png",
+      "contentType": "image/png",
+      "size": 149631,
+      "sha256": "1b9f21354cba390431c9f14fcfdf41ada1d5bd2d64eaa4c030ada894587b4a4b",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-1f04ea2c-81c9-4c5e-8c2b-28cce3518823.jpg",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-1f04ea2c-81c9-4c5e-8c2b-28cce3518823.jpg",
+      "contentType": "image/jpeg",
+      "size": 47967,
+      "sha256": "11defc85233667e66ec8311544f367bdd8633424f9175def72157c78f8fa03b8",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-24f77616-ee44-42b7-8129-cd2587219b98.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-24f77616-ee44-42b7-8129-cd2587219b98.png",
+      "contentType": "image/png",
+      "size": 46189,
+      "sha256": "d98300d92edddacac7087b1725c7d7541e023db176a6d38d1608475989b16444",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-25a9c3af-0aa3-4e19-919f-c54e43aa5671.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-25a9c3af-0aa3-4e19-919f-c54e43aa5671.png",
+      "contentType": "image/png",
+      "size": 1553073,
+      "sha256": "3e27f30d4bb0e48415a6c561e07e14d660f48b2347ba780f4d8fbfa17d988591",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-34bab926-6f59-4d79-9d11-cceaeb5421e5.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-34bab926-6f59-4d79-9d11-cceaeb5421e5.png",
+      "contentType": "image/png",
+      "size": 132995,
+      "sha256": "b28f383719d18a161855698689ee87234d04cb77dfcf54acab9e222da0f209af",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-4f139c3e-6f57-4770-9b9a-e537c935f7d1.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-4f139c3e-6f57-4770-9b9a-e537c935f7d1.png",
+      "contentType": "image/png",
+      "size": 132025,
+      "sha256": "b40162a5f2d25ce94d971ed1db3a3f5ae2671ae4bd06ffeb835c4e567bfe2b9a",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-4f8c62e7-b219-4584-b255-6b503647f2bc.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-4f8c62e7-b219-4584-b255-6b503647f2bc.png",
+      "contentType": "image/png",
+      "size": 196890,
+      "sha256": "4656b250f7e48eb5c71fee3cdcec03f5170e6c58613bda03311fe0f9475fe8b2",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-55132b70-f93a-43cf-8765-6ec4c813170f.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-55132b70-f93a-43cf-8765-6ec4c813170f.png",
+      "contentType": "image/png",
+      "size": 74560,
+      "sha256": "91775b0aeaefa2a83fe5fb6fcfedb85a32f216718f2e033703172e04da315a83",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-5928a8dc-bac1-47c9-a7ba-44c855d99e07.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-5928a8dc-bac1-47c9-a7ba-44c855d99e07.png",
+      "contentType": "image/png",
+      "size": 66687,
+      "sha256": "393c9b7dcd62ca47b995557cbf81f022a292c0ae6272b2ee7e9b9ef842a26e80",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-653bc72b-b62f-4e2b-adaf-7e8b746c3035.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-653bc72b-b62f-4e2b-adaf-7e8b746c3035.png",
+      "contentType": "image/png",
+      "size": 328172,
+      "sha256": "71221f18d54cba2d842d2c5a6bbec1f24774e94d776dc657ee358ee4d9c2d56e",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-7ebae386-0082-4cd9-89cb-db7a722b966b.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-7ebae386-0082-4cd9-89cb-db7a722b966b.png",
+      "contentType": "image/png",
+      "size": 116765,
+      "sha256": "5e1611ac4c4904a784fdc928345a7ea48c70842cd26768baf4d31a801936ec4c",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-8aa2d82e-7b39-4445-bd6e-c4e8e2c19f17.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-8aa2d82e-7b39-4445-bd6e-c4e8e2c19f17.png",
+      "contentType": "image/png",
+      "size": 62100,
+      "sha256": "e4febf0747be487909f812d87d954863547cc8dfe14974c064771e43fece2d41",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-8c26982d-4801-427c-804e-9346c2d0c83b.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-8c26982d-4801-427c-804e-9346c2d0c83b.png",
+      "contentType": "image/png",
+      "size": 1640735,
+      "sha256": "0edc5031fa6e4203978c3abb9cabb9ce49135d1426ba2ed0e8fa23ac18356dd2",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-90720f29-9133-4c6b-843e-af5f5beb36f9.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-90720f29-9133-4c6b-843e-af5f5beb36f9.png",
+      "contentType": "image/png",
+      "size": 298252,
+      "sha256": "ae0655e9b998c40eef02746e09e41e6bf93a31fd6970b0fc2e26d8f6f3736fc3",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-977a2f52-b927-41a2-a0de-04bddb285c54.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-977a2f52-b927-41a2-a0de-04bddb285c54.png",
+      "contentType": "image/png",
+      "size": 300023,
+      "sha256": "fe78635a1acd707a9f1286577598052092e1c7670e9b8cd52129aca3d598eea8",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-a6926340-9886-4f18-90c5-ebef233b00b9.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-a6926340-9886-4f18-90c5-ebef233b00b9.png",
+      "contentType": "image/png",
+      "size": 59527,
+      "sha256": "b0a82037eeef76606cb156de6600cdeb359454ac159d4c5f15d9dc250d3f6d10",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-b817def9-612a-42c0-90f9-53a7bf94763e.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-b817def9-612a-42c0-90f9-53a7bf94763e.png",
+      "contentType": "image/png",
+      "size": 119685,
+      "sha256": "9c38158a8e9c3e8b5b3b2e3fe165a71fe3b167586e73a03e21e2ce7790bd7ccd",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-bbc61e82-5a77-4101-8bdf-cccae7fc3065.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-bbc61e82-5a77-4101-8bdf-cccae7fc3065.png",
+      "contentType": "image/png",
+      "size": 94944,
+      "sha256": "3bb38b160d0a414d15e1bc95f4898c2950338f9aeb189c6138f19de6a2477e6e",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-beeb3841-29da-4957-b999-cb39e60d9d72.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-beeb3841-29da-4957-b999-cb39e60d9d72.png",
+      "contentType": "image/png",
+      "size": 135870,
+      "sha256": "d0941b3d583b963372ae6c07444883ae56c368ca6ba1023766916ed8306a08a6",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-c2b401a8-4c2d-4bdf-ada5-ce52a8d8ce14.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-c2b401a8-4c2d-4bdf-ada5-ce52a8d8ce14.png",
+      "contentType": "image/png",
+      "size": 82200,
+      "sha256": "1730478ca7e7dbec8963c8fe206307a5edd031f1439c2e952811c731848048d8",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-c2e4b02d-2044-420c-98a9-0641823cfe7b.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-c2e4b02d-2044-420c-98a9-0641823cfe7b.png",
+      "contentType": "image/png",
+      "size": 40047,
+      "sha256": "73cf5e3801c75b41d40c06ec3d1f15aefa8b9ce065c8a311602209db129b93ae",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-e13d0202-8184-4c6f-8998-f7827abe4ed8.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-e13d0202-8184-4c6f-8998-f7827abe4ed8.png",
+      "contentType": "image/png",
+      "size": 50710,
+      "sha256": "80a46cd92800fc39114be9831cbcce08009695d1d19addc67d3d4f27a99cb354",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-e3db2151-912c-4e12-ad93-890f2ec0a76c.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-e3db2151-912c-4e12-ad93-890f2ec0a76c.png",
+      "contentType": "image/png",
+      "size": 107416,
+      "sha256": "9aab8f63a979e230a55a9bd9b6af0acb3354a5c3c052ca95814e573b243e037a",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-eaf120f0-fce5-4d89-bbc7-68c974e0345a.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-eaf120f0-fce5-4d89-bbc7-68c974e0345a.png",
+      "contentType": "image/png",
+      "size": 42572,
+      "sha256": "6e28f58538f5f27d8eefdc46ee563389e3a0bf91c14b38fc2aa250bc763e8718",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-ec05dfca-09ea-4e3c-ab0e-3ffce20301b9.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-ec05dfca-09ea-4e3c-ab0e-3ffce20301b9.png",
+      "contentType": "image/png",
+      "size": 74384,
+      "sha256": "7c7b8fff06d412489ee6f0a49dd9e3e5a15a68d5832e9f699031e17e32564b23",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-ecab0686-2343-4f1f-a850-2e79fa4c9eee.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-ecab0686-2343-4f1f-a850-2e79fa4c9eee.png",
+      "contentType": "image/png",
+      "size": 81573,
+      "sha256": "93484df1884ba250e8e0e40e0f1f34f460d79b3dec74f6c5f436685828e55e75",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-f4908d70-1e53-44a6-a034-0079ad282694.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-f4908d70-1e53-44a6-a034-0079ad282694.png",
+      "contentType": "image/png",
+      "size": 301620,
+      "sha256": "c4df8852e60b829369efa61e1cba04b9c0e88b2895a0e4bd629aad6e692efe5a",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-f7c20b69-5700-41d5-93c2-43246b538592.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-f7c20b69-5700-41d5-93c2-43246b538592.png",
+      "contentType": "image/png",
+      "size": 174042,
+      "sha256": "49af171763b7a302e992dedddc6a162708f201a2850de8734dd81d75a521299f",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-fa2702b1-2319-4f56-b118-3c1a6729d3fb.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-fa2702b1-2319-4f56-b118-3c1a6729d3fb.png",
+      "contentType": "image/png",
+      "size": 532165,
+      "sha256": "7939bba377ce6519afda8ecebb1532a292123f7ecea1412ae65e78f0a1cbf91b",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-fcceaff4-4db1-4d60-b182-6beed52d5e6b.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-fcceaff4-4db1-4d60-b182-6beed52d5e6b.png",
+      "contentType": "image/png",
+      "size": 75212,
+      "sha256": "1db5a04931845c125be6f62f22e54a3e4061ada2be017fe288e855f681bcc055",
+      "localExists": true,
+      "localMatches": true
+    },
+    {
+      "filename": "writeup-inline-fde5f2f6-c921-4950-80d9-97cc300fd0a5.png",
+      "url": "https://claritys.web.id/api/public/uploads/writeup-inline-fde5f2f6-c921-4950-80d9-97cc300fd0a5.png",
+      "contentType": "image/png",
+      "size": 83925,
+      "sha256": "b084d5767de7300a36eddcc820a9ae1f6820c374f3316613612b080d015a60ea",
+      "localExists": true,
+      "localMatches": true
+    }
+  ]
+}

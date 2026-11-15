@@ -2,6 +2,7 @@ import { ImageResponse } from "next/og";
 import { ogFonts } from "@/lib/og-fonts";
 
 export const alt = "Elang Dimas Syadewa (Claritys) — pwn-focused CTF writeups and projects";
+export const dynamic = "force-static";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -18,7 +19,7 @@ export default async function Image() {
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 30, borderTop: "2px solid #2a2925", paddingTop: 28 }}>
           <span style={{ letterSpacing: 4 }}>pwn · rev · webexploit</span>
-          <span style={{ color: "#FF5B1F" }}>claritys.web.id</span>
+          <span style={{ color: "#FF5B1F" }}>dfbro.github.io</span>
         </div>
       </div>
     ),

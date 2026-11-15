@@ -5,6 +5,8 @@ import { X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { getLenis } from "@/components/motion/smooth-scroll";
+import { DeferredImage } from "@/components/site/deferred-image";
+import { withBasePath } from "@/lib/base-path";
 import { cn } from "@/lib/utils";
 
 // MediaItemType defines the structure of a media item
@@ -20,7 +22,7 @@ export interface MediaItemType {
 }
 
 // MediaItem renders either a video or an image based on item.type
-const MediaItem = ({ item, className, onClick }: { item: MediaItemType; className?: string; onClick?: () => void }) => {
+const MediaItem = ({ item, className, onClick, defer = true }: { item: MediaItemType; className?: string; onClick?: () => void; defer?: boolean }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isInView, setIsInView] = useState(false);
   const [isBuffering, setIsBuffering] = useState(true);
@@ -67,8 +69,8 @@ const MediaItem = ({ item, className, onClick }: { item: MediaItemType; classNam
   if (item.type === "video") {
     return (
       <div className={cn(className, "relative overflow-hidden")}>
-        <video ref={videoRef} className="h-full w-full object-cover" onClick={onClick} playsInline muted loop preload="auto" style={{ opacity: isBuffering ? 0.8 : 1, transition: "opacity 0.2s" }}>
-          <source src={item.url} type="video/mp4" />
+        <video ref={videoRef} className="h-full w-full object-cover" onClick={onClick} playsInline muted loop preload={isInView ? "metadata" : "none"} style={{ opacity: isBuffering ? 0.8 : 1, transition: "opacity 0.2s" }}>
+          {isInView && <source src={withBasePath(item.url) ?? item.url} type="video/mp4" />}
         </video>
         {isBuffering && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/10">
@@ -79,10 +81,7 @@ const MediaItem = ({ item, className, onClick }: { item: MediaItemType; classNam
     );
   }
 
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={item.url} alt={item.title} className={cn(className, "cursor-pointer object-cover")} onClick={onClick} loading="lazy" decoding="async" draggable={false} />
-  );
+  return <DeferredImage src={withBasePath(item.url) ?? item.url} alt={item.title} className={cn(className, "cursor-pointer object-cover")} onClick={onClick} eager={!defer} draggable={false} />;
 };
 
 // GalleryModal displays the selected item full-size with a draggable thumbnail dock
@@ -143,13 +142,13 @@ export const GalleryModal = ({ selectedItem, onClose, setSelectedItem, mediaItem
                 exit={{ y: 20, scale: 0.97, opacity: 0, transition: { duration: 0.15 } }}
                 onClick={(e) => e.stopPropagation()}
               >
-                <MediaItem item={selectedItem} className="max-h-[78vh] w-full object-contain" />
+                <MediaItem item={selectedItem} className="max-h-[78vh] w-full object-contain" defer={false} />
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-3 md:p-5">
                   <h3 className="font-display text-base font-semibold text-white sm:text-lg md:text-xl">{selectedItem.title}</h3>
                   {selectedItem.desc && <p className="mt-1 font-mono text-[11px] tracking-[0.14em] text-white/70 uppercase">{selectedItem.desc}</p>}
                   {selectedItem.link && (
                     <a
-                      href={selectedItem.link}
+                      href={withBasePath(selectedItem.link) ?? selectedItem.link}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
@@ -268,7 +267,7 @@ const InteractiveBentoGallery: React.FC<InteractiveBentoGalleryProps> = ({ media
         {selectedItem && <GalleryModal selectedItem={selectedItem} onClose={() => select(null)} setSelectedItem={select} mediaItems={items} />}
       </AnimatePresence>
       <motion.div
-        className="grid grid-flow-row-dense auto-rows-[60px] grid-cols-1 gap-3 sm:grid-cols-3 md:grid-cols-4"
+        className="achievement-gallery grid grid-flow-row-dense auto-rows-[60px] grid-cols-1 gap-3 sm:grid-cols-3 md:grid-cols-4"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-80px" }}
@@ -285,13 +284,14 @@ const InteractiveBentoGallery: React.FC<InteractiveBentoGalleryProps> = ({ media
               visible: { y: 0, scale: 1, opacity: 1, transition: { type: "spring", stiffness: 350, damping: 25, delay: Math.min(index, 12) * 0.04 } },
             }}
             whileHover={{ scale: 1.02 }}
-            drag
+            // Keep vertical touch gestures available to the page; reordering is horizontal only.
+            drag="x"
             dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
             dragElastic={1}
             onDragStart={() => setIsDragging(true)}
             onDragEnd={(_, info) => {
               setIsDragging(false);
-              const moveDistance = info.offset.x + info.offset.y;
+              const moveDistance = info.offset.x;
               if (Math.abs(moveDistance) > 50) {
                 const newItems = [...items];
                 const draggedItem = newItems[index];

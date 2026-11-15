@@ -1,12 +1,10 @@
 "use client";
 
-import { useGSAP } from "@gsap/react";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Media } from "@/components/site/media";
 import { SectionLabel } from "@/components/site/section-label";
-import { gsap, NO_REDUCED } from "@/lib/motion";
 import type { ProjectItem } from "@/lib/types";
 
 const SHOWN = 6;
@@ -18,33 +16,20 @@ export function ProjectStack({ projects }: { projects: ProjectItem[] }) {
   const shown = projects.slice(0, SHOWN);
   const pad = (n: number) => String(n).padStart(2, "0");
 
-  useGSAP(
-    () => {
-      const mm = gsap.matchMedia();
-      // Phones get a plain list: a card there is taller than the screen, so stacking would hide its image.
-      mm.add(`${NO_REDUCED} and (min-width: 768px)`, () => {
-        const cards = gsap.utils.toArray<HTMLElement>(".stack-card");
-        cards.forEach((card, i) => {
-          const next = cards[i + 1];
-          if (!next) return;
-          // As the next card slides up over this one, this one sinks back into the stack.
-          // fromTo, not to: GSAP reads the computed `filter: none` as brightness(0), which flashed the card black.
-          gsap.fromTo(
-            card.querySelector(".stack-inner"),
-            { scale: 1, filter: "brightness(1)" },
-            {
-              scale: 0.92,
-              filter: "brightness(0.55)",
-              ease: "none",
-              scrollTrigger: { trigger: next, start: "top bottom", end: `top ${96 + (i + 1) * STEP}px`, scrub: true },
-            },
-          );
-        });
-      });
-      return () => mm.revert();
-    },
-    { scope: ref },
-  );
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || window.innerWidth < 768) return;
+    const cards = Array.from(ref.current?.querySelectorAll<HTMLElement>(".stack-card") ?? []);
+    if (cards.length < 2) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        const index = cards.indexOf(entry.target as HTMLElement);
+        cards[index - 1]?.querySelector(".stack-inner")?.classList.toggle("is-stacked", entry.isIntersecting);
+      }
+    }, { rootMargin: "-96px 0px -144px 0px", threshold: 0 });
+    cards.slice(1).forEach((card) => observer.observe(card));
+    return () => observer.disconnect();
+  }, [shown]);
 
   return (
     <section ref={ref} className="mx-auto max-w-[1600px] px-4 py-24 md:px-8 md:py-32">
@@ -59,7 +44,7 @@ export function ProjectStack({ projects }: { projects: ProjectItem[] }) {
           const external = !!p.projectUrl?.startsWith("http");
           return (
             <li key={p.id} className="stack-card md:sticky" style={{ top: 96 + i * STEP }}>
-              <article className="stack-inner grid origin-top gap-8 overflow-hidden rounded-2xl border border-border bg-card p-6 will-change-transform md:min-h-[min(70svh,560px)] md:grid-cols-12 md:p-10">
+              <article className="stack-inner relative grid origin-top gap-8 overflow-hidden rounded-2xl border border-border bg-card p-6 md:min-h-[min(70svh,560px)] md:grid-cols-12 md:p-10">
                 <div className="flex flex-col md:col-span-5">
                   <div className="meta flex justify-between">
                     <span>

@@ -7,7 +7,6 @@ import { breadcrumbJsonLd, jsonLdScript, pageOpenGraph, truncate } from "@/lib/s
 import { ids } from "@/lib/seo-graph";
 import { siteUrl } from "@/lib/site";
 
-export const dynamic = "force-dynamic";
 export async function generateMetadata(): Promise<Metadata> {
   const items = await listAchievements();
   const notable = items.filter((a) => a.weight >= 4).map((a) => a.title.split(" – ")[0]);
@@ -59,7 +58,7 @@ export default async function AchievementsPage() {
     <main className="mx-auto max-w-[1600px] px-4 pt-32 pb-24 md:px-8 md:pt-44">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
       <SectionLabel index={4} name="record" />
-      <SplitHeading as="h1" text="Record" className="mt-4 mb-16 font-display text-[18vw] leading-[0.8] font-black tracking-[-0.05em] md:text-[12vw]" />
+      <SplitHeading as="h1" text="Record" deferUntilIdle className="mt-4 mb-16 font-display text-[18vw] leading-[0.8] font-black tracking-[-0.05em] md:text-[12vw]" />
       <AchievementList items={items} />
     </main>
   );

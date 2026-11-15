@@ -1,11 +1,13 @@
 node_modules/
 .next/
 out/
+dist/
 .env*
 !.env.example
 *.dump
 *.tar.gz
 public/uploads/
+public/assets/exports/
 .remember/
 next-env.d.ts
 *.tsbuildinfo

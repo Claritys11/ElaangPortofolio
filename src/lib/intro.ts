@@ -6,8 +6,18 @@
 export const INTRO_KEY = "intro-seen";
 export const INTRO_EVENT = "intro:done";
 
+export function introProgress(elapsedMs: number, loaded: number, total: number, minMs: number, maxMs: number): number {
+  if (elapsedMs >= maxMs) return 1;
+  const time = Math.min(1, Math.max(0, elapsedMs) / minMs);
+  const real = total > 0 ? Math.min(1, Math.max(0, loaded) / total) : 1;
+  return Math.min(time, Math.max(real, time * 0.9));
+}
+
 /** Runs before hydration. Kept tiny and dependency-free because it is inlined as a string. */
-export const INTRO_SCRIPT = `try{if(location.pathname==="/"&&!sessionStorage.getItem("${INTRO_KEY}")&&!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.dataset.intro="1"}catch(e){}`;
+export function createIntroScript(basePath = "") {
+  const homePath = JSON.stringify(basePath);
+  return `try{const p=location.pathname.replace(/\\/+$/,"")||"/";if((p==="/"||p===${homePath})&&!sessionStorage.getItem("${INTRO_KEY}")&&!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.dataset.intro="1"}catch(e){}`;
+}
 
 export const introPending = () => typeof document !== "undefined" && document.documentElement.dataset.intro === "1";
 
